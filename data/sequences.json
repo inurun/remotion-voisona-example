@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "id": "6002098f-c3d4-4f6f-98cb-9d28b9276255",
+      "text": "こんにちわ",
+      "readText": "こんにちわ",
+      "voiceName": "chis-a_ja_JP",
+      "voiceVersion": "2.1.0",
+      "speech": {
+        "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhh\" original=\"こんにちわ\" phoneme=\"k,o|N|n,i|ch,i|w,a\" pos=\"感動詞\" pronunciation=\"コンニチワ\">こんにちわ</word></acoustic_phrase></tsml>"
+      },
+      "durationSec": 1.2000000000000002,
+      "audio": {
+        "src": "/tts/a4cd4b50c8dc008b91c14c6426c90539.wav"
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "id": "6002098f-c3d4-4f6f-98cb-9d28b9276255",
+      "startSec": 0,
+      "endSec": 1.2000000000000002
+    }
+  ],
+  "durationSec": 1.2000000000000002
+}

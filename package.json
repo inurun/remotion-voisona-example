@@ -1,0 +1,31 @@
+{
+  "name": "remotion-voisona-example",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "setup": "pnpm approve-builds esbuild sharp && pnpm install",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "render": "remotion render src/remotion/index.ts RemotionVoisonaExample out/latest.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.443",
+    "@remotion/player": "4.0.443",
+    "mediabunny": "1.39.2",
+    "next": "16.2.3",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.443",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "24.12.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "sharp"]
+  }
+}
