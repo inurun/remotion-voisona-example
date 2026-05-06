@@ -2,16 +2,16 @@
   "items": [
     {
       "id": "6002098f-c3d4-4f6f-98cb-9d28b9276255",
-      "text": "こんにちわ",
-      "readText": "こんにちわ",
-      "voiceName": "chis-a_ja_JP",
-      "voiceVersion": "2.1.0",
+      "text": "こんにちわんこ！今日のワンコは何色かなぁ〜！あっ赤色だ！！！",
+      "readText": "こんにちわんこ！今日のワンコは何色かなぁ〜！あっ赤色だ！！！",
+      "voiceName": "futaba-minato_ja_JP",
+      "voiceVersion": "2.0.2",
       "speech": {
-        "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhh\" original=\"こんにちわ\" phoneme=\"k,o|N|n,i|ch,i|w,a\" pos=\"感動詞\" pronunciation=\"コンニチワ\">こんにちわ</word></acoustic_phrase></tsml>"
+        "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhh\" original=\"こんにち\" phoneme=\"k,o|N|n,i|ch,i\" pos=\"名詞\" pos_group1=\"副詞可能\" pronunciation=\"コンニチ\">こんにち</word><word chain=\"1\" hl=\"hhl\" original=\"わんこ\" phoneme=\"w,a|N|k,o\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ワンコ\">わんこ</word><word chain=\"1\" is_exclamation=\"1\" original=\"！\" phoneme=\"\" pos=\"記号\" pos_group1=\"一般\" pronunciation=\"\">！</word></acoustic_phrase><acoustic_phrase><word chain=\"0\" hl=\"hl\" original=\"今日\" phoneme=\"ky,o|o\" pos=\"名詞\" pos_group1=\"副詞可能\" pronunciation=\"キョー\">今日</word><word chain=\"1\" hl=\"l\" original=\"の\" phoneme=\"n,o\" pos=\"助詞\" pos_group1=\"連体化\" pronunciation=\"ノ\">の</word><word chain=\"0\" hl=\"hll\" original=\"ワンコ\" phoneme=\"w,a|N|k,o\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ワンコ\">ワンコ</word><word chain=\"1\" hl=\"l\" original=\"は\" phoneme=\"w,a\" pos=\"助詞\" pos_group1=\"係助詞\" pronunciation=\"ワ\">は</word><word chain=\"0\" hl=\"hl\" original=\"何\" phoneme=\"n,a|N\" pos=\"名詞\" pos_group1=\"数\" pronunciation=\"ナン\">何</word><word chain=\"1\" hl=\"ll\" original=\"色\" phoneme=\"sh,o|k,U\" pos=\"名詞\" pos_group1=\"接尾\" pos_group2=\"助数詞\" pronunciation=\"ショク’\">色</word><word chain=\"1\" hl=\"l\" original=\"か\" phoneme=\"k,a\" pos=\"助詞\" pos_group1=\"副助詞／並立助詞／終助詞\" pronunciation=\"カ\">か</word><word chain=\"1\" hl=\"ll\" original=\"なぁ\" phoneme=\"n,a|a\" pos=\"助詞\" pos_group1=\"終助詞\" pronunciation=\"ナー\">なぁ</word><word chain=\"1\" original=\"〜\" phoneme=\"\" pos=\"記号\" pos_group1=\"一般\" pronunciation=\"\">〜</word><word chain=\"1\" is_exclamation=\"1\" original=\"！\" phoneme=\"\" pos=\"記号\" pos_group1=\"一般\" pronunciation=\"\">！</word></acoustic_phrase><acoustic_phrase><word chain=\"0\" hl=\"hl\" original=\"あっ\" phoneme=\"a|cl\" pos=\"感動詞\" pronunciation=\"アッ\">あっ</word><word chain=\"0\" hl=\"lhhh\" original=\"赤色\" phoneme=\"a|k,a|i|r,o\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"アカイロ\">赤色</word><word cform=\"基本形\" chain=\"1\" ctype=\"特殊・ダ\" hl=\"h\" original=\"だ\" phoneme=\"d,a\" pos=\"助動詞\" pronunciation=\"ダ\">だ</word><word chain=\"1\" is_exclamation=\"1\" original=\"！\" phoneme=\"\" pos=\"記号\" pos_group1=\"一般\" pronunciation=\"\">！</word><word chain=\"1\" original=\"！\" phoneme=\"\" pos=\"記号\" pos_group1=\"一般\" pronunciation=\"\">！</word><word chain=\"1\" original=\"！\" phoneme=\"\" pos=\"記号\" pos_group1=\"一般\" pronunciation=\"\">！</word></acoustic_phrase></tsml>"
       },
-      "durationSec": 1.2000000000000002,
+      "durationSec": 5.009999999999999,
       "audio": {
-        "src": "/tts/a4cd4b50c8dc008b91c14c6426c90539.wav"
+        "src": "/tts/4094fda2fcd03787341dd1c6b2045683.wav"
       }
     }
   ],
@@ -19,8 +19,8 @@
     {
       "id": "6002098f-c3d4-4f6f-98cb-9d28b9276255",
       "startSec": 0,
-      "endSec": 1.2000000000000002
+      "endSec": 5.009999999999999
     }
   ],
-  "durationSec": 1.2000000000000002
+  "durationSec": 5.009999999999999
 }
