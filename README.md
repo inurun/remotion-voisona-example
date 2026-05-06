@@ -2,9 +2,7 @@
 
 Next.js 管理画面から VoiSona Talk の text-analysis / TTS / TSML 調整 / Remotion render を試すための最小サンプル。
 
-## Demo
-
-- デモ動画: ![demo.mp4](./demo.mp4)
+https://github.com/user-attachments/assets/368aaad0-d5dc-477d-b181-47dd4b0e2091
 
 ## Setup
 
