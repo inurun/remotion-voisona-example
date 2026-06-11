@@ -1,6 +1,6 @@
 import {
   AbsoluteFill,
-  Audio,
+  Html5Audio,
   Sequence,
   staticFile,
   useCurrentFrame,
@@ -45,7 +45,7 @@ export function RemotionVideo({ project }: { project: SavedProject }) {
             from={secondsToFrames(item.startSec, fps)}
             durationInFrames={Math.max(1, secondsToFrames(item.tts.durationSec, fps))}
           >
-            <Audio src={staticFile(item.tts.audio.src)} />
+            <Html5Audio src={staticFile(item.tts.audio.src)} />
           </Sequence>
         );
       })}
