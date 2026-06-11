@@ -1,5 +1,31 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
 :root {
   color-scheme: light;
+  --background: oklch(0.98 0.01 90);
+  --foreground: oklch(0.27 0.02 40);
+  --card: oklch(0.995 0.01 95);
+  --card-foreground: oklch(0.27 0.02 40);
+  --popover: oklch(0.995 0.01 95 / 0.9);
+  --popover-foreground: oklch(0.27 0.02 40);
+  --primary: oklch(0.54 0.14 45);
+  --primary-foreground: oklch(0.99 0.01 95);
+  --secondary: oklch(0.95 0.02 75);
+  --secondary-foreground: oklch(0.3 0.02 40);
+  --muted: oklch(0.94 0.01 80);
+  --muted-foreground: oklch(0.49 0.02 45);
+  --accent: oklch(0.92 0.03 60);
+  --accent-foreground: oklch(0.27 0.02 40);
+  --destructive: oklch(0.62 0.21 28);
+  --destructive-foreground: oklch(0.99 0 0);
+  --input: oklch(0.9 0.01 78);
+  --ring: oklch(0.73 0.08 52);
+  --radius: 16px;
   --bg: #f3efe6;
   --panel: rgba(255, 250, 241, 0.88);
   --panel-strong: #fff9ef;
@@ -10,10 +36,44 @@
   --accent-strong: #8f3f1d;
   --danger: #9b2c2c;
   --shadow: 0 24px 80px rgba(82, 61, 39, 0.14);
-  font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-sans: "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-serif: "Iowan Old Style", "Georgia", "Hiragino Mincho ProN", serif;
+  --font-mono: "SFMono-Regular", "Roboto Mono", "Menlo", monospace;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-serif);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 3px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) * 1.5);
 }
 
 * {
+  @apply border-border outline-ring/50;
   box-sizing: border-box;
 }
 
@@ -28,6 +88,7 @@ body {
 }
 
 body {
+  @apply bg-background font-sans text-foreground antialiased;
   min-height: 100vh;
 }
 
