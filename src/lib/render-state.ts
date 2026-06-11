@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { LATEST_VIDEO_PATH, OUT_DIR, PROJECT_ROOT } from "@/lib/storage";
+import { OUT_DIR, PROJECT_ROOT } from "@/lib/storage";
 
 type RenderStatus = "idle" | "running" | "success" | "error";
 

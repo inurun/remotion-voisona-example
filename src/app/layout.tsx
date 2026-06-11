@@ -7,9 +7,7 @@ export const metadata: Metadata = {
   description: "Minimal admin UI for VoiSona and Remotion",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ja">
       <body>{children}</body>

@@ -35,8 +35,7 @@ function normalizeEnvValue(value: string | undefined) {
 }
 
 export const VOISONA_BASE =
-  normalizeEnvValue(process.env["VOISONA_BASE"]) ??
-  "http://localhost:32766/api/talk/v1";
+  normalizeEnvValue(process.env["VOISONA_BASE"]) ?? "http://localhost:32766/api/talk/v1";
 
 const configuredVoicesPath = normalizeEnvValue(process.env["VOISONA_VOICES_PATH"]);
 
@@ -45,9 +44,7 @@ function getCredentials() {
   const password = normalizeEnvValue(process.env["VOISONA_PASSWORD"]);
 
   if (!username || !password) {
-    throw new Error(
-      "VOISONA_USERNAME and VOISONA_PASSWORD must be set in .env.local.",
-    );
+    throw new Error("VOISONA_USERNAME and VOISONA_PASSWORD must be set in .env.local.");
   }
 
   return { username, password };
@@ -217,13 +214,7 @@ export async function synthesizeVoisona(input: {
   }
 }
 
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 function toDisplayName(voiceName: string, voiceVersion?: string) {
   const base = voiceName.replace(/_ja_JP$/u, "").replaceAll("-", " ");
@@ -302,10 +293,7 @@ export async function listVoisonaVoices() {
 
       const deduped = Array.from(
         new Map(
-          options.map((option) => [
-            `${option.voiceName}:${option.voiceVersion ?? ""}`,
-            option,
-          ]),
+          options.map((option) => [`${option.voiceName}:${option.voiceVersion ?? ""}`, option]),
         ).values(),
       ).sort((a, b) => a.displayName.localeCompare(b.displayName));
 
@@ -315,9 +303,7 @@ export async function listVoisonaVoices() {
 
       errors.push(`${candidatePath}: empty_response`);
     } catch (error) {
-      errors.push(
-        `${candidatePath}: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      errors.push(`${candidatePath}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

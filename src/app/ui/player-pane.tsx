@@ -7,9 +7,7 @@ import { COMP_NAME, VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/lib/constants
 import type { SavedProject } from "@/lib/schema";
 
 export function PlayerPane({ project }: { project: SavedProject }) {
-  const [component, setComponent] = useState<ComponentType<{ project: SavedProject }> | null>(
-    null,
-  );
+  const [component, setComponent] = useState<ComponentType<{ project: SavedProject }> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,7 +28,11 @@ export function PlayerPane({ project }: { project: SavedProject }) {
   }, [project.durationSec]);
 
   if (!component) {
-    return <div className="panel"><div className="panel-body">Loading player...</div></div>;
+    return (
+      <div className="panel">
+        <div className="panel-body">Loading player...</div>
+      </div>
+    );
   }
 
   return (

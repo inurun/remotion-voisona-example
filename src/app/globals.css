@@ -10,10 +10,7 @@
   --accent-strong: #8f3f1d;
   --danger: #9b2c2c;
   --shadow: 0 24px 80px rgba(82, 61, 39, 0.14);
-  font-family:
-    "Hiragino Sans",
-    "Yu Gothic",
-    sans-serif;
+  font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
 }
 
 * {
@@ -254,10 +251,7 @@ a {
   border-radius: 18px;
   background: #201912;
   color: #f6ead9;
-  font-family:
-    "SFMono-Regular",
-    Consolas,
-    monospace;
+  font-family: "SFMono-Regular", Consolas, monospace;
   font-size: 12px;
   line-height: 1.6;
 }

@@ -1,11 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import {
-  draftProjectSchema,
-  savedProjectSchema,
-  type SavedProject,
-} from "@/lib/schema";
+import { draftProjectSchema, savedProjectSchema, type SavedProject } from "@/lib/schema";
 
 export const PROJECT_ROOT = process.cwd();
 export const DATA_DIR = path.join(PROJECT_ROOT, "data");

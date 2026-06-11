@@ -26,9 +26,7 @@ export async function buildSavedProject(payload: unknown): Promise<SavedProject>
         text: readText,
         analyzedText,
         voiceName: item.voiceName,
-        ...(item.voiceVersion?.trim()
-          ? { voiceVersion: item.voiceVersion.trim() }
-          : {}),
+        ...(item.voiceVersion?.trim() ? { voiceVersion: item.voiceVersion.trim() } : {}),
       });
 
       return {
@@ -36,9 +34,7 @@ export async function buildSavedProject(payload: unknown): Promise<SavedProject>
         text: item.text,
         readText,
         voiceName: item.voiceName,
-        ...(item.voiceVersion?.trim()
-          ? { voiceVersion: item.voiceVersion.trim() }
-          : {}),
+        ...(item.voiceVersion?.trim() ? { voiceVersion: item.voiceVersion.trim() } : {}),
         durationSec: audio.durationSec + AUDIO_PADDING_SECONDS,
         audio: {
           src: audio.audioSrc,

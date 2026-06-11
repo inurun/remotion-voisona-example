@@ -1,0 +1,16 @@
+pre-commit:
+  commands:
+    format:
+      glob:
+        - "*.{js,jsx,ts,tsx}"
+        - "*.{json,jsonc,json5}"
+        - "*.{css,scss,less}"
+        - "*.{md,mdx}"
+        - "*.{html,yaml,yml,toml}"
+      run: pnpm exec oxfmt {staged_files}
+      stage_fixed: true
+    lint:
+      glob:
+        - "*.{js,jsx,ts,tsx}"
+      run: pnpm exec oxlint --fix {staged_files}
+      stage_fixed: true

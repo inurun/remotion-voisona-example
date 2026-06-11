@@ -94,9 +94,7 @@ export function AppClient({ initialProject }: { initialProject: SavedProject }) 
 
     try {
       const response = await fetch("/api/voices", { cache: "no-store" });
-      const data = (await response.json()) as
-        | { options: VoiceOption[] }
-        | { error: string };
+      const data = (await response.json()) as { options: VoiceOption[] } | { error: string };
 
       if (!response.ok || !("options" in data)) {
         throw new Error("error" in data ? data.error : `HTTP ${response.status}`);
@@ -303,9 +301,7 @@ export function AppClient({ initialProject }: { initialProject: SavedProject }) 
             <div className="panel-body">
               <div className="section-head">
                 <h2>Render</h2>
-                <span
-                  className={`badge ${renderState.status === "error" ? "error" : ""}`}
-                >
+                <span className={`badge ${renderState.status === "error" ? "error" : ""}`}>
                   {renderState.status}
                 </span>
               </div>
@@ -398,8 +394,16 @@ export function AppClient({ initialProject }: { initialProject: SavedProject }) 
                   {voices.error}
                 </div>
               ) : null}
-              {message ? <div className="hint" style={{ marginBottom: 14 }}>{message}</div> : null}
-              {error ? <div className="error-text" style={{ marginBottom: 14 }}>{error}</div> : null}
+              {message ? (
+                <div className="hint" style={{ marginBottom: 14 }}>
+                  {message}
+                </div>
+              ) : null}
+              {error ? (
+                <div className="error-text" style={{ marginBottom: 14 }}>
+                  {error}
+                </div>
+              ) : null}
 
               {items.length === 0 ? (
                 <div className="hint">行がない。追加して開始。</div>
@@ -473,7 +477,9 @@ export function AppClient({ initialProject }: { initialProject: SavedProject }) 
                         <button
                           type="button"
                           className="button secondary"
-                          disabled={!canRunTts || !item.text.trim() || !item.voiceName || Boolean(busy)}
+                          disabled={
+                            !canRunTts || !item.text.trim() || !item.voiceName || Boolean(busy)
+                          }
                           onClick={() => {
                             void analyzeItem(item);
                           }}
@@ -483,7 +489,9 @@ export function AppClient({ initialProject }: { initialProject: SavedProject }) 
                         <button
                           type="button"
                           className="button ghost"
-                          disabled={!canRunTts || !item.text.trim() || !item.voiceName || Boolean(busy)}
+                          disabled={
+                            !canRunTts || !item.text.trim() || !item.voiceName || Boolean(busy)
+                          }
                           onClick={() => {
                             void previewItem(item);
                           }}

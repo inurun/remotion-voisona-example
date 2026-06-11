@@ -6,6 +6,11 @@
     "setup": "pnpm approve-builds esbuild sharp && pnpm install",
     "dev": "next dev --webpack",
     "build": "next build --webpack",
+    "hooks:install": "lefthook install",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "start": "next start",
     "render": "remotion render src/remotion/index.ts RemotionVoisonaExample out/latest.mp4"
   },
@@ -20,12 +25,19 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "24.12.0",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
+    "lefthook": "2.1.6",
+    "oxfmt": "0.47.0",
+    "oxlint": "1.62.0",
     "typescript": "5.9.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "sharp"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
   }
 }
