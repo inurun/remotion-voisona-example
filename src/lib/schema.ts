@@ -6,9 +6,9 @@ export const voiceOptionSchema = z.object({
   displayName: z.string().min(1),
 });
 
-export const draftItemSchema = z.object({
+export const draftTtsSchema = z.object({
   id: z.string().min(1),
-  text: z.string().min(1),
+  text: z.string(),
   readText: z.string().optional(),
   voiceName: z.string().optional(),
   voiceVersion: z.string().optional(),
@@ -19,41 +19,42 @@ export const draftItemSchema = z.object({
     .optional(),
 });
 
-export const savedItemSchema = draftItemSchema.extend({
-  readText: z.string().min(1),
-  voiceName: z.string().min(1),
+export const savedTtsSchema = draftTtsSchema.extend({
   durationSec: z.number().nonnegative(),
   audio: z.object({
     src: z.string(),
   }),
-  speech: z.object({
-    analyzedText: z.string().optional(),
-  }),
+  speech: z
+    .object({
+      analyzedText: z.string().optional(),
+    })
+    .default({}),
 });
 
-export const timelineItemSchema = z
-  .object({
-    id: z.string().min(1),
-    startSec: z.number().nonnegative(),
-    endSec: z.number().nonnegative(),
-  })
-  .refine((value) => value.endSec >= value.startSec, {
-    message: "endSec must be greater than or equal to startSec",
-    path: ["endSec"],
-  });
+export const draftPageSchema = z.object({
+  id: z.string().min(1),
+  richText: z.string(),
+  tts: z.array(draftTtsSchema),
+});
 
 export const draftProjectSchema = z.object({
-  items: z.array(draftItemSchema),
+  pages: z.array(draftPageSchema),
+});
+
+export const savedPageSchema = z.object({
+  id: z.string().min(1),
+  richText: z.string(),
+  tts: z.array(savedTtsSchema),
 });
 
 export const savedProjectSchema = z.object({
-  items: z.array(savedItemSchema),
-  timeline: z.array(timelineItemSchema),
-  durationSec: z.number().nonnegative(),
+  pages: z.array(savedPageSchema),
 });
 
 export type VoiceOption = z.infer<typeof voiceOptionSchema>;
-export type DraftItem = z.infer<typeof draftItemSchema>;
-export type SavedItem = z.infer<typeof savedItemSchema>;
+export type DraftTts = z.infer<typeof draftTtsSchema>;
+export type SavedTts = z.infer<typeof savedTtsSchema>;
+export type DraftPage = z.infer<typeof draftPageSchema>;
+export type SavedPage = z.infer<typeof savedPageSchema>;
 export type DraftProject = z.infer<typeof draftProjectSchema>;
 export type SavedProject = z.infer<typeof savedProjectSchema>;

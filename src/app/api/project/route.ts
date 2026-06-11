@@ -13,7 +13,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Failed to load sequences",
+        error: error instanceof Error ? error.message : "Failed to load project",
       },
       { status: 500 },
     );
@@ -22,13 +22,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const project = await buildSavedProject(await request.json());
+    const previousProject = await readSavedProject().catch(() => undefined);
+    const project = await buildSavedProject(await request.json(), previousProject);
     await writeSavedProject(project);
     return NextResponse.json(project);
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Failed to save sequences",
+        error: error instanceof Error ? error.message : "Failed to save project",
       },
       { status: 500 },
     );

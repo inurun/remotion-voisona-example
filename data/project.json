@@ -1,0 +1,22 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "richText": "<h1>Remotion + VoiSona Template</h1><p>このテンプレをベースに本文と読み上げを編集できる。</p>",
+      "tts": [
+        {
+          "id": "tts-1",
+          "text": "このテンプレをベースに本文と読み上げを編集できる。",
+          "readText": "このテンプレをベースにほんぶんとよみあげをへんしゅうできる。",
+          "voiceName": "",
+          "voiceVersion": "",
+          "durationSec": 0,
+          "audio": {
+            "src": ""
+          },
+          "speech": {}
+        }
+      ]
+    }
+  ]
+}

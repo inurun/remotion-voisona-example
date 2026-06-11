@@ -7,7 +7,8 @@ import {
   useVideoConfig,
 } from "remotion";
 
-import type { SavedProject } from "../lib/schema";
+import { getProjectPlayback } from "@/lib/project-playback";
+import type { SavedProject } from "@/lib/schema";
 
 function secondsToFrames(value: number, fps: number) {
   return Math.round(value * fps);
@@ -17,10 +18,10 @@ export function RemotionVideo({ project }: { project: SavedProject }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const currentSec = frame / fps;
-  const activeIndex = project.timeline.findIndex(
+  const playback = getProjectPlayback(project);
+  const activeItem = playback.tts.find(
     (item) => currentSec >= item.startSec && currentSec < item.endSec,
   );
-  const activeItem = activeIndex >= 0 ? project.items[activeIndex] : project.items[0];
 
   return (
     <AbsoluteFill
@@ -33,19 +34,18 @@ export function RemotionVideo({ project }: { project: SavedProject }) {
         padding: 64,
       }}
     >
-      {project.timeline.map((segment, index) => {
-        const item = project.items[index];
-        if (!item?.audio.src) {
+      {playback.tts.map((item) => {
+        if (!item.tts.audio.src) {
           return null;
         }
 
         return (
           <Sequence
-            key={segment.id}
-            from={secondsToFrames(segment.startSec, fps)}
-            durationInFrames={Math.max(1, secondsToFrames(item.durationSec, fps))}
+            key={item.tts.id}
+            from={secondsToFrames(item.startSec, fps)}
+            durationInFrames={Math.max(1, secondsToFrames(item.tts.durationSec, fps))}
           >
-            <Audio src={staticFile(item.audio.src)} />
+            <Audio src={staticFile(item.tts.audio.src)} />
           </Sequence>
         );
       })}
@@ -68,7 +68,7 @@ export function RemotionVideo({ project }: { project: SavedProject }) {
             color: "rgba(255, 232, 201, 0.8)",
           }}
         >
-          {activeItem?.voiceName || "No Voice"}
+          {activeItem?.tts.voiceName || "No Voice"}
         </div>
         <div
           style={{
@@ -78,7 +78,7 @@ export function RemotionVideo({ project }: { project: SavedProject }) {
             whiteSpace: "pre-wrap",
           }}
         >
-          {activeItem?.text || "No Script"}
+          {activeItem?.tts.text || "No Script"}
         </div>
       </div>
     </AbsoluteFill>
