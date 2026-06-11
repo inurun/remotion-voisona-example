@@ -2,6 +2,8 @@
 
 Next.js 管理画面で `page + TTS` を編集し、VoiSona の text-analysis / preview / save / Remotion render まで一通り試せるテンプレ。
 
+https://github.com/user-attachments/assets/7488dc5a-36bd-4a98-8333-38f514935c30
+
 ## できること
 
 - ページ単位で本文をリッチテキスト編集する
