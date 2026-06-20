@@ -38,13 +38,23 @@ function createDraftPage(): DraftPage {
   };
 }
 
+function getDefaultVoiceFields(defaultVoice?: VoiceOption) {
+  if (!defaultVoice) {
+    return { voiceName: "", voiceVersion: "" };
+  }
+
+  return {
+    voiceName: defaultVoice.voiceName,
+    voiceVersion: defaultVoice.voiceVersion ?? "",
+  };
+}
+
 function createDraftTts(defaultVoice?: VoiceOption): DraftTts {
   return {
     id: createUuid(),
     text: "",
     readText: "",
-    voiceName: defaultVoice?.voiceName ?? "",
-    voiceVersion: defaultVoice?.voiceVersion ?? "",
+    ...getDefaultVoiceFields(defaultVoice),
     speech: {},
   };
 }

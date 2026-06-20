@@ -9,28 +9,35 @@ export type VoiceState =
   | { status: "ready"; options: VoiceOption[]; error: string | null }
   | { status: "error"; options: VoiceOption[]; error: string };
 
+function toVoiceState(data: { options: VoiceOption[] } | undefined, error: unknown): VoiceState {
+  if (error) {
+    return {
+      status: "error",
+      options: [],
+      error: error instanceof Error ? error.message : "Failed to load voices",
+    };
+  }
+
+  if (!data) {
+    return {
+      status: "loading",
+      options: [],
+      error: null,
+    };
+  }
+
+  return {
+    status: "ready",
+    options: data.options,
+    error: null,
+  };
+}
+
 export function useVoices() {
   const swr = useSWR<{ options: VoiceOption[] }>("/api/voisona/voices", fetchJson, {
     revalidateOnFocus: false,
   });
-
-  const voices: VoiceState = swr.error
-    ? {
-        status: "error",
-        options: [],
-        error: swr.error instanceof Error ? swr.error.message : "Failed to load voices",
-      }
-    : swr.data
-      ? {
-          status: "ready",
-          options: swr.data.options,
-          error: null,
-        }
-      : {
-          status: "loading",
-          options: [],
-          error: null,
-        };
+  const voices = toVoiceState(swr.data, swr.error);
 
   return {
     voices,

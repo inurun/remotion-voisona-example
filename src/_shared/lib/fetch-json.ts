@@ -1,11 +1,26 @@
-export async function fetchJson<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-  const response = await fetch(input, init);
-  const json = (await response.json()) as T | { error?: string };
+function getDefaultHttpError(status: number) {
+  return `HTTP ${status}`;
+}
 
-  if (!response.ok) {
-    const message = typeof json === "object" && json && "error" in json ? json.error : undefined;
-    throw new Error(message ?? `HTTP ${response.status}`);
+function getJsonError(json: unknown) {
+  if (typeof json !== "object" || !json || !("error" in json)) {
+    return undefined;
   }
 
-  return json as T;
+  return (json as { error?: string }).error;
+}
+
+function getResponseErrorMessage(json: unknown, status: number) {
+  return getJsonError(json) ?? getDefaultHttpError(status);
+}
+
+export async function fetchJson<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
+  const response = await fetch(input, init);
+  const json = (await response.json()) as T;
+
+  if (!response.ok) {
+    throw new Error(getResponseErrorMessage(json, response.status));
+  }
+
+  return json;
 }

@@ -1,4 +1,4 @@
-export function normalizeNewlines(value: string) {
+function normalizeNewlines(value: string) {
   return value.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
 }
 

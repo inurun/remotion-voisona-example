@@ -26,96 +26,166 @@ function getTtsComparisonInput(item: DraftTts) {
   };
 }
 
-export async function buildSavedProject(
+function validatePage(page: DraftProject["pages"][number]) {
+  if (!page.richText.trim()) {
+    throw new Error(`richText is required for page ${page.id}`);
+  }
+
+  if (page.tts.length === 0) {
+    throw new Error(`at least one tts is required for page ${page.id}`);
+  }
+}
+
+function validateTts(item: DraftTts) {
+  if (!item.text.trim()) {
+    throw new Error(`text is required for tts ${item.id}`);
+  }
+
+  if (!item.voiceName?.trim()) {
+    throw new Error(`voiceName is required for tts ${item.id}`);
+  }
+}
+
+function getPreviousComparisonInput(previous: SavedProject["pages"][number]["tts"][number]) {
+  return {
+    text: previous.text,
+    readText: previous.readText ?? "",
+    voiceName: previous.voiceName ?? "",
+    voiceVersion: previous.voiceVersion ?? "",
+    analyzedText: normalizeAnalyzedText(previous.speech.analyzedText),
+  };
+}
+
+function normalizeAnalyzedText(value?: string) {
+  return value?.trim() || "";
+}
+
+function shouldReusePreviousTts(
+  item: DraftTts,
+  previous?: SavedProject["pages"][number]["tts"][number],
+) {
+  if (!previous) {
+    return false;
+  }
+
+  return (
+    JSON.stringify(getPreviousComparisonInput(previous)) ===
+    JSON.stringify(getTtsComparisonInput(item))
+  );
+}
+
+async function resolveAnalyzedText(
+  serverEnv: ServerEnv,
+  nextInput: ReturnType<typeof getTtsComparisonInput>,
+) {
+  if (nextInput.analyzedText) {
+    return nextInput.analyzedText;
+  }
+
+  const analysis = await analyzeVoisonaText(serverEnv, {
+    text: nextInput.readText,
+    language: "ja_JP",
+  });
+  return analysis.analyzedText;
+}
+
+async function buildSavedTts(
+  serverEnv: ServerEnv,
+  item: DraftTts,
+  previous?: SavedProject["pages"][number]["tts"][number],
+) {
+  validateTts(item);
+  if (shouldReusePreviousTts(item, previous)) {
+    return previous!;
+  }
+
+  const nextInput = getTtsComparisonInput(item);
+  const analyzedText = await resolveAnalyzedText(serverEnv, nextInput);
+  const voiceVersion = getOptionalVoiceVersion(nextInput.voiceVersion);
+  const audio = await synthesizeVoisona(
+    createSynthesisInput(serverEnv, nextInput, analyzedText, voiceVersion),
+  );
+
+  return createSavedTts(item, nextInput, analyzedText, audio, voiceVersion);
+}
+
+function getOptionalVoiceVersion(value: string) {
+  return value || undefined;
+}
+
+function createSynthesisInput(
+  serverEnv: ServerEnv,
+  nextInput: ReturnType<typeof getTtsComparisonInput>,
+  analyzedText: string,
+  voiceVersion?: string,
+) {
+  return {
+    serverEnv,
+    text: nextInput.readText,
+    analyzedText,
+    voiceName: nextInput.voiceName,
+    ...(voiceVersion ? { voiceVersion } : {}),
+  };
+}
+
+function createSavedTts(
+  item: DraftTts,
+  nextInput: ReturnType<typeof getTtsComparisonInput>,
+  analyzedText: string,
+  audio: { audioSrc: string; durationSec: number },
+  voiceVersion?: string,
+) {
+  return {
+    id: item.id,
+    text: item.text,
+    readText: nextInput.readText,
+    voiceName: nextInput.voiceName,
+    ...(voiceVersion ? { voiceVersion } : {}),
+    durationSec: audio.durationSec + AUDIO_PADDING_SECONDS,
+    audio: {
+      src: audio.audioSrc,
+    },
+    speech: {
+      analyzedText,
+    },
+  };
+}
+
+async function buildSavedPage(
+  serverEnv: ServerEnv,
+  page: DraftProject["pages"][number],
+  previousTtsById: Map<string, SavedProject["pages"][number]["tts"][number]>,
+) {
+  validatePage(page);
+  const tts = await Promise.all(
+    page.tts.map((item) => buildSavedTts(serverEnv, item, previousTtsById.get(item.id))),
+  );
+
+  return {
+    id: page.id,
+    richText: page.richText,
+    tts,
+  };
+}
+
+function buildPreviousTtsMap(previousProject?: SavedProject) {
+  return new Map(
+    previousProject?.pages.flatMap((page) => page.tts).map((item) => [item.id, item]) ?? [],
+  );
+}
+
+async function buildSavedProject(
   serverEnv: ServerEnv,
   payload: unknown,
   previousProject?: SavedProject,
 ): Promise<SavedProject> {
   const draft = parseDraftPayload(payload);
-  const previousTtsById = new Map(
-    previousProject?.pages.flatMap((page) => page.tts).map((item) => [item.id, item]) ?? [],
-  );
-
+  const previousTtsById = buildPreviousTtsMap(previousProject);
   const pages = await Promise.all(
-    draft.pages.map(async (page) => {
-      if (!page.richText.trim()) {
-        throw new Error(`richText is required for page ${page.id}`);
-      }
-      if (page.tts.length === 0) {
-        throw new Error(`at least one tts is required for page ${page.id}`);
-      }
-
-      const tts = await Promise.all(
-        page.tts.map(async (item) => {
-          const nextInput = getTtsComparisonInput(item);
-          if (!item.text.trim()) {
-            throw new Error(`text is required for tts ${item.id}`);
-          }
-          if (!item.voiceName?.trim()) {
-            throw new Error(`voiceName is required for tts ${item.id}`);
-          }
-
-          const previous = previousTtsById.get(item.id);
-          const previousInput = previous
-            ? {
-                text: previous.text,
-                readText: previous.readText ?? "",
-                voiceName: previous.voiceName ?? "",
-                voiceVersion: previous.voiceVersion ?? "",
-                analyzedText: previous.speech.analyzedText?.trim() || "",
-              }
-            : null;
-
-          if (previous && JSON.stringify(previousInput) === JSON.stringify(nextInput)) {
-            return previous;
-          }
-
-          const analyzedText =
-            nextInput.analyzedText ||
-            (
-              await analyzeVoisonaText(serverEnv, {
-                text: nextInput.readText,
-                language: "ja_JP",
-              })
-            ).analyzedText;
-
-          const voiceVersion = nextInput.voiceVersion || undefined;
-          const audio = await synthesizeVoisona({
-            serverEnv,
-            text: nextInput.readText,
-            analyzedText,
-            voiceName: nextInput.voiceName,
-            ...(voiceVersion ? { voiceVersion } : {}),
-          });
-
-          return {
-            id: item.id,
-            text: item.text,
-            readText: nextInput.readText,
-            voiceName: nextInput.voiceName,
-            ...(voiceVersion ? { voiceVersion } : {}),
-            durationSec: audio.durationSec + AUDIO_PADDING_SECONDS,
-            audio: {
-              src: audio.audioSrc,
-            },
-            speech: {
-              analyzedText,
-            },
-          };
-        }),
-      );
-
-      return {
-        id: page.id,
-        richText: page.richText,
-        tts,
-      };
-    }),
+    draft.pages.map((page) => buildSavedPage(serverEnv, page, previousTtsById)),
   );
 
-  return savedProjectSchema.parse({
-    pages,
-  });
+  return savedProjectSchema.parse({ pages });
 }
 
 export async function loadProject() {

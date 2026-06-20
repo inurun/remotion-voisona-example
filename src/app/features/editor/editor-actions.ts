@@ -1,8 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-
 import { type DraftProject, type DraftTts, type SavedProject } from "@/_schemas";
+import {
+  requestPreviewSynthesis,
+  requestSaveProject,
+  requestTextAnalysis,
+} from "@/app/features/editor/editor-api";
 
 export function useEditorActions({
   onSavedProjectChange,
@@ -32,70 +36,59 @@ export function useEditorActions({
     setMessage(null);
   }
 
-  async function analyzeItem(item: DraftTts) {
+  async function runItemTask<T>(
+    id: string,
+    reason: string,
+    task: () => Promise<T>,
+    onSuccess?: (value: T) => void,
+  ) {
     clearFeedback();
-    setItemBusy(item.id, "analyze");
+    setItemBusy(id, reason);
 
     try {
-      const response = await fetch("/api/voisona/text-analysis", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: item.readText?.trim() || item.text,
-          language: "ja_JP",
-        }),
-      });
-      const data = (await response.json()) as { analyzedText?: string; error?: string };
-      if (!response.ok || !data.analyzedText) {
-        throw new Error(data.error ?? `HTTP ${response.status}`);
-      }
-
-      setMessage("TSML を更新した。");
-      return data.analyzedText;
-    } catch (analyzeError) {
-      setError(analyzeError instanceof Error ? analyzeError.message : "Analyze failed");
+      const result = await task();
+      onSuccess?.(result);
+      return result;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : `${reason} failed`);
       return null;
     } finally {
-      setItemBusy(item.id, null);
+      setItemBusy(id, null);
     }
   }
 
+  async function analyzeItem(item: DraftTts) {
+    return runItemTask(
+      item.id,
+      "analyze",
+      () => requestTextAnalysis(item),
+      () => {
+        setMessage("TSML を更新した。");
+      },
+    );
+  }
+
+  async function playPreview(audioSrc: string) {
+    previewAudioRef.current?.pause();
+    const audio = new Audio(audioSrc);
+    previewAudioRef.current = audio;
+    await audio.play();
+  }
+
   async function previewItem(item: DraftTts) {
-    clearFeedback();
-    setItemBusy(item.id, "preview");
+    return runItemTask(
+      item.id,
+      "preview",
+      () => requestPreviewSynthesis(item),
+      async (audioSrc) => {
+        if (!audioSrc) {
+          return;
+        }
 
-    try {
-      const response = await fetch("/api/voisona/synthesize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: item.readText?.trim() || item.text,
-          ...(item.speech?.analyzedText?.trim()
-            ? { analyzedText: item.speech.analyzedText.trim() }
-            : {}),
-          voiceName: item.voiceName,
-          ...(item.voiceVersion?.trim() ? { voiceVersion: item.voiceVersion.trim() } : {}),
-        }),
-      });
-      const data = (await response.json()) as { audioSrc?: string; error?: string };
-      if (!response.ok || !data.audioSrc) {
-        throw new Error(data.error ?? `HTTP ${response.status}`);
-      }
-
-      previewAudioRef.current?.pause();
-      const audio = new Audio(data.audioSrc);
-      previewAudioRef.current = audio;
-      await audio.play();
-      setMessage("Preview を再生した。");
-    } catch (previewError) {
-      setError(previewError instanceof Error ? previewError.message : "Preview failed");
-    } finally {
-      setItemBusy(item.id, null);
-    }
+        await playPreview(audioSrc);
+        setMessage("Preview を再生した。");
+      },
+    );
   }
 
   async function saveProject(project: DraftProject) {
@@ -103,20 +96,8 @@ export function useEditorActions({
     clearFeedback();
 
     try {
-      const response = await fetch("/api/project", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(project),
-      });
-      const data = (await response.json()) as SavedProject | { error: string };
-
-      if (!response.ok || !("pages" in data)) {
-        throw new Error("error" in data ? data.error : `HTTP ${response.status}`);
-      }
-
-      onSavedProjectChange(data);
+      const savedProject = await requestSaveProject(project);
+      onSavedProjectChange(savedProject);
       setMessage("保存して音声を更新した。");
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Save failed");

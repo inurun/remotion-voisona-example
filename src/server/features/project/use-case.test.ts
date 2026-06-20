@@ -46,8 +46,9 @@ describe("project use-case", () => {
       ],
     };
 
-    const { buildSavedProject } = await import("./use-case");
-    const result = await buildSavedProject(
+    readSavedProjectMock.mockResolvedValueOnce(previous);
+    const { saveProject } = await import("./use-case");
+    const result = await saveProject(
       {},
       {
         pages: [
@@ -67,12 +68,12 @@ describe("project use-case", () => {
           },
         ],
       },
-      previous,
     );
 
     expect(result).toEqual(previous);
     expect(analyzeVoisonaTextMock).not.toHaveBeenCalled();
     expect(synthesizeVoisonaMock).not.toHaveBeenCalled();
+    expect(writeSavedProjectMock).toHaveBeenCalledWith(previous);
   });
 
   it("saves a freshly synthesized project", async () => {

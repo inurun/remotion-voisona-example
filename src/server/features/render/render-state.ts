@@ -52,7 +52,7 @@ function appendLog(line: string) {
   emit();
 }
 
-export function getRenderSnapshot(): RenderSnapshot {
+function getRenderSnapshot(): RenderSnapshot {
   return {
     status: state.status,
     logs: [...state.logs],

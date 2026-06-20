@@ -4,13 +4,24 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetchJson } from "@/_shared/lib/fetch-json";
 
-export type RenderState = {
+type RenderState = {
   status: "idle" | "running" | "success" | "error";
   logs: string[];
   videoPath: string | null;
   updatedAt?: number;
   lastError: string | null;
 };
+
+async function postRenderStart() {
+  const response = await fetch("/api/render", {
+    method: "POST",
+  });
+  const data = (await response.json()) as { started?: boolean; error?: string };
+
+  if (!response.ok || !data.started) {
+    throw new Error(data.error ?? "Render start failed");
+  }
+}
 
 export function useRenderState({
   onError,
@@ -53,13 +64,7 @@ export function useRenderState({
     onMessage(null);
 
     try {
-      const response = await fetch("/api/render", {
-        method: "POST",
-      });
-      const data = (await response.json()) as { started?: boolean; error?: string };
-      if (!response.ok || !data.started) {
-        throw new Error(data.error ?? "Render start failed");
-      }
+      await postRenderStart();
       onMessage("Render を開始した。");
       void mutate();
     } catch (renderError) {

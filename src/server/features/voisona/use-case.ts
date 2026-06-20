@@ -1,109 +1,34 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { z } from "zod";
-import { type VoiceOption, voiceOptionSchema } from "@/_schemas";
 import { applyVoisonaTextTransforms } from "@/_shared/lib/text";
 import { getWavDurationSeconds } from "@/_shared/lib/wav";
 import type { ServerEnv } from "@/server/core/env";
 import { TTS_DIR } from "@/server/_shared/storage";
+import {
+  getConfiguredVoicesPath,
+  getVoisonaBase,
+  getVoisonaHeaders,
+  waitForVoisonaRequest,
+} from "./client";
+import {
+  synthesizeRequestSchema,
+  type SynthesizeRequest,
+  type SynthesizeResponse,
+  textAnalysisRequestSchema,
+} from "./contract";
+import { collectVoiceOptions, dedupeVoiceOptions } from "./voice-options";
 
-const inFlightSyntheses = new Map<
-  string,
-  Promise<{ audioSrc: string; outputPath: string; durationSec: number }>
->();
-
-function normalizeEnvValue(value: string | undefined) {
-  if (!value) {
-    return undefined;
-  }
-
-  const trimmed = value.trim();
-  if (!trimmed) {
-    return undefined;
-  }
-
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    return trimmed.slice(1, -1).trim() || undefined;
-  }
-
-  return trimmed;
-}
-
-function getVoisonaBase(serverEnv: ServerEnv) {
-  return normalizeEnvValue(serverEnv.VOISONA_BASE) ?? "http://localhost:32766/api/talk/v1";
-}
-
-function getConfiguredVoicesPath(serverEnv: ServerEnv) {
-  return normalizeEnvValue(serverEnv.VOISONA_VOICES_PATH);
-}
-
-function getCredentials(serverEnv: ServerEnv) {
-  const username = normalizeEnvValue(serverEnv.VOISONA_USERNAME);
-  const password = normalizeEnvValue(serverEnv.VOISONA_PASSWORD);
-
-  if (!username || !password) {
-    throw new Error("VOISONA_USERNAME and VOISONA_PASSWORD must be set in .env.local.");
-  }
-
-  return { username, password };
-}
-
-function getHeaders(serverEnv: ServerEnv) {
-  const { username, password } = getCredentials(serverEnv);
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`,
-  };
-}
-
-async function waitForVoisonaRequest<T extends { state: string }>(
-  serverEnv: ServerEnv,
-  endpoint: "speech-syntheses" | "text-analyses",
-  uuid: string,
-) {
-  let attempts = 120;
-
-  while (attempts-- > 0) {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const response = await fetch(`${getVoisonaBase(serverEnv)}/${endpoint}/${uuid}`, {
-      headers: getHeaders(serverEnv),
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      continue;
-    }
-
-    const result = (await response.json()) as T;
-    if (result.state === "succeeded") {
-      return result;
-    }
-
-    if (result.state === "failed") {
-      throw new Error(`VoiSona ${endpoint} failed: ${JSON.stringify(result)}`);
-    }
-  }
-
-  throw new Error(`VoiSona ${endpoint} timed out`);
-}
-
-const analyzeSchema = z.object({
-  text: z.string().min(1),
-  language: z.string().default("ja_JP"),
-});
+const inFlightSyntheses = new Map<string, Promise<SynthesizeResponse>>();
 
 export async function analyzeVoisonaText(
   serverEnv: ServerEnv,
   input: { text: string; language?: string },
 ) {
-  const { text, language } = analyzeSchema.parse(input);
+  const { text, language } = textAnalysisRequestSchema.parse(input);
   const response = await fetch(`${getVoisonaBase(serverEnv)}/text-analyses`, {
     method: "POST",
-    headers: getHeaders(serverEnv),
+    headers: getVoisonaHeaders(serverEnv),
     body: JSON.stringify({
       language,
       text: applyVoisonaTextTransforms(text),
@@ -130,13 +55,6 @@ export async function analyzeVoisonaText(
   };
 }
 
-const synthesizeSchema = z.object({
-  text: z.string().min(1),
-  analyzedText: z.string().optional(),
-  voiceName: z.string().min(1),
-  voiceVersion: z.string().optional(),
-});
-
 export async function synthesizeVoisona(input: {
   serverEnv: ServerEnv;
   text: string;
@@ -145,7 +63,7 @@ export async function synthesizeVoisona(input: {
   voiceVersion?: string;
 }) {
   const { serverEnv, ...payload } = input;
-  const parsed = synthesizeSchema.parse(payload);
+  const parsed = synthesizeRequestSchema.parse(payload);
   const transformedText = applyVoisonaTextTransforms(parsed.text);
   const cacheKey = crypto
     .createHash("md5")
@@ -166,50 +84,13 @@ export async function synthesizeVoisona(input: {
     return existing;
   }
 
-  const task = (async () => {
-    await fs.mkdir(TTS_DIR, { recursive: true });
-
-    try {
-      await fs.access(outputPath);
-      return {
-        outputPath,
-        audioSrc,
-        durationSec: await getWavDurationSeconds(outputPath),
-      };
-    } catch {
-      // Cache miss.
-    }
-
-    const response = await fetch(`${getVoisonaBase(serverEnv)}/speech-syntheses`, {
-      method: "POST",
-      headers: getHeaders(serverEnv),
-      body: JSON.stringify({
-        language: "ja_JP",
-        ...(parsed.analyzedText
-          ? { analyzed_text: parsed.analyzedText }
-          : { text: transformedText }),
-        destination: "file",
-        can_overwrite_file: true,
-        output_file_path: outputPath,
-        voice_name: parsed.voiceName,
-        ...(parsed.voiceVersion ? { voice_version: parsed.voiceVersion } : {}),
-        force_enqueue: true,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`VoiSona synthesis request failed: ${await response.text()}`);
-    }
-
-    const { uuid } = (await response.json()) as { uuid: string };
-    await waitForVoisonaRequest(serverEnv, "speech-syntheses", uuid);
-
-    return {
-      outputPath,
-      audioSrc,
-      durationSec: await getWavDurationSeconds(outputPath),
-    };
-  })();
+  const task = createSynthesisTask({
+    audioSrc,
+    outputPath,
+    parsed,
+    serverEnv,
+    transformedText,
+  });
 
   inFlightSyntheses.set(outputPath, task);
 
@@ -222,57 +103,125 @@ export async function synthesizeVoisona(input: {
   }
 }
 
-type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
-
-function toDisplayName(voiceName: string, voiceVersion?: string) {
-  const base = voiceName.replace(/_ja_JP$/u, "").replaceAll("-", " ");
-  return voiceVersion ? `${base} v${voiceVersion}` : base;
+async function getCachedSynthesisResult(outputPath: string, audioSrc: string) {
+  try {
+    await fs.access(outputPath);
+    return {
+      outputPath,
+      audioSrc,
+      durationSec: await getWavDurationSeconds(outputPath),
+    } satisfies SynthesizeResponse;
+  } catch {
+    return null;
+  }
 }
 
-function collectVoiceOptions(value: JsonValue, output: VoiceOption[]) {
-  if (Array.isArray(value)) {
-    for (const entry of value) {
-      collectVoiceOptions(entry, output);
+function getSpeechSynthesisBody(
+  parsed: SynthesizeRequest,
+  transformedText: string,
+  outputPath: string,
+) {
+  return {
+    language: "ja_JP",
+    ...(parsed.analyzedText ? { analyzed_text: parsed.analyzedText } : { text: transformedText }),
+    destination: "file",
+    can_overwrite_file: true,
+    output_file_path: outputPath,
+    voice_name: parsed.voiceName,
+    ...(parsed.voiceVersion ? { voice_version: parsed.voiceVersion } : {}),
+    force_enqueue: true,
+  };
+}
+
+async function requestSpeechSynthesis(
+  serverEnv: ServerEnv,
+  parsed: SynthesizeRequest,
+  transformedText: string,
+  outputPath: string,
+) {
+  const response = await fetch(`${getVoisonaBase(serverEnv)}/speech-syntheses`, {
+    method: "POST",
+    headers: getVoisonaHeaders(serverEnv),
+    body: JSON.stringify(getSpeechSynthesisBody(parsed, transformedText, outputPath)),
+  });
+
+  if (!response.ok) {
+    throw new Error(`VoiSona synthesis request failed: ${await response.text()}`);
+  }
+
+  return (await response.json()) as { uuid: string };
+}
+
+function createSynthesisTask({
+  audioSrc,
+  outputPath,
+  parsed,
+  serverEnv,
+  transformedText,
+}: {
+  audioSrc: string;
+  outputPath: string;
+  parsed: SynthesizeRequest;
+  serverEnv: ServerEnv;
+  transformedText: string;
+}) {
+  return (async () => {
+    await fs.mkdir(TTS_DIR, { recursive: true });
+
+    const cached = await getCachedSynthesisResult(outputPath, audioSrc);
+    if (cached) {
+      return cached;
     }
-    return;
-  }
 
-  if (!value || typeof value !== "object") {
-    return;
-  }
+    const { uuid } = await requestSpeechSynthesis(serverEnv, parsed, transformedText, outputPath);
+    await waitForVoisonaRequest(serverEnv, "speech-syntheses", uuid);
 
-  const record = value as Record<string, JsonValue>;
-  const voiceName =
-    typeof record["voice_name"] === "string"
-      ? record["voice_name"]
-      : typeof record["voiceName"] === "string"
-        ? record["voiceName"]
-        : undefined;
-  const voiceVersion =
-    typeof record["voice_version"] === "string"
-      ? record["voice_version"]
-      : typeof record["voiceVersion"] === "string"
-        ? record["voiceVersion"]
-        : undefined;
-  const displayName =
-    typeof record["display_name"] === "string"
-      ? record["display_name"]
-      : typeof record["displayName"] === "string"
-        ? record["displayName"]
-        : undefined;
+    return {
+      outputPath,
+      audioSrc,
+      durationSec: await getWavDurationSeconds(outputPath),
+    } satisfies SynthesizeResponse;
+  })();
+}
 
-  if (voiceName) {
-    output.push(
-      voiceOptionSchema.parse({
-        voiceName,
-        ...(voiceVersion ? { voiceVersion } : {}),
-        displayName: displayName ?? toDisplayName(voiceName, voiceVersion),
-      }),
-    );
-  }
+function getVoicesFetchError(candidatePath: string, error: unknown) {
+  return `${candidatePath}: ${error instanceof Error ? error.message : String(error)}`;
+}
 
-  for (const nested of Object.values(record)) {
-    collectVoiceOptions(nested, output);
+function getEmptyVoicesResult(candidatePath: string) {
+  return { error: `${candidatePath}: empty_response` };
+}
+
+function getFailedVoicesResult(candidatePath: string, status: number) {
+  return { error: `${candidatePath}: http_${status}` };
+}
+
+function collectVoicesResult(
+  candidatePath: string,
+  json: Parameters<typeof collectVoiceOptions>[0],
+) {
+  const options: Parameters<typeof dedupeVoiceOptions>[0] = [];
+  collectVoiceOptions(json, options);
+  const deduped = dedupeVoiceOptions(options);
+
+  return deduped.length > 0 ? { options: deduped } : getEmptyVoicesResult(candidatePath);
+}
+
+async function fetchVoicesFromCandidate(serverEnv: ServerEnv, candidatePath: string) {
+  try {
+    const response = await fetch(`${getVoisonaBase(serverEnv)}${candidatePath}`, {
+      headers: getVoisonaHeaders(serverEnv),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return getFailedVoicesResult(candidatePath, response.status);
+    }
+
+    const json = (await response.json()) as Parameters<typeof collectVoiceOptions>[0];
+    return collectVoicesResult(candidatePath, json);
+  } catch (error) {
+    return { error: getVoicesFetchError(candidatePath, error) };
   }
 }
 
@@ -285,35 +234,12 @@ export async function listVoisonaVoices(serverEnv: ServerEnv) {
   const errors: string[] = [];
 
   for (const candidatePath of candidatePaths) {
-    try {
-      const response = await fetch(`${getVoisonaBase(serverEnv)}${candidatePath}`, {
-        headers: getHeaders(serverEnv),
-        cache: "no-store",
-      });
-
-      if (!response.ok) {
-        errors.push(`${candidatePath}: http_${response.status}`);
-        continue;
-      }
-
-      const json = (await response.json()) as JsonValue;
-      const options: VoiceOption[] = [];
-      collectVoiceOptions(json, options);
-
-      const deduped = Array.from(
-        new Map(
-          options.map((option) => [`${option.voiceName}:${option.voiceVersion ?? ""}`, option]),
-        ).values(),
-      ).sort((a, b) => a.displayName.localeCompare(b.displayName));
-
-      if (deduped.length > 0) {
-        return deduped;
-      }
-
-      errors.push(`${candidatePath}: empty_response`);
-    } catch (error) {
-      errors.push(`${candidatePath}: ${error instanceof Error ? error.message : String(error)}`);
+    const result = await fetchVoicesFromCandidate(serverEnv, candidatePath);
+    if ("options" in result) {
+      return result.options;
     }
+
+    errors.push(result.error);
   }
 
   throw new Error(`Unable to fetch VoiSona voices (${errors.join(", ")})`);

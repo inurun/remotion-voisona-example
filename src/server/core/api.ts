@@ -30,7 +30,7 @@ async function servePublicAsset(publicPath: string) {
   });
 }
 
-export const createApi = () => {
+function createApi() {
   const api = new Hono();
 
   registerProjectRoutes(api);
@@ -39,7 +39,7 @@ export const createApi = () => {
   registerUploadRoutes(api);
 
   return api;
-};
+}
 
 export const createApp = () => {
   const app = new Hono();

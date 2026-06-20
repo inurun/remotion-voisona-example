@@ -21,8 +21,12 @@ export const synthesizeRequestSchema = z.object({
   voiceVersion: z.string().optional(),
 });
 
+export type SynthesizeRequest = z.infer<typeof synthesizeRequestSchema>;
+
 export const synthesizeResponseSchema = z.object({
   audioSrc: z.string().min(1),
   outputPath: z.string().min(1),
   durationSec: z.number().nonnegative(),
 });
+
+export type SynthesizeResponse = z.infer<typeof synthesizeResponseSchema>;

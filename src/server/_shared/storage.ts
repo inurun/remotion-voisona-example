@@ -4,12 +4,12 @@ import path from "node:path";
 import { draftProjectSchema, savedProjectSchema, type SavedProject } from "@/_schemas";
 
 export const PROJECT_ROOT = process.cwd();
-export const DATA_DIR = path.join(PROJECT_ROOT, "data");
-export const PUBLIC_DIR = path.join(PROJECT_ROOT, "public");
+const DATA_DIR = path.join(PROJECT_ROOT, "data");
+const PUBLIC_DIR = path.join(PROJECT_ROOT, "public");
 export const TTS_DIR = path.join(PUBLIC_DIR, "tts");
 export const UPLOADS_DIR = path.join(PUBLIC_DIR, "uploads");
 export const OUT_DIR = path.join(PROJECT_ROOT, "out");
-export const SAVED_PROJECT_PATH = path.join(DATA_DIR, "project.json");
+const SAVED_PROJECT_PATH = path.join(DATA_DIR, "project.json");
 export const RENDER_STATE_PATH = path.join(DATA_DIR, "render-state.json");
 export const LATEST_VIDEO_PATH = path.join(OUT_DIR, "latest.mp4");
 

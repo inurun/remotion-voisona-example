@@ -3,8 +3,6 @@
 import { useMemo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { Label } from "@/_shared/components/ui/label";
-import { Separator } from "@/_shared/components/ui/separator";
 import { cn } from "@/_shared/lib/utils";
 
 function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
@@ -48,53 +46,6 @@ function Field({
   );
 }
 
-function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
-  return (
-    <Label
-      data-slot="field-label"
-      className={cn("peer/field-label flex w-fit gap-2 leading-snug", className)}
-      {...props}
-    />
-  );
-}
-
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return (
-    <p
-      data-slot="field-description"
-      className={cn(
-        "text-left text-sm leading-normal font-normal text-muted-foreground",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-function FieldSeparator({
-  children,
-  className,
-  ...props
-}: React.ComponentProps<"div"> & { children?: React.ReactNode }) {
-  return (
-    <div
-      data-slot="field-separator"
-      className={cn("relative -my-2 h-5 text-sm", className)}
-      {...props}
-    >
-      <Separator className="absolute inset-0 top-1/2" />
-      {children ? (
-        <span
-          className="relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
-          data-slot="field-separator-content"
-        >
-          {children}
-        </span>
-      ) : null}
-    </div>
-  );
-}
-
 function FieldError({
   className,
   children,
@@ -103,26 +54,35 @@ function FieldError({
 }: React.ComponentProps<"div"> & {
   errors?: Array<{ message?: string } | undefined>;
 }) {
+  const getErrorMessages = () => {
+    if (!errors?.length) {
+      return [];
+    }
+
+    return [...new Map(errors.map((error) => [error?.message, error?.message])).values()].filter(
+      Boolean,
+    ) as string[];
+  };
+
   const content = useMemo(() => {
     if (children) {
       return children;
     }
 
-    if (!errors?.length) {
+    const messages = getErrorMessages();
+    if (messages.length === 0) {
       return null;
     }
 
-    const uniqueErrors = [...new Map(errors.map((error) => [error?.message, error])).values()];
-
-    if (uniqueErrors.length === 1) {
-      return uniqueErrors[0]?.message;
+    if (messages.length === 1) {
+      return messages[0];
     }
 
     return (
       <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map((error, index) =>
-          error?.message ? <li key={index}>{error.message}</li> : null,
-        )}
+        {messages.map((message, index) => (
+          <li key={index}>{message}</li>
+        ))}
       </ul>
     );
   }, [children, errors]);
@@ -143,4 +103,4 @@ function FieldError({
   );
 }
 
-export { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator };
+export { Field, FieldError, FieldGroup };

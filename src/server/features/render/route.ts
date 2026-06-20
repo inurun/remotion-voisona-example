@@ -1,9 +1,10 @@
 import fs from "node:fs/promises";
 import type { Hono } from "hono";
 import { LATEST_VIDEO_PATH } from "@/server/_shared/storage";
-import { jsonError, sseMessage } from "@/server/_shared/http";
-import { readRenderSnapshot, startRender, subscribeRender } from "./render-state";
+import { jsonError } from "@/server/_shared/http";
+import { readRenderSnapshot, startRender } from "./render-state";
 import { renderSnapshotSchema, renderStartResponseSchema } from "./contract";
+import { createRenderStream } from "./render-stream";
 
 export const registerRenderRoutes = <TApp extends Hono>(app: TApp) =>
   app
@@ -26,59 +27,7 @@ export const registerRenderRoutes = <TApp extends Hono>(app: TApp) =>
       }
     })
     .get("/render/stream", async (c) => {
-      const encoder = new TextEncoder();
-
-      const stream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          let closed = false;
-          let lastUpdatedAt = -1;
-
-          const pushSnapshot = (snapshot: Awaited<ReturnType<typeof readRenderSnapshot>>) => {
-            if (closed || snapshot.updatedAt === lastUpdatedAt) {
-              return;
-            }
-
-            lastUpdatedAt = snapshot.updatedAt;
-            controller.enqueue(encoder.encode(sseMessage(renderSnapshotSchema.parse(snapshot))));
-          };
-
-          const unsubscribe = subscribeRender((snapshot) => {
-            pushSnapshot(snapshot);
-          });
-
-          void readRenderSnapshot().then((snapshot) => {
-            pushSnapshot(snapshot);
-          });
-
-          const polling = setInterval(() => {
-            void readRenderSnapshot().then((snapshot) => {
-              pushSnapshot(snapshot);
-            });
-          }, 500);
-
-          const heartbeat = setInterval(() => {
-            if (!closed) {
-              controller.enqueue(encoder.encode(": keep-alive\n\n"));
-            }
-          }, 15_000);
-
-          const close = () => {
-            if (closed) {
-              return;
-            }
-
-            closed = true;
-            clearInterval(polling);
-            clearInterval(heartbeat);
-            unsubscribe();
-            controller.close();
-          };
-
-          c.req.raw.signal.addEventListener("abort", close, { once: true });
-        },
-      });
-
-      return new Response(stream, {
+      return new Response(createRenderStream(c.req.raw.signal), {
         headers: {
           "Cache-Control": "no-cache, no-transform",
           Connection: "keep-alive",

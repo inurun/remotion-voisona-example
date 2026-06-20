@@ -1,6 +1,6 @@
 import { type SavedProject, type SavedTts } from "@/_schemas";
 
-export type PlaybackTts = {
+type PlaybackTts = {
   pageId: string;
   pageIndex: number;
   pageRichText: string;
@@ -10,7 +10,7 @@ export type PlaybackTts = {
   endSec: number;
 };
 
-export type PlaybackPage = {
+type PlaybackPage = {
   id: string;
   richText: string;
   startSec: number;

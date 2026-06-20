@@ -1,6 +1,6 @@
 type RichTextElementTag = "em" | "h1" | "h2" | "img" | "li" | "mark" | "ol" | "p" | "strong" | "ul";
 
-export type RichTextNode =
+type RichTextNode =
   | {
       children: RichTextNode[];
       type: "root";
@@ -24,18 +24,13 @@ function getMeaningfulChildren(node: Extract<RichTextNode, { type: "root" | "ele
   return node.children.filter((child) => !isWhitespaceText(child));
 }
 
-export function isSingleImageRichTextNode(node: RichTextNode): boolean {
-  if (node.type === "text") {
+function isSingleImageRichTextNode(node: RichTextNode): boolean {
+  const onlyChild = getOnlyMeaningfulChild(node);
+  if (!onlyChild) {
     return false;
   }
 
-  const children = getMeaningfulChildren(node);
-  if (children.length !== 1) {
-    return false;
-  }
-
-  const [onlyChild] = children;
-  return onlyChild?.type === "element" && onlyChild.tagName === "img";
+  return onlyChild.type === "element" && onlyChild.tagName === "img";
 }
 
 export function isSingleImageRichText(html: string) {
@@ -80,7 +75,104 @@ function parseTagAttributes(source: string) {
   return attributes;
 }
 
-export function parseRichText(html: string): RichTextNode {
+function getOpeningTagSource(token: string) {
+  return token.slice(1, -1).trim();
+}
+
+function normalizeOpeningTag(openingTag: string) {
+  return openingTag.endsWith("/") ? openingTag.slice(0, -1).trim() : openingTag;
+}
+
+function getTagName(cleanedTag: string) {
+  const spaceIndex = cleanedTag.search(/\s/);
+  const tagSource = spaceIndex === -1 ? cleanedTag : cleanedTag.slice(0, spaceIndex);
+  return tagSource.toLowerCase();
+}
+
+function getTagAttributesSource(cleanedTag: string) {
+  const spaceIndex = cleanedTag.search(/\s/);
+  return spaceIndex === -1 ? "" : cleanedTag.slice(spaceIndex + 1);
+}
+
+function createElementNode(token: string): RichTextNode | null {
+  const cleanedTag = normalizeOpeningTag(getOpeningTagSource(token));
+  const rawTagName = getTagName(cleanedTag);
+
+  if (!ALLOWED_TAGS.has(rawTagName as RichTextElementTag)) {
+    return null;
+  }
+
+  return {
+    attributes: parseTagAttributes(getTagAttributesSource(cleanedTag)),
+    children: [],
+    tagName: rawTagName as RichTextElementTag,
+    type: "element",
+  };
+}
+
+function appendChild(parent: RichTextNode, child: RichTextNode) {
+  if (parent.type === "element" || parent.type === "root") {
+    parent.children.push(child);
+  }
+}
+
+function handleClosingTag(token: string, stack: RichTextNode[]) {
+  const tagName = token.slice(2, -1).trim().toLowerCase();
+  if (ALLOWED_TAGS.has(tagName as RichTextElementTag) && stack.length > 1) {
+    stack.pop();
+  }
+}
+
+function handleOpeningTag(token: string, stack: RichTextNode[]) {
+  const node = createElementNode(token);
+  if (!node) {
+    return;
+  }
+
+  appendChild(stack[stack.length - 1]!, node);
+
+  if (token.endsWith("/>") || node.tagName === "img") {
+    return;
+  }
+
+  stack.push(node);
+}
+
+function handleTextToken(token: string, stack: RichTextNode[]) {
+  const text = decodeHtml(token);
+  if (text) {
+    appendChild(stack[stack.length - 1]!, { text, type: "text" });
+  }
+}
+
+function getOnlyMeaningfulChild(node: RichTextNode) {
+  if (node.type === "text") {
+    return null;
+  }
+
+  const children = getMeaningfulChildren(node);
+  if (children.length !== 1) {
+    return null;
+  }
+
+  return children[0] ?? null;
+}
+
+function handleToken(token: string, stack: RichTextNode[]) {
+  if (token.startsWith("</")) {
+    handleClosingTag(token, stack);
+    return;
+  }
+
+  if (token.startsWith("<")) {
+    handleOpeningTag(token, stack);
+    return;
+  }
+
+  handleTextToken(token, stack);
+}
+
+function parseRichText(html: string): RichTextNode {
   const root: RichTextNode = { children: [], type: "root" };
   const stack: RichTextNode[] = [root];
   const tokenPattern = /<\/?[^>]+>|[^<]+/g;
@@ -91,57 +183,7 @@ export function parseRichText(html: string): RichTextNode {
       continue;
     }
 
-    if (token.startsWith("</")) {
-      const tagName = token.slice(2, -1).trim().toLowerCase();
-      if (ALLOWED_TAGS.has(tagName as RichTextElementTag) && stack.length > 1) {
-        stack.pop();
-      }
-      continue;
-    }
-
-    if (token.startsWith("<")) {
-      const openingTag = token.slice(1, -1).trim();
-      const isSelfClosing = openingTag.endsWith("/");
-      const cleanedTag = isSelfClosing ? openingTag.slice(0, -1).trim() : openingTag;
-      const spaceIndex = cleanedTag.search(/\s/);
-      const rawTagName = (
-        spaceIndex === -1 ? cleanedTag : cleanedTag.slice(0, spaceIndex)
-      ).toLowerCase();
-
-      if (!ALLOWED_TAGS.has(rawTagName as RichTextElementTag)) {
-        continue;
-      }
-
-      const node: RichTextNode = {
-        attributes: parseTagAttributes(spaceIndex === -1 ? "" : cleanedTag.slice(spaceIndex + 1)),
-        children: [],
-        tagName: rawTagName as RichTextElementTag,
-        type: "element",
-      };
-      const parent = stack[stack.length - 1];
-      if (parent.type === "element" || parent.type === "root") {
-        parent.children.push(node);
-      }
-
-      if (!isSelfClosing && rawTagName !== "img") {
-        stack.push(node);
-      }
-
-      continue;
-    }
-
-    const text = decodeHtml(token);
-    if (!text) {
-      continue;
-    }
-
-    const parent = stack[stack.length - 1];
-    if (parent.type === "element" || parent.type === "root") {
-      parent.children.push({
-        text,
-        type: "text",
-      });
-    }
+    handleToken(token, stack);
   }
 
   return root;
