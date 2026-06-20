@@ -5,6 +5,7 @@ import { z } from "zod";
 import { type VoiceOption, voiceOptionSchema } from "@/_schemas";
 import { applyVoisonaTextTransforms } from "@/_shared/lib/text";
 import { getWavDurationSeconds } from "@/_shared/lib/wav";
+import type { ServerEnv } from "@/server/core/env";
 import { TTS_DIR } from "@/server/_shared/storage";
 
 const inFlightSyntheses = new Map<
@@ -32,14 +33,17 @@ function normalizeEnvValue(value: string | undefined) {
   return trimmed;
 }
 
-export const VOISONA_BASE =
-  normalizeEnvValue(process.env["VOISONA_BASE"]) ?? "http://localhost:32766/api/talk/v1";
+function getVoisonaBase(serverEnv: ServerEnv) {
+  return normalizeEnvValue(serverEnv.VOISONA_BASE) ?? "http://localhost:32766/api/talk/v1";
+}
 
-const configuredVoicesPath = normalizeEnvValue(process.env["VOISONA_VOICES_PATH"]);
+function getConfiguredVoicesPath(serverEnv: ServerEnv) {
+  return normalizeEnvValue(serverEnv.VOISONA_VOICES_PATH);
+}
 
-function getCredentials() {
-  const username = normalizeEnvValue(process.env["VOISONA_USERNAME"]);
-  const password = normalizeEnvValue(process.env["VOISONA_PASSWORD"]);
+function getCredentials(serverEnv: ServerEnv) {
+  const username = normalizeEnvValue(serverEnv.VOISONA_USERNAME);
+  const password = normalizeEnvValue(serverEnv.VOISONA_PASSWORD);
 
   if (!username || !password) {
     throw new Error("VOISONA_USERNAME and VOISONA_PASSWORD must be set in .env.local.");
@@ -48,8 +52,8 @@ function getCredentials() {
   return { username, password };
 }
 
-function getHeaders() {
-  const { username, password } = getCredentials();
+function getHeaders(serverEnv: ServerEnv) {
+  const { username, password } = getCredentials(serverEnv);
   return {
     "Content-Type": "application/json",
     Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`,
@@ -57,6 +61,7 @@ function getHeaders() {
 }
 
 async function waitForVoisonaRequest<T extends { state: string }>(
+  serverEnv: ServerEnv,
   endpoint: "speech-syntheses" | "text-analyses",
   uuid: string,
 ) {
@@ -64,8 +69,8 @@ async function waitForVoisonaRequest<T extends { state: string }>(
 
   while (attempts-- > 0) {
     await new Promise((resolve) => setTimeout(resolve, 300));
-    const response = await fetch(`${VOISONA_BASE}/${endpoint}/${uuid}`, {
-      headers: getHeaders(),
+    const response = await fetch(`${getVoisonaBase(serverEnv)}/${endpoint}/${uuid}`, {
+      headers: getHeaders(serverEnv),
       cache: "no-store",
     });
 
@@ -91,11 +96,14 @@ const analyzeSchema = z.object({
   language: z.string().default("ja_JP"),
 });
 
-export async function analyzeVoisonaText(input: { text: string; language?: string }) {
+export async function analyzeVoisonaText(
+  serverEnv: ServerEnv,
+  input: { text: string; language?: string },
+) {
   const { text, language } = analyzeSchema.parse(input);
-  const response = await fetch(`${VOISONA_BASE}/text-analyses`, {
+  const response = await fetch(`${getVoisonaBase(serverEnv)}/text-analyses`, {
     method: "POST",
-    headers: getHeaders(),
+    headers: getHeaders(serverEnv),
     body: JSON.stringify({
       language,
       text: applyVoisonaTextTransforms(text),
@@ -111,7 +119,7 @@ export async function analyzeVoisonaText(input: { text: string; language?: strin
   const result = await waitForVoisonaRequest<{
     state: string;
     analyzed_text?: string;
-  }>("text-analyses", uuid);
+  }>(serverEnv, "text-analyses", uuid);
 
   if (!result.analyzed_text) {
     throw new Error("VoiSona text analysis succeeded without analyzed_text");
@@ -130,12 +138,14 @@ const synthesizeSchema = z.object({
 });
 
 export async function synthesizeVoisona(input: {
+  serverEnv: ServerEnv;
   text: string;
   analyzedText?: string;
   voiceName: string;
   voiceVersion?: string;
 }) {
-  const parsed = synthesizeSchema.parse(input);
+  const { serverEnv, ...payload } = input;
+  const parsed = synthesizeSchema.parse(payload);
   const transformedText = applyVoisonaTextTransforms(parsed.text);
   const cacheKey = crypto
     .createHash("md5")
@@ -170,9 +180,9 @@ export async function synthesizeVoisona(input: {
       // Cache miss.
     }
 
-    const response = await fetch(`${VOISONA_BASE}/speech-syntheses`, {
+    const response = await fetch(`${getVoisonaBase(serverEnv)}/speech-syntheses`, {
       method: "POST",
-      headers: getHeaders(),
+      headers: getHeaders(serverEnv),
       body: JSON.stringify({
         language: "ja_JP",
         ...(parsed.analyzedText
@@ -192,7 +202,7 @@ export async function synthesizeVoisona(input: {
     }
 
     const { uuid } = (await response.json()) as { uuid: string };
-    await waitForVoisonaRequest("speech-syntheses", uuid);
+    await waitForVoisonaRequest(serverEnv, "speech-syntheses", uuid);
 
     return {
       outputPath,
@@ -266,7 +276,8 @@ function collectVoiceOptions(value: JsonValue, output: VoiceOption[]) {
   }
 }
 
-export async function listVoisonaVoices() {
+export async function listVoisonaVoices(serverEnv: ServerEnv) {
+  const configuredVoicesPath = getConfiguredVoicesPath(serverEnv);
   const candidatePaths = configuredVoicesPath
     ? [configuredVoicesPath]
     : ["/voice-libraries", "/voices", "/voice-library-versions"];
@@ -275,8 +286,8 @@ export async function listVoisonaVoices() {
 
   for (const candidatePath of candidatePaths) {
     try {
-      const response = await fetch(`${VOISONA_BASE}${candidatePath}`, {
-        headers: getHeaders(),
+      const response = await fetch(`${getVoisonaBase(serverEnv)}${candidatePath}`, {
+        headers: getHeaders(serverEnv),
         cache: "no-store",
       });
 

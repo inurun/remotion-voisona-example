@@ -11,6 +11,7 @@ import {
   readSavedProject,
   writeSavedProject,
 } from "@/server/_shared/storage";
+import type { ServerEnv } from "@/server/core/env";
 import { analyzeVoisonaText, synthesizeVoisona } from "@/server/features/voisona/use-case";
 
 const AUDIO_PADDING_SECONDS = 0.1;
@@ -26,6 +27,7 @@ function getTtsComparisonInput(item: DraftTts) {
 }
 
 export async function buildSavedProject(
+  serverEnv: ServerEnv,
   payload: unknown,
   previousProject?: SavedProject,
 ): Promise<SavedProject> {
@@ -71,7 +73,7 @@ export async function buildSavedProject(
           const analyzedText =
             nextInput.analyzedText ||
             (
-              await analyzeVoisonaText({
+              await analyzeVoisonaText(serverEnv, {
                 text: nextInput.readText,
                 language: "ja_JP",
               })
@@ -79,6 +81,7 @@ export async function buildSavedProject(
 
           const voiceVersion = nextInput.voiceVersion || undefined;
           const audio = await synthesizeVoisona({
+            serverEnv,
             text: nextInput.readText,
             analyzedText,
             voiceName: nextInput.voiceName,
@@ -120,9 +123,9 @@ export async function loadProject() {
   return readSavedProject();
 }
 
-export async function saveProject(payload: DraftProject) {
+export async function saveProject(serverEnv: ServerEnv, payload: DraftProject) {
   const previousProject = await readSavedProject().catch(() => undefined);
-  const project = await buildSavedProject(payload, previousProject);
+  const project = await buildSavedProject(serverEnv, payload, previousProject);
   await writeSavedProject(project);
   return project;
 }

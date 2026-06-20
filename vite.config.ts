@@ -4,9 +4,11 @@ import tailwindcss from "@tailwindcss/vite";
 import build from "@hono/vite-build/node";
 import devServer from "@hono/vite-dev-server";
 import ssrPlugin from "vite-ssr-components/plugin";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
+  Object.assign(process.env, loadEnv(mode, process.cwd(), ""));
+
   const resolve = {
     alias: {
       "@": path.resolve(__dirname, "./src"),

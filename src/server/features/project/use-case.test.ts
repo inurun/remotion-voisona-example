@@ -48,6 +48,7 @@ describe("project use-case", () => {
 
     const { buildSavedProject } = await import("./use-case");
     const result = await buildSavedProject(
+      {},
       {
         pages: [
           {
@@ -84,15 +85,18 @@ describe("project use-case", () => {
     });
 
     const { saveProject } = await import("./use-case");
-    const saved = await saveProject({
-      pages: [
-        {
-          id: "page-1",
-          richText: "<p>Hello</p>",
-          tts: [{ id: "tts-1", text: "Hello", voiceName: "voice", speech: {} }],
-        },
-      ],
-    });
+    const saved = await saveProject(
+      {},
+      {
+        pages: [
+          {
+            id: "page-1",
+            richText: "<p>Hello</p>",
+            tts: [{ id: "tts-1", text: "Hello", voiceName: "voice", speech: {} }],
+          },
+        ],
+      },
+    );
 
     expect(saved.pages[0]?.tts[0]?.audio.src).toBe("/tts/generated.wav");
     expect(writeSavedProjectMock).toHaveBeenCalledWith(saved);

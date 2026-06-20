@@ -88,6 +88,107 @@ function ErrorCard({ message, onRetry }: { message: string; onRetry: () => void 
   );
 }
 
+function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+      <header className="grid gap-2">
+        <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">
+          Remotion + VoiSona Template
+        </h1>
+      </header>
+      {children}
+    </main>
+  );
+}
+
+function AppContent({
+  project,
+  voices,
+  voicesAvailable,
+  loadVoices,
+  editorActions,
+  renderState,
+  startRender,
+}: {
+  project: NonNullable<ReturnType<typeof useProject>["project"]>;
+  voices: ReturnType<typeof useVoices>["voices"];
+  voicesAvailable: boolean;
+  loadVoices: ReturnType<typeof useVoices>["loadVoices"];
+  editorActions: ReturnType<typeof useEditorActions>;
+  renderState: ReturnType<typeof useRenderState>["renderState"];
+  startRender: ReturnType<typeof useRenderState>["startRender"];
+}) {
+  const videoHref = renderState.videoPath
+    ? `${renderState.videoPath}?t=${renderState.logs.length}`
+    : undefined;
+
+  console.log(project);
+
+  return (
+    <div className="grid items-start gap-5 xl:grid-cols-[360px_minmax(0,1fr)_360px]">
+      <aside className="flex flex-col gap-4 xl:sticky xl:top-6">
+        <PlayerPane project={project} />
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className="text-xl">Render</CardTitle>
+              <StatusChip status={renderState.status}>{renderState.status}</StatusChip>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="icon"
+                disabled={
+                  !voicesAvailable || editorActions.saving || renderState.status === "running"
+                }
+                onClick={() => {
+                  void startRender();
+                }}
+                title="Render"
+                aria-label="Render"
+              >
+                <Clapperboard />
+              </Button>
+              {videoHref && (
+                <a
+                  aria-label="latest.mp4"
+                  className={buttonVariants({ variant: "secondary", size: "icon" })}
+                  href={videoHref}
+                  rel="noreferrer"
+                  target="_blank"
+                  title="latest.mp4"
+                >
+                  <Download />
+                </a>
+              )}
+            </div>
+            <div className="min-h-[220px] max-h-[320px] overflow-auto rounded-xl border border-border bg-muted/30 p-4 font-mono text-xs leading-6 text-foreground">
+              <pre className="m-0 whitespace-pre-wrap break-words">
+                {renderState.logs.join("\n") || "No logs yet."}
+              </pre>
+            </div>
+            {renderState.lastError && (
+              <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                {renderState.lastError}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </aside>
+
+      <Editor
+        initialProject={project}
+        voices={voices}
+        onLoadVoices={loadVoices}
+        editorActions={editorActions}
+      />
+    </div>
+  );
+}
+
 export default function App() {
   const { project, projectError, isProjectLoading, mutateProject, reloadProject } = useProject();
   const { voices, voicesAvailable, loadVoices } = useVoices();
@@ -101,93 +202,38 @@ export default function App() {
     onMessage: editorActions.setMessage,
   });
 
-  const videoHref = renderState.videoPath
-    ? `${renderState.videoPath}?t=${renderState.logs.length}`
-    : null;
-
-  return (
-    <main className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="grid gap-2">
-        <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">
-          Remotion + VoiSona Template
-        </h1>
-        <p className="max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-          ページごとの本文と TTS を編集して、音声 preview と render まで一通り試せるテンプレ。
-        </p>
-      </header>
-
-      {projectError ? (
+  if (projectError) {
+    return (
+      <AppLayout>
         <ErrorCard
           message={projectError}
           onRetry={() => {
             void reloadProject();
           }}
         />
-      ) : isProjectLoading || !project ? (
+      </AppLayout>
+    );
+  }
+
+  if (isProjectLoading || !project) {
+    return (
+      <AppLayout>
         <LoadingShell />
-      ) : (
-        <div className="grid items-start gap-5 xl:grid-cols-[360px_minmax(0,1fr)_360px]">
-          <aside className="flex flex-col gap-4 xl:sticky xl:top-6">
-            <PlayerPane project={project} />
+      </AppLayout>
+    );
+  }
 
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between gap-3">
-                  <CardTitle className="text-xl">Render</CardTitle>
-                  <StatusChip status={renderState.status}>{renderState.status}</StatusChip>
-                </div>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    size="icon"
-                    disabled={
-                      !voicesAvailable || editorActions.saving || renderState.status === "running"
-                    }
-                    onClick={() => {
-                      void startRender();
-                    }}
-                    title="Render"
-                    aria-label="Render"
-                  >
-                    <Clapperboard />
-                  </Button>
-                  {videoHref ? (
-                    <a
-                      aria-label="latest.mp4"
-                      className={buttonVariants({ variant: "secondary", size: "icon" })}
-                      href={videoHref}
-                      rel="noreferrer"
-                      target="_blank"
-                      title="latest.mp4"
-                    >
-                      <Download />
-                    </a>
-                  ) : null}
-                </div>
-                <div className="min-h-[220px] max-h-[320px] overflow-auto rounded-xl border border-border bg-muted/30 p-4 font-mono text-xs leading-6 text-foreground">
-                  <pre className="m-0 whitespace-pre-wrap break-words">
-                    {renderState.logs.join("\n") || "No logs yet."}
-                  </pre>
-                </div>
-                {renderState.lastError ? (
-                  <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                    {renderState.lastError}
-                  </div>
-                ) : null}
-              </CardContent>
-            </Card>
-          </aside>
-
-          <Editor
-            initialProject={project}
-            voices={voices}
-            onLoadVoices={loadVoices}
-            editorActions={editorActions}
-          />
-        </div>
-      )}
-    </main>
+  return (
+    <AppLayout>
+      <AppContent
+        project={project}
+        voices={voices}
+        voicesAvailable={voicesAvailable}
+        loadVoices={loadVoices}
+        editorActions={editorActions}
+        renderState={renderState}
+        startRender={startRender}
+      />
+    </AppLayout>
   );
 }

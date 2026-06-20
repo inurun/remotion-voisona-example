@@ -1,4 +1,5 @@
 import type { Hono } from "hono";
+import { getServerEnv } from "@/server/core/env";
 import { jsonError } from "@/server/_shared/http";
 import { listVoisonaVoices, analyzeVoisonaText, synthesizeVoisona } from "./use-case";
 import {
@@ -13,7 +14,9 @@ export const registerVoisonaRoutes = <TApp extends Hono>(app: TApp) =>
   app
     .get("/voisona/voices", async (c) => {
       try {
-        return c.json(voicesResponseSchema.parse({ options: await listVoisonaVoices() }));
+        return c.json(
+          voicesResponseSchema.parse({ options: await listVoisonaVoices(getServerEnv(c)) }),
+        );
       } catch (error) {
         return jsonError(c, 500, error, "Failed to load voices");
       }
@@ -21,7 +24,9 @@ export const registerVoisonaRoutes = <TApp extends Hono>(app: TApp) =>
     .post("/voisona/text-analysis", async (c) => {
       try {
         const json = textAnalysisRequestSchema.parse(await c.req.json());
-        return c.json(textAnalysisResponseSchema.parse(await analyzeVoisonaText(json)));
+        return c.json(
+          textAnalysisResponseSchema.parse(await analyzeVoisonaText(getServerEnv(c), json)),
+        );
       } catch (error) {
         return jsonError(c, 500, error, "Analyze failed");
       }
@@ -29,7 +34,14 @@ export const registerVoisonaRoutes = <TApp extends Hono>(app: TApp) =>
     .post("/voisona/synthesize", async (c) => {
       try {
         const json = synthesizeRequestSchema.parse(await c.req.json());
-        return c.json(synthesizeResponseSchema.parse(await synthesizeVoisona(json)));
+        return c.json(
+          synthesizeResponseSchema.parse(
+            await synthesizeVoisona({
+              serverEnv: getServerEnv(c),
+              ...json,
+            }),
+          ),
+        );
       } catch (error) {
         return jsonError(c, 500, error, "Synthesize failed");
       }

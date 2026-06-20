@@ -1,0 +1,4 @@
+{
+  "ignorePatterns": ["**/*.test.*", "**/__test__/**"],
+  "ignoreDependencies": ["@hono/node-server", "@remotion/studio"]
+}
