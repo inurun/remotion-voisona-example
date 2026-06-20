@@ -1,0 +1,58 @@
+import fs from "node:fs/promises";
+import { describe, expect, it, vi } from "vitest";
+import { Hono } from "hono";
+import { registerUploadRoutes } from "./route";
+
+vi.mock("node:fs/promises", () => ({
+  default: {
+    writeFile: vi.fn(),
+  },
+}));
+
+vi.mock("@/server/_shared/storage", async () => {
+  const actual = await vi.importActual<typeof import("@/server/_shared/storage")>(
+    "@/server/_shared/storage",
+  );
+  return {
+    ...actual,
+    UPLOADS_DIR: "/tmp/uploads",
+    ensureProjectDirs: vi.fn(),
+  };
+});
+
+describe("upload routes", () => {
+  it("rejects unsupported image types", async () => {
+    const app = new Hono();
+    registerUploadRoutes(app);
+
+    const formData = new FormData();
+    formData.set("file", new File(["x"], "test.svg", { type: "image/svg+xml" }));
+
+    const response = await app.request("/uploads/image", {
+      method: "POST",
+      body: formData,
+    });
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ error: "unsupported image type" });
+  });
+
+  it("stores supported images", async () => {
+    const app = new Hono();
+    registerUploadRoutes(app);
+
+    const formData = new FormData();
+    formData.set("file", new File(["png"], "test.png", { type: "image/png" }));
+
+    const response = await app.request("/uploads/image", {
+      method: "POST",
+      body: formData,
+    });
+
+    expect(response.status).toBe(200);
+    expect(fs.writeFile).toHaveBeenCalled();
+    await expect(response.json()).resolves.toMatchObject({
+      src: expect.stringMatching(/^\/uploads\/.+\.png$/),
+    });
+  });
+});

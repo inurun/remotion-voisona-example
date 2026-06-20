@@ -7,14 +7,30 @@
         {
           "id": "tts-1",
           "text": "このテンプレをベースに本文と読み上げを編集できる。",
-          "readText": "このテンプレをベースにほんぶんとよみあげをへんしゅうできる。",
-          "voiceName": "",
-          "voiceVersion": "",
-          "durationSec": 0,
-          "audio": {
-            "src": ""
+          "readText": "このテンプレをベースにほんぶんとよみあげをへんしゅうできる",
+          "voiceName": "chis-a_ja_JP",
+          "voiceVersion": "2.1.0",
+          "speech": {
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lh\" original=\"この\" phoneme=\"k,o|n,o\" pos=\"連体詞\" pronunciation=\"コノ\">この</word><word chain=\"0\" hl=\"lhhh\" original=\"テンプレ\" phoneme=\"t,e|N|p,u|r,e\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"テンプレ\">テンプレ</word><word chain=\"1\" hl=\"h\" original=\"を\" phoneme=\"o\" pos=\"助詞\" pos_group1=\"格助詞\" pos_group2=\"一般\" pronunciation=\"ヲ\">を</word><word chain=\"0\" hl=\"hll\" original=\"ベース\" phoneme=\"b,e|e|s,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ベース\">ベース</word><word chain=\"1\" hl=\"l\" original=\"に\" phoneme=\"n,i\" pos=\"助詞\" pos_group1=\"格助詞\" pos_group2=\"一般\" pronunciation=\"ニ\">に</word><word chain=\"0\" hl=\"hlll\" original=\"ほんぶん\" phoneme=\"h,o|N|b,u|N\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ホンブン\">ほんぶん</word><word chain=\"1\" hl=\"l\" original=\"と\" phoneme=\"t,o\" pos=\"助詞\" pos_group1=\"格助詞\" pos_group2=\"引用\" pronunciation=\"ト\">と</word><word cform=\"連用形\" chain=\"0\" ctype=\"一段\" hl=\"lhhh\" original=\"よみあげる\" phoneme=\"y,o|m,i|a|g,e\" pos=\"動詞\" pos_group1=\"自立\" pronunciation=\"ヨミアゲ\">よみあげ</word><word chain=\"1\" hl=\"h\" original=\"を\" phoneme=\"o\" pos=\"助詞\" pos_group1=\"格助詞\" pos_group2=\"一般\" pronunciation=\"ヲ\">を</word><word chain=\"0\" hl=\"lhhh\" original=\"へんしゅう\" phoneme=\"h,e|N|sh,u|u\" pos=\"名詞\" pos_group1=\"サ変接続\" pronunciation=\"ヘンシュー\">へんしゅう</word><word cform=\"基本形\" chain=\"0\" ctype=\"一段\" hl=\"lhl\" original=\"できる\" phoneme=\"d,e|k,i|r,u\" pos=\"動詞\" pos_group1=\"自立\" pronunciation=\"デキル\">できる</word></acoustic_phrase></tsml>"
           },
-          "speech": {}
+          "durationSec": 4.694999999999999,
+          "audio": {
+            "src": "/tts/7c99cdc322ffa6bf91ba7d9c31656b04.wav"
+          }
+        },
+        {
+          "id": "742ce671-c70b-4201-b6dc-d29254a2b566",
+          "text": "ここにテキストをニュウリョクワン！",
+          "readText": "ここにテキストをニュウリョクワン！",
+          "voiceName": "futaba-minato_ja_JP",
+          "voiceVersion": "2.0.2",
+          "speech": {
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lh\" original=\"ここ\" phoneme=\"k,o|k,o\" pos=\"名詞\" pos_group1=\"代名詞\" pos_group2=\"一般\" pronunciation=\"ココ\">ここ</word><word chain=\"1\" hl=\"h\" original=\"に\" phoneme=\"n,i\" pos=\"助詞\" pos_group1=\"格助詞\" pos_group2=\"一般\" pronunciation=\"ニ\">に</word><word chain=\"0\" hl=\"hlll\" original=\"テキスト\" phoneme=\"t,e|k,I|s,u|t,o\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"テキ’スト\">テキスト</word><word chain=\"1\" hl=\"l\" original=\"を\" phoneme=\"o\" pos=\"助詞\" pos_group1=\"格助詞\" pos_group2=\"一般\" pronunciation=\"ヲ\">を</word><word chain=\"0\" hl=\"hl\" original=\"ニュウ\" phoneme=\"ny,u|u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ニュー\">ニュウ</word><word chain=\"1\" hl=\"l\" original=\"リョ\" phoneme=\"ry,o\" pos=\"フィラー\" pronunciation=\"リョ\">リョ</word><word chain=\"1\" hl=\"lhl\" original=\"クワン\" phoneme=\"k,u|w,a|N\" pos=\"副詞\" pronunciation=\"クワン\">クワン</word><word chain=\"1\" is_exclamation=\"1\" original=\"！\" phoneme=\"\" pos=\"記号\" pos_group1=\"一般\" pronunciation=\"\">！</word></acoustic_phrase></tsml>"
+          },
+          "durationSec": 2.23,
+          "audio": {
+            "src": "/tts/5230e4b24551354e7e592aa2989d1d9f.wav"
+          }
         }
       ]
     }

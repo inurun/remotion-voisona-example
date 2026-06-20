@@ -5,6 +5,7 @@
 .next
 node_modules
 out
+dist
 *.log
 data/render-state.json
 *.tsbuildinfo
