@@ -16,6 +16,8 @@
 - 同一 feature 内でしか使わない処理は、その feature 配下の非公開実装に留める
 - `export` は別モジュールから実使用がある場合のみ許可する
 - `_shared` への抽出は複数 feature から実利用が発生した純粋関数・型だけに限定する
+- `_shared/lib` に置いてよいのは、複数 feature または複数 layer から実利用されている基盤 helper だけとする
+- feature 専用 helper は feature 配下に戻す。server 専用 helper は `src/server` 配下に置く
 - 「将来使うかもしれない」は公開や保持の理由にしない
 
 ## Frontend Policy

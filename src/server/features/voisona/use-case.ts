@@ -1,8 +1,6 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { applyVoisonaTextTransforms } from "@/_shared/lib/text";
-import { getWavDurationSeconds } from "@/_shared/lib/wav";
 import type { ServerEnv } from "@/server/core/env";
 import { TTS_DIR } from "@/server/_shared/storage";
 import {
@@ -17,7 +15,9 @@ import {
   type SynthesizeResponse,
   textAnalysisRequestSchema,
 } from "./contract";
+import { applyVoisonaTextTransforms } from "./text";
 import { collectVoiceOptions, dedupeVoiceOptions } from "./voice-options";
+import { getWavDurationSeconds } from "./wav";
 
 const inFlightSyntheses = new Map<string, Promise<SynthesizeResponse>>();
 

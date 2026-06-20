@@ -4,10 +4,10 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect } from "react";
 
-import { isSingleImageRichText } from "@/_shared/lib/rich-text";
 import { cn } from "@/_shared/lib/utils";
 import { RichTextEditorToolbar } from "@/app/features/editor/rich-text-editor-toolbar";
 import { useRichTextImageUpload } from "@/app/features/editor/rich-text-image-upload";
+import { isSingleImageRichText } from "@/app/features/editor/rich-text";
 import { TiptapImage } from "@/app/features/editor/tiptap-image";
 import { TiptapMarker } from "@/app/features/editor/tiptap-marker";
 

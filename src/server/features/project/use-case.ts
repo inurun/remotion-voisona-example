@@ -4,7 +4,6 @@ import {
   savedProjectSchema,
   type SavedProject,
 } from "@/_schemas";
-import { getVoisonaReadText } from "@/_shared/lib/text";
 import {
   ensureSavedProjectFile,
   parseDraftPayload,
@@ -12,6 +11,7 @@ import {
   writeSavedProject,
 } from "@/server/_shared/storage";
 import type { ServerEnv } from "@/server/core/env";
+import { getVoisonaReadText } from "@/server/features/voisona/text";
 import { analyzeVoisonaText, synthesizeVoisona } from "@/server/features/voisona/use-case";
 
 const AUDIO_PADDING_SECONDS = 0.1;
