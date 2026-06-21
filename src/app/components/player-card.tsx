@@ -9,6 +9,7 @@ import { COMP_NAME, VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
 
 function usePlayerComponent() {
   const [component, setComponent] = useState<ComponentType<{ project: SavedProject }> | null>(null);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -70,9 +71,8 @@ function PreviewPlayer({
   );
 }
 
-export function PlayerPane({ project }: { project: SavedProject }) {
+export function PlayerCard({ project }: { project: SavedProject }) {
   const component = usePlayerComponent();
-
   const durationInFrames = useMemo(() => {
     return Math.max(1, Math.ceil(getProjectPlayback(project).durationSec * VIDEO_FPS));
   }, [project]);

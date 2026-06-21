@@ -5,7 +5,7 @@ export function getProjectPathFromLocation(pathname: string) {
   return normalizedPath ? decodeURIComponent(normalizedPath) : null;
 }
 
-export function encodeProjectPathForUrl(projectPath: string) {
+function encodeProjectPathForUrl(projectPath: string) {
   return projectPath
     .split("/")
     .filter(Boolean)

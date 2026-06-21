@@ -1,6 +1,6 @@
 import type { ProjectFileSummary } from "@/_schemas";
 
-export type ProjectDirectoryGroup = {
+type ProjectDirectoryGroup = {
   directoryPath: string;
   directoryName: string;
   items: ProjectFileSummary[];

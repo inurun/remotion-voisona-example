@@ -1,28 +1,28 @@
 "use client";
 
 import { FormProvider } from "react-hook-form";
-import { type SavedProject } from "@/_schemas";
+import type { SavedProject } from "@/_schemas";
 import { ConfigPane } from "@/app/features/editor/config-pane";
 import { EditorContextProvider } from "@/app/features/editor/editor-context";
 import { EditorPane } from "@/app/features/editor/editor-pane";
+import type { useEditorActions } from "@/app/features/editor/editor-actions";
 import { useEditorForm } from "@/app/features/editor/editor-form";
 import { useEditorScreen } from "@/app/features/editor/editor-screen";
-import { type useEditorActions } from "@/app/features/editor/editor-actions";
-import { type VoiceState } from "@/app/features/voisona/voices";
+import type { VoiceState } from "@/app/features/voisona/voices";
 
-export default function Editor({
-  initialProject,
+export function EditorCard({
+  project,
   voices,
-  onLoadVoices,
+  loadVoices,
   editorActions,
 }: {
-  initialProject: SavedProject;
+  project: SavedProject;
   voices: VoiceState;
-  onLoadVoices: () => Promise<void>;
+  loadVoices: () => Promise<void>;
   editorActions: ReturnType<typeof useEditorActions>;
 }) {
   const { form, pageFields, appendPage, createDraftTts, movePage, removePage } = useEditorForm({
-    initialProject,
+    initialProject: project,
     voiceOptions: voices.options,
   });
   const contextValue = useEditorScreen({
@@ -31,7 +31,7 @@ export default function Editor({
     editorActions,
     form,
     movePage,
-    onLoadVoices,
+    onLoadVoices: loadVoices,
     pageFields,
     removePage,
     voices,

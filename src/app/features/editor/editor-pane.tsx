@@ -93,30 +93,6 @@ function EditorToolbar() {
   );
 }
 
-function EditorFeedback() {
-  const { error, message, voices } = useEditorContext();
-
-  return (
-    <>
-      {voices.status === "error" ? (
-        <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {voices.error}
-        </div>
-      ) : null}
-      {message ? (
-        <div className="rounded-xl border border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-          {message}
-        </div>
-      ) : null}
-      {error ? (
-        <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      ) : null}
-    </>
-  );
-}
-
 function PageList() {
   const { onSelectPage, pageFields, selectedPageIndex } = useEditorContext();
 
@@ -159,7 +135,6 @@ export function EditorPane() {
         </div>
       </CardHeader>
       <CardContent className="grid gap-4">
-        <EditorFeedback />
         <div className="grid gap-4">
           <PageList />
           <SelectedPageEditor />

@@ -8,7 +8,6 @@ export type EditorContextValue = {
   busyById: Record<string, string>;
   canRunTts: boolean;
   pageFields: Array<DraftPage & { fieldKey: string }>;
-  message: string | null;
   onAnalyzeTts: (pageIndex: number, ttsIndex: number) => Promise<void>;
   onAppendPage: () => void;
   onAppendTtsToPage: (pageIndex: number) => void;
@@ -19,7 +18,6 @@ export type EditorContextValue = {
   onSave: () => void;
   onSelectPage: (index: number) => void;
   onSelectTts: (index: number | null) => void;
-  error: string | null;
   saving: boolean;
   selectedPageIndex: number | null;
   selectedTtsIndex: number | null;

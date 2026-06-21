@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import type { Hono } from "hono";
+import type { Context, Hono } from "hono";
 import {
   InvalidProjectPathError,
   LATEST_VIDEO_PATH,
@@ -14,6 +14,27 @@ import {
 } from "./contract";
 import { createRenderStream } from "./render-stream";
 
+function getRenderStartErrorStatus(error: unknown) {
+  if (error instanceof InvalidProjectPathError) {
+    return 400;
+  }
+
+  if (error instanceof ProjectNotFoundError) {
+    return 404;
+  }
+
+  return 500;
+}
+
+function createRenderStartErrorResponse(c: Context, error: unknown) {
+  const status = getRenderStartErrorStatus(error);
+  return jsonError(c, status, error, "Render start failed");
+}
+
+function isRenderConflict(result: { started: boolean }) {
+  return !result.started;
+}
+
 export const registerRenderRoutes = <TApp extends Hono>(app: TApp) =>
   app
     .get("/render", async (c) => {
@@ -27,18 +48,12 @@ export const registerRenderRoutes = <TApp extends Hono>(app: TApp) =>
       try {
         const payload = renderStartRequestSchema.parse(await c.req.json());
         const result = renderStartResponseSchema.parse(await startRender(payload.projectPath));
-        if (!result.started) {
+        if (isRenderConflict(result)) {
           return c.json({ error: "Render is already running.", ...result }, 409);
         }
         return c.json(result);
       } catch (error) {
-        const status =
-          error instanceof InvalidProjectPathError
-            ? 400
-            : error instanceof ProjectNotFoundError
-              ? 404
-              : 500;
-        return jsonError(c, status, error, "Render start failed");
+        return createRenderStartErrorResponse(c, error);
       }
     })
     .get("/render/stream", async (c) => {

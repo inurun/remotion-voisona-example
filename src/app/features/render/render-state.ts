@@ -27,15 +27,7 @@ async function postRenderStart(projectPath: string) {
   }
 }
 
-export function useRenderState({
-  onError,
-  onMessage,
-  projectPath,
-}: {
-  onError: (message: string | null) => void;
-  onMessage: (message: string | null) => void;
-  projectPath: string | null;
-}) {
+export function useRenderState({ projectPath }: { projectPath: string | null }) {
   const { data, mutate } = useSWR<RenderState>("/api/render", fetchJson, {
     revalidateOnFocus: false,
   });
@@ -67,20 +59,11 @@ export function useRenderState({
 
   async function startRender() {
     if (!projectPath) {
-      onError("Project path is required");
-      return;
+      throw new Error("Project path is required");
     }
 
-    onError(null);
-    onMessage(null);
-
-    try {
-      await postRenderStart(projectPath);
-      onMessage("Render を開始した。");
-      void mutate();
-    } catch (renderError) {
-      onError(renderError instanceof Error ? renderError.message : "Render failed");
-    }
+    await postRenderStart(projectPath);
+    void mutate();
   }
 
   return {

@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-export
 "use client";
 
 import * as React from "react";
@@ -157,45 +158,116 @@ function Sidebar({
 
   if (collapsible === "none") {
     return (
-      <div
-        data-slot="sidebar"
-        className={cn(
-          "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground",
-          className,
-        )}
-        {...props}
-      >
+      <SidebarStatic className={className} {...props}>
         {children}
-      </div>
+      </SidebarStatic>
     );
   }
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-        <SheetContent
-          dir={dir}
-          data-sidebar="sidebar"
-          data-slot="sidebar"
-          data-mobile="true"
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-          style={
-            {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
-          }
-          side={side}
-        >
-          <SheetHeader className="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-          </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
-        </SheetContent>
-      </Sheet>
+      <MobileSidebar open={openMobile} setOpen={setOpenMobile} side={side} dir={dir} {...props}>
+        {children}
+      </MobileSidebar>
     );
   }
 
+  return (
+    <DesktopSidebar
+      state={state}
+      side={side}
+      variant={variant}
+      collapsible={collapsible}
+      className={className}
+      {...props}
+    >
+      {children}
+    </DesktopSidebar>
+  );
+}
+
+function SidebarStatic({ className, children, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sidebar"
+      className={cn(
+        "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+function MobileSidebar({
+  open,
+  setOpen,
+  side,
+  dir,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  side: "left" | "right";
+}) {
+  return (
+    <Sheet open={open} onOpenChange={setOpen} {...props}>
+      <SheetContent
+        dir={dir}
+        data-sidebar="sidebar"
+        data-slot="sidebar"
+        data-mobile="true"
+        className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+        style={
+          {
+            "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+          } as React.CSSProperties
+        }
+        side={side}
+      >
+        <SheetHeader className="sr-only">
+          <SheetTitle>Sidebar</SheetTitle>
+          <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+        </SheetHeader>
+        <div className="flex h-full w-full flex-col">{children}</div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function getDesktopGapClassName(variant: "sidebar" | "floating" | "inset") {
+  if (variant === "floating" || variant === "inset") {
+    return "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]";
+  }
+
+  return "group-data-[collapsible=icon]:w-(--sidebar-width-icon)";
+}
+
+function getDesktopContainerClassName(variant: "sidebar" | "floating" | "inset") {
+  if (variant === "floating" || variant === "inset") {
+    return "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]";
+  }
+
+  return "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l";
+}
+
+function DesktopSidebar({
+  state,
+  side,
+  variant,
+  collapsible,
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  state: "expanded" | "collapsed";
+  side: "left" | "right";
+  variant: "sidebar" | "floating" | "inset";
+  collapsible: "offcanvas" | "icon" | "none";
+}) {
   return (
     <div
       className="group peer hidden text-sidebar-foreground md:block"
@@ -205,16 +277,13 @@ function Sidebar({
       data-side={side}
       data-slot="sidebar"
     >
-      {/* This is what handles the sidebar gap on desktop */}
       <div
         data-slot="sidebar-gap"
         className={cn(
           "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
-          variant === "floating" || variant === "inset"
-            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
+          getDesktopGapClassName(variant),
         )}
       />
       <div
@@ -222,10 +291,7 @@ function Sidebar({
         data-side={side}
         className={cn(
           "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex",
-          // Adjust the padding for floating and inset variants.
-          variant === "floating" || variant === "inset"
-            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+          getDesktopContainerClassName(variant),
           className,
         )}
         {...props}
@@ -240,6 +306,33 @@ function Sidebar({
       </div>
     </div>
   );
+}
+
+function getTooltipContent(
+  tooltip: string | React.ComponentProps<typeof TooltipContent> | undefined,
+) {
+  if (!tooltip) {
+    return null;
+  }
+
+  if (typeof tooltip === "string") {
+    return {
+      children: tooltip,
+    };
+  }
+
+  return tooltip;
+}
+
+function getSidebarMenuButtonRender(
+  render: useRender.ComponentProps<"button">["render"],
+  tooltip: string | React.ComponentProps<typeof TooltipContent> | undefined,
+) {
+  if (!tooltip) {
+    return render;
+  }
+
+  return <TooltipTrigger render={render} />;
 }
 
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
@@ -488,6 +581,7 @@ function SidebarMenuButton({
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar();
+  const tooltipContent = getTooltipContent(tooltip);
   const comp = useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
@@ -496,7 +590,7 @@ function SidebarMenuButton({
       },
       props,
     ),
-    render: !tooltip ? render : <TooltipTrigger render={render} />,
+    render: getSidebarMenuButtonRender(render, tooltip),
     state: {
       slot: "sidebar-menu-button",
       sidebar: "menu-button",
@@ -505,14 +599,8 @@ function SidebarMenuButton({
     },
   });
 
-  if (!tooltip) {
+  if (!tooltipContent) {
     return comp;
-  }
-
-  if (typeof tooltip === "string") {
-    tooltip = {
-      children: tooltip,
-    };
   }
 
   return (
@@ -522,7 +610,7 @@ function SidebarMenuButton({
         side="right"
         align="center"
         hidden={state !== "collapsed" || isMobile}
-        {...tooltip}
+        {...tooltipContent}
       />
     </Tooltip>
   );

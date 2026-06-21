@@ -9,14 +9,16 @@ import {
 } from "@/app/features/editor/editor-api";
 
 export function useEditorActions({
+  onError,
   onSavedProjectChange,
+  onSuccess,
   projectPath,
 }: {
+  onError: (message: string) => void;
   onSavedProjectChange: (project: SavedProject) => void;
+  onSuccess: (message: string) => void;
   projectPath: string | null;
 }) {
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [busyById, setBusyById] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -33,18 +35,12 @@ export function useEditorActions({
     });
   }
 
-  function clearFeedback() {
-    setError(null);
-    setMessage(null);
-  }
-
   async function runItemTask<T>(
     id: string,
     reason: string,
     task: () => Promise<T>,
     onSuccess?: (value: T) => void,
   ) {
-    clearFeedback();
     setItemBusy(id, reason);
 
     try {
@@ -52,7 +48,7 @@ export function useEditorActions({
       onSuccess?.(result);
       return result;
     } catch (error) {
-      setError(error instanceof Error ? error.message : `${reason} failed`);
+      onError(error instanceof Error ? error.message : `${reason} failed`);
       return null;
     } finally {
       setItemBusy(id, null);
@@ -65,7 +61,7 @@ export function useEditorActions({
       "analyze",
       () => requestTextAnalysis(item),
       () => {
-        setMessage("TSML を更新した。");
+        onSuccess("TSML を更新した。");
       },
     );
   }
@@ -88,26 +84,25 @@ export function useEditorActions({
         }
 
         await playPreview(audioSrc);
-        setMessage("Preview を再生した。");
+        onSuccess("Preview を再生した。");
       },
     );
   }
 
   async function saveProject(project: DraftProject) {
     if (!projectPath) {
-      setError("Project path is required");
+      onError("Project path is required");
       return;
     }
 
     setSaving(true);
-    clearFeedback();
 
     try {
       const savedProject = await requestSaveProject(projectPath, project);
       onSavedProjectChange(savedProject);
-      setMessage("保存して音声を更新した。");
+      onSuccess("保存して音声を更新した。");
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "Save failed");
+      onError(saveError instanceof Error ? saveError.message : "Save failed");
     } finally {
       setSaving(false);
     }
@@ -115,11 +110,7 @@ export function useEditorActions({
 
   return {
     busyById,
-    error,
-    message,
     saving,
-    setError,
-    setMessage,
     analyzeItem,
     previewItem,
     saveProject,

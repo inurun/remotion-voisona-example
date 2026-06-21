@@ -21,6 +21,7 @@ export const LATEST_VIDEO_PATH = path.join(OUT_DIR, "latest.mp4");
 const DEFAULT_PROJECT_PATH = "project";
 const PROJECT_FILE_EXTENSION = ".json";
 const PROJECT_LIST_EXCLUDE = new Set([path.basename(RENDER_STATE_PATH)]);
+const INVALID_PROJECT_PATH_MESSAGE = "Invalid project path";
 
 export class InvalidProjectPathError extends Error {}
 
@@ -52,20 +53,37 @@ function createInitialSavedProject() {
   });
 }
 
+function throwInvalidProjectPath() {
+  throw new InvalidProjectPathError(INVALID_PROJECT_PATH_MESSAGE);
+}
+
 function normalizeProjectPathSegment(segment: string) {
   const value = segment.trim();
-  if (!value || value === "." || value === ".." || value.includes("\0")) {
-    throw new InvalidProjectPathError("Invalid project path");
-  }
-
-  if (value.includes(path.sep) || value.includes("/")) {
-    throw new InvalidProjectPathError("Invalid project path");
-  }
-
+  assertSegmentHasContent(value);
+  assertSegmentHasNoNullByte(value);
+  assertSegmentHasNoPathSeparator(value);
   return value;
 }
 
-export function normalizeProjectPath(projectPath: string) {
+function assertSegmentHasContent(segment: string) {
+  if (!segment || segment === "." || segment === "..") {
+    throwInvalidProjectPath();
+  }
+}
+
+function assertSegmentHasNoNullByte(segment: string) {
+  if (segment.includes("\0")) {
+    throwInvalidProjectPath();
+  }
+}
+
+function assertSegmentHasNoPathSeparator(segment: string) {
+  if (segment.includes(path.sep) || segment.includes("/")) {
+    throwInvalidProjectPath();
+  }
+}
+
+function normalizeProjectPath(projectPath: string) {
   const normalized = projectPath
     .split("/")
     .filter(Boolean)
@@ -73,19 +91,19 @@ export function normalizeProjectPath(projectPath: string) {
     .join("/");
 
   if (!normalized || normalized.endsWith(PROJECT_FILE_EXTENSION)) {
-    throw new InvalidProjectPathError("Invalid project path");
+    throwInvalidProjectPath();
   }
 
   return normalized;
 }
 
-function ensureProjectAbsolutePath(projectPath: string) {
+function createProjectFilePath(projectPath: string) {
   const normalizedPath = normalizeProjectPath(projectPath);
   const filePath = path.resolve(DATA_DIR, `${normalizedPath}${PROJECT_FILE_EXTENSION}`);
   const dataRoot = `${DATA_DIR}${path.sep}`;
 
   if (!filePath.startsWith(dataRoot)) {
-    throw new InvalidProjectPathError("Invalid project path");
+    throwInvalidProjectPath();
   }
 
   return filePath;
@@ -104,33 +122,59 @@ function toProjectSummary(relativePath: string, updatedAt: number): ProjectFileS
   });
 }
 
+function shouldIncludeProjectFile(entryName: string, isFile: boolean) {
+  return (
+    isFile && entryName.endsWith(PROJECT_FILE_EXTENSION) && !PROJECT_LIST_EXCLUDE.has(entryName)
+  );
+}
+
+async function readProjectSummaryFile(relativePath: string, absolutePath: string) {
+  const stats = await fs.stat(absolutePath);
+  return toProjectSummary(relativePath, stats.mtimeMs);
+}
+
+async function collectProjectEntrySummaries(
+  entry: Awaited<ReturnType<typeof fs.readdir>>[number],
+  dirPath: string,
+  nestedPath: string,
+): Promise<ProjectFileSummary[]> {
+  const relativePath = nestedPath ? path.join(nestedPath, entry.name) : entry.name;
+  const absolutePath = path.join(dirPath, entry.name);
+
+  if (entry.isDirectory()) {
+    return collectProjectFiles(absolutePath, relativePath);
+  }
+
+  if (!shouldIncludeProjectFile(entry.name, entry.isFile())) {
+    return [];
+  }
+
+  return [await readProjectSummaryFile(relativePath, absolutePath)];
+}
+
+function sortProjectsByUpdatedAt(projects: ProjectFileSummary[]) {
+  return projects.sort((left, right) => right.updatedAt - left.updatedAt);
+}
+
 async function collectProjectFiles(
   dirPath: string,
   nestedPath = "",
 ): Promise<ProjectFileSummary[]> {
   const entries = await fs.readdir(dirPath, { withFileTypes: true });
-  const summaries = await Promise.all(
-    entries.flatMap((entry) => {
-      const relativePath = nestedPath ? path.join(nestedPath, entry.name) : entry.name;
-      const absolutePath = path.join(dirPath, entry.name);
-
-      if (entry.isDirectory()) {
-        return [collectProjectFiles(absolutePath, relativePath)];
-      }
-
-      if (
-        !entry.isFile() ||
-        !entry.name.endsWith(PROJECT_FILE_EXTENSION) ||
-        PROJECT_LIST_EXCLUDE.has(entry.name)
-      ) {
-        return [];
-      }
-
-      return [fs.stat(absolutePath).then((stats) => toProjectSummary(relativePath, stats.mtimeMs))];
-    }),
+  const nestedSummaries = await Promise.all(
+    entries.map((entry) => collectProjectEntrySummaries(entry, dirPath, nestedPath)),
   );
+  return sortProjectsByUpdatedAt(nestedSummaries.flat());
+}
 
-  return summaries.flat().sort((left, right) => right.updatedAt - left.updatedAt);
+async function ensureDefaultProjectFile() {
+  const projectPath = createProjectFilePath(DEFAULT_PROJECT_PATH);
+
+  try {
+    await fs.access(projectPath);
+  } catch {
+    await writeSavedProject(DEFAULT_PROJECT_PATH, createInitialSavedProject());
+  }
 }
 
 export async function ensureProjectDirs() {
@@ -150,13 +194,13 @@ export async function listSavedProjects() {
     return files;
   }
 
-  await ensureSavedProjectFile(DEFAULT_PROJECT_PATH);
+  await ensureDefaultProjectFile();
   return collectProjectFiles(DATA_DIR);
 }
 
 export async function readSavedProject(projectPath: string): Promise<SavedProject> {
   await ensureProjectDirs();
-  const filePath = ensureProjectAbsolutePath(projectPath);
+  const filePath = createProjectFilePath(projectPath);
 
   try {
     const content = await fs.readFile(filePath, "utf8");
@@ -171,20 +215,9 @@ export async function readSavedProject(projectPath: string): Promise<SavedProjec
 
 export async function writeSavedProject(projectPath: string, project: SavedProject) {
   await ensureProjectDirs();
-  const filePath = ensureProjectAbsolutePath(projectPath);
+  const filePath = createProjectFilePath(projectPath);
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, JSON.stringify(project, null, 2));
-}
-
-export async function ensureSavedProjectFile(projectPath: string) {
-  await ensureProjectDirs();
-  const filePath = ensureProjectAbsolutePath(projectPath);
-
-  try {
-    await fs.access(filePath);
-  } catch {
-    await writeSavedProject(projectPath, createInitialSavedProject());
-  }
 }
 
 export function parseDraftPayload(payload: unknown) {

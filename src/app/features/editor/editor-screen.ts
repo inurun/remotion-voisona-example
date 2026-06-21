@@ -336,7 +336,6 @@ export function useEditorScreen({
     busyById: editorActions.busyById,
     canRunTts,
     pageFields,
-    message: editorActions.message,
     onAnalyzeTts: analyzeTts,
     onAppendPage: () => {
       setSelectedPageIndex(pageFields.length);
@@ -377,7 +376,6 @@ export function useEditorScreen({
       setSelectedTtsIndex(0);
     },
     onSelectTts: setSelectedTtsIndex,
-    error: editorActions.error,
     saving: editorActions.saving,
     selectedPageIndex,
     selectedTtsIndex,
