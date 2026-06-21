@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import type { UseFormReturn } from "react-hook-form";
 import { type DraftPage, type DraftProject, type DraftTts } from "@/_schemas";
-import { type EditorContextValue } from "@/app/features/editor/editor-context";
+import { type EditorContextValue } from "@/app/contexts/editor-context/editor-context.hook";
 import { getVoiceValue } from "@/app/features/editor/editor-form";
 import { type useEditorActions } from "@/app/features/editor/editor-actions";
-import { type VoiceState } from "@/app/features/voisona/voices";
+import { type VoiceOption } from "@/_schemas";
 
 type EditorActions = ReturnType<typeof useEditorActions>;
 
@@ -24,7 +24,7 @@ type UseEditorScreenParams = {
   pageFields: Array<DraftPage & { fieldKey: string }>;
   removePage: (index: number) => void;
   saveProject: (project: DraftProject) => Promise<unknown>;
-  voices: VoiceState;
+  voiceOptions: VoiceOption[];
 };
 
 function getItemBusyReason(busyById: Record<string, string>, item: DraftTts | undefined) {
@@ -264,9 +264,9 @@ export function useEditorScreen({
   pageFields,
   removePage,
   saveProject,
-  voices,
+  voiceOptions,
 }: UseEditorScreenParams): EditorContextValue {
-  const canRunTts = voices.status === "ready" && voices.options.length > 0 && !editorActions.saving;
+  const canRunTts = voiceOptions.length > 0 && !editorActions.saving;
   const { selectedPageIndex, selectedTtsIndex, setSelectedPageIndex, setSelectedTtsIndex } =
     useSelectedIndices(pageFields.length);
   const [pendingTextFocus, setPendingTextFocus] = useState<PendingTextFocus | null>(null);
@@ -376,8 +376,7 @@ export function useEditorScreen({
     selectedPageIndex,
     selectedTtsIndex,
     createDraftTts,
-    voiceSelectOptions: voices.options,
-    voices,
+    voiceSelectOptions: voiceOptions,
     onLoadVoices,
   };
 }

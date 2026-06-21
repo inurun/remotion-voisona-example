@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/_shared/components/ui/button";
@@ -14,26 +14,25 @@ import { Separator } from "@/_shared/components/ui/separator";
 import { Textarea } from "@/_shared/components/ui/textarea";
 import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
-import { useEditorContext } from "@/app/features/editor/editor-context";
+import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { getVoiceValue } from "@/app/features/editor/editor-form";
-import { RichTextEditor } from "@/app/features/editor/rich-text-editor";
 
-function TtsVoiceField({
-  index,
-  pageIndex,
-  onRemove,
-}: {
-  index: number;
-  pageIndex: number;
-  onRemove: () => void;
-}) {
+function TtsVoiceField({ index, onRemove }: { index: number; onRemove: () => void }) {
   const { control, setValue } = useFormContext<DraftProject>();
-  const { onSelectTts, voiceSelectOptions } = useEditorContext();
-  const voiceVersion = useWatch({ control, name: `pages.${pageIndex}.tts.${index}.voiceVersion` });
+  const { onSelectTts, selectedPageIndex, voiceSelectOptions } = useEditor();
+  const pageIndex = selectedPageIndex ?? 0;
+  const voiceVersion = useWatch({
+    control,
+    name: `pages.${pageIndex}.tts.${index}.voiceVersion`,
+  });
+
+  if (selectedPageIndex === null) {
+    return null;
+  }
 
   return (
     <Controller
-      name={`pages.${pageIndex}.tts.${index}.voiceName`}
+      name={`pages.${selectedPageIndex}.tts.${index}.voiceName`}
       control={control}
       render={({ field: controllerField, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
@@ -47,9 +46,11 @@ function TtsVoiceField({
               onValueChange={(value) => {
                 const [nextVoiceName, nextVoiceVersion] = value.split("::");
                 controllerField.onChange(nextVoiceName ?? "");
-                setValue(`pages.${pageIndex}.tts.${index}.voiceVersion`, nextVoiceVersion ?? "", {
-                  shouldDirty: true,
-                });
+                setValue(
+                  `pages.${selectedPageIndex}.tts.${index}.voiceVersion`,
+                  nextVoiceVersion ?? "",
+                  { shouldDirty: true },
+                );
                 onSelectTts(index);
               }}
             >
@@ -85,20 +86,24 @@ function TtsVoiceField({
   );
 }
 
-function TtsTextField({ index, pageIndex }: { index: number; pageIndex: number }) {
+function TtsTextField({ index }: { index: number }) {
   const { control, setValue } = useFormContext<DraftProject>();
-  const { onSelectTts } = useEditorContext();
+  const { onSelectTts, selectedPageIndex } = useEditor();
+
+  if (selectedPageIndex === null) {
+    return null;
+  }
 
   return (
     <Controller
-      name={`pages.${pageIndex}.tts.${index}.text`}
+      name={`pages.${selectedPageIndex}.tts.${index}.text`}
       control={control}
       render={({ field: controllerField, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
           <Textarea
             {...controllerField}
             value={controllerField.value ?? ""}
-            data-page-index={pageIndex}
+            data-page-index={selectedPageIndex}
             data-tts-index={index}
             data-tts-hotkey-target="text"
             aria-invalid={fieldState.invalid}
@@ -107,7 +112,7 @@ function TtsTextField({ index, pageIndex }: { index: number; pageIndex: number }
             onChange={(event) => {
               const nextText = event.target.value;
               controllerField.onChange(nextText);
-              setValue(`pages.${pageIndex}.tts.${index}.readText`, nextText, {
+              setValue(`pages.${selectedPageIndex}.tts.${index}.readText`, nextText, {
                 shouldDirty: true,
               });
             }}
@@ -120,10 +125,16 @@ function TtsTextField({ index, pageIndex }: { index: number; pageIndex: number }
   );
 }
 
-function TtsBusyBadge({ pageIndex, ttsIndex }: { pageIndex: number; ttsIndex: number }) {
-  const { busyById } = useEditorContext();
+function TtsBusyBadge({ ttsIndex }: { ttsIndex: number }) {
+  const { busyById, selectedPageIndex } = useEditor();
   const { control } = useFormContext<DraftProject>();
+  const pageIndex = selectedPageIndex ?? 0;
   const itemId = useWatch({ control, name: `pages.${pageIndex}.tts.${ttsIndex}.id` });
+
+  if (selectedPageIndex === null) {
+    return null;
+  }
+
   const busy = itemId ? busyById[itemId] : undefined;
 
   if (!busy) {
@@ -137,16 +148,8 @@ function TtsBusyBadge({ pageIndex, ttsIndex }: { pageIndex: number; ttsIndex: nu
   );
 }
 
-function TtsItem({
-  index,
-  pageIndex,
-  onRemove,
-}: {
-  index: number;
-  pageIndex: number;
-  onRemove: () => void;
-}) {
-  const { selectedTtsIndex } = useEditorContext();
+function TtsItem({ index, onRemove }: { index: number; onRemove: () => void }) {
+  const { selectedTtsIndex } = useEditor();
 
   return (
     <article
@@ -156,17 +159,18 @@ function TtsItem({
       )}
     >
       <div className="flex items-center gap-3">
-        <TtsBusyBadge pageIndex={pageIndex} ttsIndex={index} />
+        <TtsBusyBadge ttsIndex={index} />
       </div>
-      <TtsVoiceField index={index} pageIndex={pageIndex} onRemove={onRemove} />
-      <TtsTextField index={index} pageIndex={pageIndex} />
+      <TtsVoiceField index={index} onRemove={onRemove} />
+      <TtsTextField index={index} />
     </article>
   );
 }
 
-function TtsList({ pageIndex }: { pageIndex: number }) {
+export function TtsList() {
   const { control } = useFormContext<DraftProject>();
-  const { onSelectTts, selectedTtsIndex } = useEditorContext();
+  const { onSelectTts, selectedPageIndex, selectedTtsIndex } = useEditor();
+  const pageIndex = selectedPageIndex ?? 0;
   const { fields, remove } = useFieldArray({
     control,
     keyName: "fieldKey",
@@ -174,6 +178,10 @@ function TtsList({ pageIndex }: { pageIndex: number }) {
   });
 
   useEffect(() => {
+    if (selectedPageIndex === null) {
+      return;
+    }
+
     if (fields.length === 0) {
       onSelectTts(null);
       return;
@@ -187,7 +195,11 @@ function TtsList({ pageIndex }: { pageIndex: number }) {
     if (selectedTtsIndex >= fields.length) {
       onSelectTts(fields.length - 1);
     }
-  }, [fields.length, onSelectTts, selectedTtsIndex]);
+  }, [fields.length, onSelectTts, selectedPageIndex, selectedTtsIndex]);
+
+  if (selectedPageIndex === null) {
+    return null;
+  }
 
   if (fields.length === 0) {
     return (
@@ -204,7 +216,6 @@ function TtsList({ pageIndex }: { pageIndex: number }) {
           {index > 0 ? <Separator className="bg-border/70" /> : null}
           <TtsItem
             index={index}
-            pageIndex={pageIndex}
             onRemove={() => {
               onSelectTts(fields.length <= 1 ? null : Math.min(index, fields.length - 2));
               remove(index);
@@ -214,114 +225,4 @@ function TtsList({ pageIndex }: { pageIndex: number }) {
       ))}
     </FieldGroup>
   );
-}
-
-function SelectedPageHeader({ pageIndex }: { pageIndex: number }) {
-  const { onMovePageDown, onMovePageUp, onRemovePage, pageFields } = useEditorContext();
-
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="text-sm text-muted-foreground">Page {pageIndex + 1}</div>
-      <div className="flex items-center gap-2">
-        <Button
-          type="button"
-          size="icon-sm"
-          variant="outline"
-          disabled={pageIndex === 0}
-          title="上へ"
-          aria-label="上へ"
-          onClick={() => onMovePageUp(pageIndex)}
-        >
-          <ArrowUp />
-        </Button>
-        <Button
-          type="button"
-          size="icon-sm"
-          variant="outline"
-          disabled={pageIndex === pageFields.length - 1}
-          title="下へ"
-          aria-label="下へ"
-          onClick={() => onMovePageDown(pageIndex)}
-        >
-          <ArrowDown />
-        </Button>
-        <Button
-          type="button"
-          size="icon-sm"
-          variant="destructive"
-          title="削除"
-          aria-label="削除"
-          onClick={() => onRemovePage(pageIndex)}
-        >
-          <Trash2 />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function RichTextField({ pageIndex }: { pageIndex: number }) {
-  const { control } = useFormContext<DraftProject>();
-
-  return (
-    <Controller
-      name={`pages.${pageIndex}.richText`}
-      control={control}
-      render={({ field, fieldState }) => (
-        <Field data-invalid={fieldState.invalid} className="grid gap-2">
-          <RichTextEditor value={field.value ?? ""} onChange={field.onChange} />
-          <FieldError errors={[fieldState.error]} />
-        </Field>
-      )}
-    />
-  );
-}
-
-function AddTtsButton({ pageIndex }: { pageIndex: number }) {
-  const { onAppendTtsToPage } = useEditorContext();
-
-  return (
-    <div className="flex justify-end">
-      <Button
-        type="button"
-        size="icon"
-        variant="secondary"
-        title="TTS 追加"
-        aria-label="TTS 追加"
-        onClick={() => onAppendTtsToPage(pageIndex)}
-      >
-        <Plus />
-      </Button>
-    </div>
-  );
-}
-
-function SelectedPageEditorContent({ pageIndex }: { pageIndex: number }) {
-  return (
-    <div className="grid gap-4">
-      <SelectedPageHeader pageIndex={pageIndex} />
-      <RichTextField pageIndex={pageIndex} />
-      <AddTtsButton pageIndex={pageIndex} />
-      <TtsList pageIndex={pageIndex} />
-    </div>
-  );
-}
-
-export function SelectedPageEditor() {
-  const { pageFields, selectedPageIndex } = useEditorContext();
-
-  if (pageFields.length === 0 || selectedPageIndex === null) {
-    return (
-      <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-sm text-muted-foreground">
-        ページを選ぶと本文と tts を編集できる。
-      </div>
-    );
-  }
-
-  const selectedPage = pageFields[selectedPageIndex];
-  if (!selectedPage) {
-    return null;
-  }
-
-  return <SelectedPageEditorContent key={selectedPage.id} pageIndex={selectedPageIndex} />;
 }

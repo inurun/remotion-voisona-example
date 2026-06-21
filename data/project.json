@@ -17,6 +17,20 @@
           "audio": {
             "src": "/tts/db6c2c481ce46e25d40350b6efe3cd0e.wav"
           }
+        },
+        {
+          "id": "b704d231-f137-4455-966c-ff537dcf8472",
+          "text": "ランニング竹山",
+          "readText": "ランニング竹山",
+          "voiceName": "futaba-minato_ja_JP",
+          "voiceVersion": "2.0.2",
+          "speech": {
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word></acoustic_phrase></tsml>"
+          },
+          "durationSec": 1.4100000000000001,
+          "audio": {
+            "src": "/tts/15793b73616f5308654e4cbafa46de09.wav"
+          }
         }
       ]
     }

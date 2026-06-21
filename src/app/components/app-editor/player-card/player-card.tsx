@@ -1,40 +1,14 @@
 import { Player } from "@remotion/player";
-import { useEffect, useMemo, useState, type ComponentType } from "react";
-import type { SavedProject } from "@/_schemas";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
 import { getProjectPlayback } from "@/_shared/lib/project-playback";
 import { VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
+import { useProject } from "../../../contexts/project-context/project-context";
+import { usePlayerCard } from "./player-card.hook";
 
-function usePlayerComponent() {
-  const [component, setComponent] = useState<ComponentType<{ project: SavedProject }> | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    void import("@/remotion/core/composition").then((module) => {
-      if (!cancelled) {
-        setComponent(() => module.Composition);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return component;
-}
-
-function LoadingPlayer() {
-  return (
-    <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-6 text-sm text-muted-foreground">
-      Loading player...
-    </div>
-  );
-}
-
-export function PlayerCard({ project }: { project: SavedProject }) {
-  const component = usePlayerComponent();
+export function PlayerCard() {
+  const { project } = useProject();
+  const component = usePlayerCard();
   const durationInFrames = useMemo(() => {
     return Math.max(1, Math.ceil(getProjectPlayback(project).durationSec * VIDEO_FPS));
   }, [project]);
@@ -63,7 +37,9 @@ export function PlayerCard({ project }: { project: SavedProject }) {
             />
           </div>
         ) : (
-          <LoadingPlayer />
+          <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-6 text-sm text-muted-foreground">
+            Loading player...
+          </div>
         )}
       </CardContent>
     </Card>

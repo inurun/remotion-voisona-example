@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 import type { DraftProject } from "@/_schemas";
 import { requestSaveProject } from "@/app/features/editor/editor-api";
-import { useEditorContext } from "@/app/features/editor/editor-context";
+import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { getProjectPathFromLocation } from "@/app/features/project/project-path";
 import { useRenderState } from "@/app/features/render/render-state";
 
@@ -25,7 +25,7 @@ function getRenderExecuteLabel(saving: boolean, status: "idle" | "running" | "su
 
 export function useAppHeader() {
   const { handleSubmit } = useFormContext<DraftProject>();
-  const { canRunTts, onSave, pageFields, saving } = useEditorContext();
+  const { canRunTts, onSave, pageFields, saving } = useEditor();
   const projectPath = getProjectPathFromLocation(window.location.pathname);
   const { renderState, startRender } = useRenderState({ projectPath });
   const [renderDialogOpen, setRenderDialogOpen] = useState(false);
