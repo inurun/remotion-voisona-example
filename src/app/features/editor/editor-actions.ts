@@ -10,8 +10,10 @@ import {
 
 export function useEditorActions({
   onSavedProjectChange,
+  projectPath,
 }: {
   onSavedProjectChange: (project: SavedProject) => void;
+  projectPath: string | null;
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -92,11 +94,16 @@ export function useEditorActions({
   }
 
   async function saveProject(project: DraftProject) {
+    if (!projectPath) {
+      setError("Project path is required");
+      return;
+    }
+
     setSaving(true);
     clearFeedback();
 
     try {
-      const savedProject = await requestSaveProject(project);
+      const savedProject = await requestSaveProject(projectPath, project);
       onSavedProjectChange(savedProject);
       setMessage("保存して音声を更新した。");
     } catch (saveError) {

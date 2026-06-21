@@ -1,11 +1,12 @@
 import {
+  type ProjectFileSummary,
   type DraftProject,
   type DraftTts,
   savedProjectSchema,
   type SavedProject,
 } from "@/_schemas";
 import {
-  ensureSavedProjectFile,
+  listSavedProjects,
   parseDraftPayload,
   readSavedProject,
   writeSavedProject,
@@ -188,14 +189,21 @@ async function buildSavedProject(
   return savedProjectSchema.parse({ pages });
 }
 
-export async function loadProject() {
-  await ensureSavedProjectFile();
-  return readSavedProject();
+export async function listProjects(): Promise<ProjectFileSummary[]> {
+  return listSavedProjects();
 }
 
-export async function saveProject(serverEnv: ServerEnv, payload: DraftProject) {
-  const previousProject = await readSavedProject().catch(() => undefined);
+export async function loadProject(projectPath: string) {
+  return readSavedProject(projectPath);
+}
+
+export async function saveProject(
+  serverEnv: ServerEnv,
+  projectPath: string,
+  payload: DraftProject,
+) {
+  const previousProject = await readSavedProject(projectPath);
   const project = await buildSavedProject(serverEnv, payload, previousProject);
-  await writeSavedProject(project);
+  await writeSavedProject(projectPath, project);
   return project;
 }

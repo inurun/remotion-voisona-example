@@ -71,4 +71,22 @@ describe("render routes", () => {
     expect(response.status).toBe(200);
     expect(await response.text()).toBe("video");
   });
+
+  it("starts render for the selected project", async () => {
+    startRenderMock.mockResolvedValueOnce({ started: true });
+
+    const app = new Hono();
+    registerRenderRoutes(app);
+
+    const response = await app.request("/render", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ projectPath: "nested/example" }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(startRenderMock).toHaveBeenCalledWith("nested/example");
+  });
 });

@@ -1,7 +1,12 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { OUT_DIR, PROJECT_ROOT, RENDER_STATE_PATH } from "@/server/_shared/storage";
+import {
+  OUT_DIR,
+  PROJECT_ROOT,
+  RENDER_STATE_PATH,
+  readSavedProject,
+} from "@/server/_shared/storage";
 
 type RenderStatus = "idle" | "running" | "success" | "error";
 
@@ -107,7 +112,7 @@ function pipeOutput(stream: NodeJS.ReadableStream | null, onLine: (line: string)
   });
 }
 
-export async function startRender() {
+export async function startRender(projectPath: string) {
   if (state.status === "running") {
     return {
       started: false as const,
@@ -116,9 +121,10 @@ export async function startRender() {
   }
 
   await fs.mkdir(OUT_DIR, { recursive: true });
+  const project = await readSavedProject(projectPath);
   resetRenderState();
   state.status = "running";
-  appendLog("Starting render...");
+  appendLog(`Starting render for ${projectPath}...`);
 
   const child = spawn(
     "pnpm",
@@ -129,6 +135,8 @@ export async function startRender() {
       "src/remotion/core/runtime.ts",
       "RemotionVoisonaExample",
       "out/latest.mp4",
+      "--props",
+      JSON.stringify({ project }),
     ],
     {
       cwd: PROJECT_ROOT,

@@ -3,7 +3,14 @@ import path from "node:path";
 import { Hono } from "hono";
 import { renderToString } from "react-dom/server";
 import { layoutHtml } from "@/app/core/layout";
-import { ensureProjectDirs, getPublicFilePath } from "@/server/_shared/storage";
+import {
+  ensureProjectDirs,
+  getPublicFilePath,
+  InvalidProjectPathError,
+  listSavedProjects,
+  ProjectNotFoundError,
+  readSavedProject,
+} from "@/server/_shared/storage";
 import { registerProjectRoutes } from "@/server/features/project";
 import { registerRenderRoutes } from "@/server/features/render";
 import { registerUploadRoutes } from "@/server/features/uploads";
@@ -28,6 +35,25 @@ async function servePublicAsset(publicPath: string) {
       "Content-Type": CONTENT_TYPES.get(ext) ?? "application/octet-stream",
     },
   });
+}
+
+async function resolveRootProjectPath() {
+  const projects = await listSavedProjects();
+  const project = projects[0];
+  if (!project) {
+    throw new ProjectNotFoundError("Project not found");
+  }
+
+  return `/${project.path}`;
+}
+
+async function assertProjectRouteExists(requestPath: string) {
+  const projectPath = decodeURIComponent(requestPath.replace(/^\/+/u, ""));
+  if (!projectPath) {
+    throw new InvalidProjectPathError("Invalid project path");
+  }
+
+  await readSavedProject(projectPath);
 }
 
 function createApi() {
@@ -64,7 +90,26 @@ export const createApp = () => {
     }
   });
 
-  app.get("*", (c) => c.html(renderToString(layoutHtml)));
+  app.get("/", async (c) => {
+    try {
+      return c.redirect(await resolveRootProjectPath());
+    } catch {
+      return c.html(renderToString(layoutHtml), 404);
+    }
+  });
+
+  app.get("*", async (c) => {
+    try {
+      await assertProjectRouteExists(c.req.path);
+      return c.html(renderToString(layoutHtml));
+    } catch (error) {
+      if (error instanceof InvalidProjectPathError || error instanceof ProjectNotFoundError) {
+        return c.html(renderToString(layoutHtml), 404);
+      }
+
+      return c.html(renderToString(layoutHtml), 500);
+    }
+  });
 
   return app;
 };

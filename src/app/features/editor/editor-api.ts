@@ -1,6 +1,7 @@
 "use client";
 
 import { type DraftProject, type DraftTts, type SavedProject } from "@/_schemas";
+import { getProjectApiPath } from "@/app/features/project/project-path";
 
 type ApiErrorResponse = {
   error?: string;
@@ -63,8 +64,8 @@ export async function requestPreviewSynthesis(item: DraftTts) {
   return data.audioSrc;
 }
 
-export async function requestSaveProject(project: DraftProject) {
-  const response = await fetch("/api/project", {
+export async function requestSaveProject(projectPath: string, project: DraftProject) {
+  const response = await fetch(getProjectApiPath(projectPath), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -8,6 +8,10 @@ export const renderSnapshotSchema = z.object({
   lastError: z.string().nullable(),
 });
 
+export const renderStartRequestSchema = z.object({
+  projectPath: z.string().min(1),
+});
+
 export const renderStartResponseSchema = z.object({
   started: z.boolean(),
   reason: z.string().optional(),

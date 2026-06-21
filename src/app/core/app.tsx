@@ -1,14 +1,23 @@
 "use client";
 
+import { useMemo } from "react";
 import type React from "react";
 import { Clapperboard, Download } from "lucide-react";
 import { Button, buttonVariants } from "@/_shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarRail,
+  SidebarTrigger,
+} from "@/_shared/components/ui/sidebar";
 import { cn } from "@/_shared/lib/utils";
 import Editor from "@/app/components/editor/editor";
 import { PlayerPane } from "@/app/components/player/player";
 import { useEditorActions } from "@/app/features/editor/editor-actions";
-import { useProject } from "@/app/features/project/project.swr";
+import { getProjectPathFromLocation } from "@/app/features/project/project-path";
+import { ProjectSidebar } from "@/app/features/project/project-sidebar";
+import { useProject, useProjects } from "@/app/features/project/project.swr";
 import { useRenderState } from "@/app/features/render/render-state";
 import { useVoices } from "@/app/features/voisona/voices";
 
@@ -73,14 +82,21 @@ function ErrorCard({ message, onRetry }: { message: string; onRetry: () => void 
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="grid gap-2">
-        <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">
-          Remotion + VoiSona Template
-        </h1>
-      </header>
-      {children}
-    </main>
+    <SidebarInset>
+      <main className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="grid gap-3 sm:grid-cols-[auto_1fr] sm:items-start">
+          <div className="sm:hidden">
+            <SidebarTrigger />
+          </div>
+          <div className="grid gap-2">
+            <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">
+              Remotion + VoiSona Template
+            </h1>
+          </div>
+        </header>
+        {children}
+      </main>
+    </SidebarInset>
   );
 }
 
@@ -205,6 +221,8 @@ function RenderCard({
 
 function AppContent({
   project,
+  projectError,
+  reloadProject,
   voices,
   voicesAvailable,
   loadVoices,
@@ -212,7 +230,9 @@ function AppContent({
   renderState,
   startRender,
 }: {
-  project: NonNullable<ReturnType<typeof useProject>["project"]>;
+  project: ReturnType<typeof useProject>["project"];
+  projectError: string | null;
+  reloadProject: ReturnType<typeof useProject>["reloadProject"];
   voices: ReturnType<typeof useVoices>["voices"];
   voicesAvailable: boolean;
   loadVoices: ReturnType<typeof useVoices>["loadVoices"];
@@ -222,71 +242,125 @@ function AppContent({
 }) {
   return (
     <div className="grid items-start gap-5 xl:grid-cols-[360px_minmax(0,1fr)_360px]">
-      <aside className="flex flex-col gap-4 xl:sticky xl:top-6">
-        <PlayerPane project={project} />
-        <RenderCard
-          editorActions={editorActions}
-          renderState={renderState}
-          startRender={startRender}
-          voicesAvailable={voicesAvailable}
-        />
-      </aside>
+      {project ? (
+        <>
+          <aside className="flex flex-col gap-4 xl:sticky xl:top-6">
+            <PlayerPane project={project} />
+            <RenderCard
+              editorActions={editorActions}
+              renderState={renderState}
+              startRender={startRender}
+              voicesAvailable={voicesAvailable}
+            />
+          </aside>
 
-      <Editor
-        initialProject={project}
-        voices={voices}
-        onLoadVoices={loadVoices}
-        editorActions={editorActions}
-      />
+          <Editor
+            initialProject={project}
+            voices={voices}
+            onLoadVoices={loadVoices}
+            editorActions={editorActions}
+          />
+        </>
+      ) : (
+        <div className="xl:col-span-2">
+          <ErrorCard
+            message={projectError ?? "Project not found"}
+            onRetry={() => {
+              void reloadProject();
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 export default function App() {
-  const { project, projectError, isProjectLoading, mutateProject, reloadProject } = useProject();
+  const selectedProjectPath = useMemo(
+    () => getProjectPathFromLocation(window.location.pathname),
+    [],
+  );
+  const { projects, projectsError, isProjectsLoading, reloadProjects } = useProjects();
+  const { project, projectError, isProjectLoading, mutateProject, reloadProject } =
+    useProject(selectedProjectPath);
   const { voices, voicesAvailable, loadVoices } = useVoices();
   const editorActions = useEditorActions({
+    projectPath: selectedProjectPath,
     onSavedProjectChange: (savedProject) => {
       void mutateProject(savedProject);
     },
   });
   const { renderState, startRender } = useRenderState({
+    projectPath: selectedProjectPath,
     onError: editorActions.setError,
     onMessage: editorActions.setMessage,
   });
 
-  if (projectError) {
+  if (projectsError) {
     return (
-      <AppLayout>
-        <ErrorCard
-          message={projectError}
-          onRetry={() => {
-            void reloadProject();
-          }}
-        />
-      </AppLayout>
+      <SidebarProvider
+        defaultOpen
+        style={
+          {
+            "--sidebar-width-icon": "2rem",
+          } as React.CSSProperties
+        }
+      >
+        <AppLayout>
+          <ErrorCard
+            message={projectsError}
+            onRetry={() => {
+              void reloadProjects();
+            }}
+          />
+        </AppLayout>
+      </SidebarProvider>
     );
   }
 
-  if (isProjectLoading || !project) {
+  if (isProjectsLoading || (isProjectLoading && !projectError)) {
     return (
-      <AppLayout>
-        <LoadingShell />
-      </AppLayout>
+      <SidebarProvider
+        defaultOpen
+        style={
+          {
+            "--sidebar-width-icon": "2rem",
+          } as React.CSSProperties
+        }
+      >
+        <ProjectSidebar projects={projects} selectedProjectPath={selectedProjectPath} />
+        <SidebarRail />
+        <AppLayout>
+          <LoadingShell />
+        </AppLayout>
+      </SidebarProvider>
     );
   }
 
   return (
-    <AppLayout>
-      <AppContent
-        project={project}
-        voices={voices}
-        voicesAvailable={voicesAvailable}
-        loadVoices={loadVoices}
-        editorActions={editorActions}
-        renderState={renderState}
-        startRender={startRender}
-      />
-    </AppLayout>
+    <SidebarProvider
+      defaultOpen
+      style={
+        {
+          "--sidebar-width-icon": "2rem",
+        } as React.CSSProperties
+      }
+    >
+      <ProjectSidebar projects={projects} selectedProjectPath={selectedProjectPath} />
+      <SidebarRail />
+      <AppLayout>
+        <AppContent
+          project={project}
+          projectError={projectError}
+          reloadProject={reloadProject}
+          voices={voices}
+          voicesAvailable={voicesAvailable}
+          loadVoices={loadVoices}
+          editorActions={editorActions}
+          renderState={renderState}
+          startRender={startRender}
+        />
+      </AppLayout>
+    </SidebarProvider>
   );
 }

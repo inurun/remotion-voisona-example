@@ -12,9 +12,13 @@ type RenderState = {
   lastError: string | null;
 };
 
-async function postRenderStart() {
+async function postRenderStart(projectPath: string) {
   const response = await fetch("/api/render", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ projectPath }),
   });
   const data = (await response.json()) as { started?: boolean; error?: string };
 
@@ -26,9 +30,11 @@ async function postRenderStart() {
 export function useRenderState({
   onError,
   onMessage,
+  projectPath,
 }: {
   onError: (message: string | null) => void;
   onMessage: (message: string | null) => void;
+  projectPath: string | null;
 }) {
   const { data, mutate } = useSWR<RenderState>("/api/render", fetchJson, {
     revalidateOnFocus: false,
@@ -60,11 +66,16 @@ export function useRenderState({
   }, [mutate]);
 
   async function startRender() {
+    if (!projectPath) {
+      onError("Project path is required");
+      return;
+    }
+
     onError(null);
     onMessage(null);
 
     try {
-      await postRenderStart();
+      await postRenderStart(projectPath);
       onMessage("Render を開始した。");
       void mutate();
     } catch (renderError) {

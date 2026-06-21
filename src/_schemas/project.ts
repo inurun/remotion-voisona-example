@@ -51,6 +51,13 @@ export const savedProjectSchema = z.object({
   pages: z.array(savedPageSchema),
 });
 
+export const projectFileSummarySchema = z.object({
+  path: z.string().min(1),
+  name: z.string().min(1),
+  segments: z.array(z.string().min(1)),
+  updatedAt: z.number().int().nonnegative(),
+});
+
 export type VoiceOption = z.infer<typeof voiceOptionSchema>;
 export type DraftTts = z.infer<typeof draftTtsSchema>;
 export type SavedTts = z.infer<typeof savedTtsSchema>;
@@ -58,3 +65,4 @@ export type DraftPage = z.infer<typeof draftPageSchema>;
 export type SavedPage = z.infer<typeof savedPageSchema>;
 export type DraftProject = z.infer<typeof draftProjectSchema>;
 export type SavedProject = z.infer<typeof savedProjectSchema>;
+export type ProjectFileSummary = z.infer<typeof projectFileSummarySchema>;

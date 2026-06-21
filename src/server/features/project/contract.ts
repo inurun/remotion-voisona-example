@@ -1,6 +1,9 @@
-import { draftProjectSchema, savedProjectSchema } from "@/_schemas";
+import { draftProjectSchema, projectFileSummarySchema, savedProjectSchema } from "@/_schemas";
 
 export const projectContract = {
+  list: {
+    response: projectFileSummarySchema.array(),
+  },
   get: {
     response: savedProjectSchema,
   },
