@@ -1,5 +1,3 @@
-"use client";
-
 import { FolderOpen, FileJson, Files } from "lucide-react";
 import type { ProjectFileSummary } from "@/_schemas";
 import {
@@ -23,6 +21,7 @@ import {
 } from "@/_shared/components/ui/sidebar";
 import { groupProjectsByDirectory } from "@/app/features/project/project-navigation";
 import { getProjectHref } from "@/app/features/project/project-path";
+import { useProjects } from "./project.swr";
 
 function ProjectSidebarGroup({
   directoryName,
@@ -63,15 +62,9 @@ function ProjectSidebarGroup({
   );
 }
 
-export function ProjectSidebar({
-  projects,
-  selectedProjectPath,
-}: {
-  projects: ProjectFileSummary[];
-  selectedProjectPath: string | null;
-}) {
+export function ProjectSidebar({ selectedProjectPath }: { selectedProjectPath: string | null }) {
+  const { projects } = useProjects();
   const groups = groupProjectsByDirectory(projects);
-
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader className="gap-1 px-3 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">

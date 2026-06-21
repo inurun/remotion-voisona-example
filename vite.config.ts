@@ -28,6 +28,11 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    server: {
+      watch: {
+        ignored: ["**/data/**"],
+      },
+    },
     build: {
       emptyOutDir: true,
     },

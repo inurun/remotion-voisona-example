@@ -1,5 +1,3 @@
-"use client";
-
 import { FilePlus2, RefreshCw } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";

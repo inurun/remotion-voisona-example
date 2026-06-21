@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetchJson } from "@/_shared/lib/fetch-json";

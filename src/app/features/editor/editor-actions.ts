@@ -1,24 +1,21 @@
-"use client";
-
 import { useRef, useState } from "react";
-import { type DraftProject, type DraftTts, type SavedProject } from "@/_schemas";
+import { type DraftProject, type DraftTts } from "@/_schemas";
 import {
   requestPreviewSynthesis,
   requestSaveProject,
   requestTextAnalysis,
 } from "@/app/features/editor/editor-api";
+import { getProjectPathFromLocation } from "../project/project-path";
+import { useMemo } from "react";
 
 export function useEditorActions({
   onError,
-  onSavedProjectChange,
   onSuccess,
-  projectPath,
 }: {
   onError: (message: string) => void;
-  onSavedProjectChange: (project: SavedProject) => void;
   onSuccess: (message: string) => void;
-  projectPath: string | null;
 }) {
+  const projectPath = useMemo(() => getProjectPathFromLocation(window.location.pathname), []);
   const [busyById, setBusyById] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -98,7 +95,6 @@ export function useEditorActions({
 
     try {
       const savedProject = await requestSaveProject(projectPath, project);
-      onSavedProjectChange(savedProject);
       return savedProject;
     } catch (saveError) {
       throw saveError instanceof Error ? saveError : new Error("Save failed");

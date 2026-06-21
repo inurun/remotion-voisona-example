@@ -1,5 +1,3 @@
-"use client";
-
 import { Sparkles, Volume2 } from "lucide-react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Button } from "@/_shared/components/ui/button";

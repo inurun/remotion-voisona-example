@@ -1,5 +1,3 @@
-"use client";
-
 import { createContext, createElement, useContext } from "react";
 import { type DraftPage, type DraftTts } from "@/_schemas";
 import { type VoiceState } from "@/app/features/voisona/voices";

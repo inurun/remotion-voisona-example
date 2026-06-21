@@ -1,5 +1,3 @@
-"use client";
-
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { useEffect } from "react";

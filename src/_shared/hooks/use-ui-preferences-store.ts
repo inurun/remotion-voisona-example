@@ -1,5 +1,4 @@
 // fallow-ignore-file unused-export
-"use client";
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";

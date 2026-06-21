@@ -1,5 +1,3 @@
-"use client";
-
 import useSWR from "swr";
 import { type VoiceOption } from "@/_schemas";
 import { fetchJson } from "@/_shared/lib/fetch-json";

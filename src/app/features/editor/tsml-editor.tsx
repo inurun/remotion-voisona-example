@@ -1,5 +1,3 @@
-"use client";
-
 import { Link2, Unlink2 } from "lucide-react";
 import { useController, useFormContext } from "react-hook-form";
 import { Button } from "@/_shared/components/ui/button";

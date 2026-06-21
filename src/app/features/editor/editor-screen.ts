@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import type { UseFormReturn } from "react-hook-form";

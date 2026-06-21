@@ -13,6 +13,7 @@
     "lint:fix": "oxlint . --fix",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
+    "tsc": "tsc --noEmit",
     "start": "node dist/index.js",
     "render": "remotion render src/remotion/core/runtime.ts RemotionVoisonaExample out/latest.mp4",
     "test": "vitest run"
@@ -56,7 +57,7 @@
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
-    "fallow": "2.97.0",
+    "fallow": "2.101.0",
     "lefthook": "2.1.9",
     "oxfmt": "0.55.0",
     "oxlint": "1.70.0",

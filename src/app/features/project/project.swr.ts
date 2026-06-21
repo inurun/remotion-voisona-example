@@ -1,5 +1,3 @@
-"use client";
-
 import useSWR from "swr";
 import type { ProjectFileSummary, SavedProject } from "@/_schemas";
 import { fetchJson } from "@/_shared/lib/fetch-json";
@@ -35,35 +33,35 @@ async function mutateProjectIfPresent(
 }
 
 export function useProjects() {
-  const swr = useSWR<ProjectFileSummary[]>("/api/projects", fetchJson, {
+  const { data, error, mutate } = useSWR<ProjectFileSummary[]>("/api/projects", fetchJson, {
     revalidateOnFocus: false,
   });
 
   return {
-    projects: swr.data ?? [],
-    projectsError: swr.error instanceof Error ? swr.error.message : null,
-    isProjectsLoading: !swr.data && !swr.error,
+    projects: data ?? [],
+    projectsError: error instanceof Error ? error.message : null,
+    isProjectsLoading: !data && !error,
     reloadProjects: async () => {
-      await swr.mutate();
+      await mutate();
     },
   };
 }
 
 export function useProject(projectPath: string | null) {
   const projectApiPath = getProjectRequestPath(projectPath);
-  const swr = useSWR<SavedProject>(projectApiPath, fetchJson, {
+  const { data, error, mutate } = useSWR<SavedProject>(projectApiPath, fetchJson, {
     revalidateOnFocus: false,
   });
 
   return {
-    project: swr.data ?? null,
-    projectError: swr.error instanceof Error ? swr.error.message : null,
-    isProjectLoading: isProjectPending(projectApiPath, swr.data, swr.error),
+    project: data ?? null,
+    projectError: error instanceof Error ? error.message : null,
+    isProjectLoading: isProjectPending(projectApiPath, data, error),
     mutateProject: async (project: SavedProject) => {
-      await mutateProjectIfPresent(projectApiPath, swr.mutate, project);
+      await mutateProjectIfPresent(projectApiPath, mutate, project);
     },
     reloadProject: async () => {
-      await mutateProjectIfPresent(projectApiPath, swr.mutate);
+      await mutateProjectIfPresent(projectApiPath, mutate);
     },
   };
 }

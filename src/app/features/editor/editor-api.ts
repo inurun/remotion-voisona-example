@@ -1,5 +1,3 @@
-"use client";
-
 import { type DraftProject, type DraftTts, type SavedProject } from "@/_schemas";
 import { getProjectApiPath } from "@/app/features/project/project-path";
 

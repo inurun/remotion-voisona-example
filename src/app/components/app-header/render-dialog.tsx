@@ -1,6 +1,3 @@
-"use client";
-
-import type React from "react";
 import { Clapperboard, Download } from "lucide-react";
 import { Button, buttonVariants } from "@/_shared/components/ui/button";
 import {
@@ -14,13 +11,8 @@ import {
 } from "@/_shared/components/ui/dialog";
 import { cn } from "@/_shared/lib/utils";
 import { type useRenderState } from "@/app/features/render/render-state";
-import { type useVoices } from "@/app/features/voisona/voices";
 
-function getStatusChipClass(
-  status:
-    | ReturnType<typeof useRenderState>["renderState"]["status"]
-    | ReturnType<typeof useVoices>["voices"]["status"],
-) {
+function getStatusChipClass(status: ReturnType<typeof useRenderState>["renderState"]["status"]) {
   return {
     error: "border-destructive/20 bg-destructive/10 text-destructive",
     idle: "border-border bg-secondary text-secondary-foreground",
@@ -31,41 +23,12 @@ function getStatusChipClass(
   }[status];
 }
 
-function StatusChip({ children, status }: { children: React.ReactNode; status: string }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium",
-        getStatusChipClass(
-          status as
-            | ReturnType<typeof useRenderState>["renderState"]["status"]
-            | ReturnType<typeof useVoices>["voices"]["status"],
-        ),
-      )}
-    >
-      {children}
-    </span>
-  );
-}
-
-function RenderLogs({ logs }: { logs: string[] }) {
-  return (
-    <div className="min-h-[220px] max-h-[320px] overflow-auto rounded-xl border border-border bg-muted/30 p-4 font-mono text-xs leading-6 text-foreground">
-      <pre className="m-0 whitespace-pre-wrap break-words">{logs.join("\n") || "No logs yet."}</pre>
-    </div>
-  );
-}
-
-function RenderError({ message }: { message: string | null }) {
-  if (!message) {
-    return null;
+function getVideoHref(renderState: ReturnType<typeof useRenderState>["renderState"]) {
+  if (!renderState.videoPath) {
+    return undefined;
   }
 
-  return (
-    <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-      {message}
-    </div>
-  );
+  return `${renderState.videoPath}?t=${renderState.logs.length}`;
 }
 
 function RenderVideoLink({ videoHref }: { videoHref?: string }) {
@@ -74,16 +37,18 @@ function RenderVideoLink({ videoHref }: { videoHref?: string }) {
   }
 
   return (
-    <a
-      aria-label="latest.mp4"
-      className={buttonVariants({ variant: "secondary", size: "icon" })}
-      href={videoHref}
-      rel="noreferrer"
-      target="_blank"
-      title="latest.mp4"
-    >
-      <Download />
-    </a>
+    <div className="flex flex-wrap gap-2">
+      <a
+        aria-label="latest.mp4"
+        className={buttonVariants({ variant: "secondary", size: "icon" })}
+        href={videoHref}
+        rel="noreferrer"
+        target="_blank"
+        title="latest.mp4"
+      >
+        <Download />
+      </a>
+    </div>
   );
 }
 
@@ -104,9 +69,8 @@ export function RenderDialog({
   renderError: string | null;
   renderState: ReturnType<typeof useRenderState>["renderState"];
 }) {
-  const videoHref = renderState.videoPath
-    ? `${renderState.videoPath}?t=${renderState.logs.length}`
-    : undefined;
+  const videoHref = getVideoHref(renderState);
+  const errorMessage = renderError ?? renderState.lastError;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -114,16 +78,29 @@ export function RenderDialog({
         <DialogHeader>
           <div className="flex items-center justify-between gap-3 pr-10">
             <DialogTitle>Render</DialogTitle>
-            <StatusChip status={renderState.status}>{renderState.status}</StatusChip>
+            <span
+              className={cn(
+                "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium",
+                getStatusChipClass(renderState.status),
+              )}
+            >
+              {renderState.status}
+            </span>
           </div>
           <DialogDescription>保存済みの最新内容から動画を書き出す。</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
-          <div className="flex flex-wrap gap-2">
-            <RenderVideoLink videoHref={videoHref} />
+          <RenderVideoLink videoHref={videoHref} />
+          <div className="min-h-[220px] max-h-[320px] overflow-auto rounded-xl border border-border bg-muted/30 p-4 font-mono text-xs leading-6 text-foreground">
+            <pre className="m-0 whitespace-pre-wrap wrap-break-word">
+              {renderState.logs.join("\n") || "No logs yet."}
+            </pre>
           </div>
-          <RenderLogs logs={renderState.logs} />
-          <RenderError message={renderError ?? renderState.lastError} />
+          {errorMessage && (
+            <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {errorMessage}
+            </div>
+          )}
         </div>
         <DialogFooter>
           <DialogClose render={<Button type="button" variant="outline" />}>閉じる</DialogClose>

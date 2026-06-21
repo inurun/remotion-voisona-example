@@ -1,5 +1,3 @@
-"use client";
-
 export function getProjectPathFromLocation(pathname: string) {
   const normalizedPath = pathname.replace(/^\/+|\/+$/g, "");
   return normalizedPath ? decodeURIComponent(normalizedPath) : null;
