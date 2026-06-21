@@ -25,6 +25,7 @@ type UseEditorScreenParams = {
   onLoadVoices: () => Promise<void>;
   pageFields: Array<DraftPage & { fieldKey: string }>;
   removePage: (index: number) => void;
+  saveProject: (project: DraftProject) => Promise<unknown>;
   voices: VoiceState;
 };
 
@@ -264,6 +265,7 @@ export function useEditorScreen({
   onLoadVoices,
   pageFields,
   removePage,
+  saveProject,
   voices,
 }: UseEditorScreenParams): EditorContextValue {
   const canRunTts = voices.status === "ready" && voices.options.length > 0 && !editorActions.saving;
@@ -276,10 +278,6 @@ export function useEditorScreen({
   };
 
   usePendingTextFocusEffect(form, pendingTextFocus, clearPendingTextFocus);
-
-  const saveCurrentProject = async (project: DraftProject) => {
-    await editorActions.saveProject(project);
-  };
 
   const analyzeTts = async (pageIndex: number, ttsIndex: number) => {
     const item = form.getValues(`pages.${pageIndex}.tts.${ttsIndex}`);
@@ -326,7 +324,7 @@ export function useEditorScreen({
 
   useEditorHotkeys(
     form,
-    saveCurrentProject,
+    saveProject,
     appendTtsToPage,
     selectedPageIndex,
     analyzeSelectedHotkeyTarget,
@@ -369,7 +367,7 @@ export function useEditorScreen({
       removePage(index);
     },
     onSave: () => {
-      void form.handleSubmit(saveCurrentProject)();
+      void form.handleSubmit(saveProject)();
     },
     onSelectPage: (index: number) => {
       setSelectedPageIndex(index);

@@ -1,72 +1,33 @@
-"use client";
-
-import type { SavedProject } from "@/_schemas";
-import { EditorCard } from "@/app/components/editor-card";
+import type { DraftProject, SavedProject } from "@/_schemas";
 import { PlayerCard } from "@/app/components/player-card";
-import { RenderCard } from "@/app/components/render-card";
-import { type useEditorActions } from "@/app/features/editor/editor-actions";
-import { type useRenderState } from "@/app/features/render/render-state";
-import { type VoiceState } from "@/app/features/voisona/voices";
+import { ConfigPane } from "@/app/features/editor/config-pane";
+import {
+  EditorContextProvider,
+  type EditorContextValue,
+} from "@/app/features/editor/editor-context";
+import { EditorPane } from "@/app/features/editor/editor-pane";
+import { FormProvider, type UseFormReturn } from "react-hook-form";
 
 type AppContentProps = {
+  editorContextValue: EditorContextValue;
+  form: UseFormReturn<DraftProject>;
   project: SavedProject;
-  voices: VoiceState;
-  voicesAvailable: boolean;
-  loadVoices: () => Promise<void>;
-  editorActions: ReturnType<typeof useEditorActions>;
-  renderState: ReturnType<typeof useRenderState>["renderState"];
-  startRender: () => Promise<void>;
 };
 
-function ProjectWorkspace({
-  project,
-  voices,
-  voicesAvailable,
-  loadVoices,
-  editorActions,
-  renderState,
-  startRender,
-}: AppContentProps) {
+export function AppContent({ editorContextValue, form, project }: AppContentProps) {
   return (
-    <div className="grid items-start gap-5 xl:grid-cols-[360px_minmax(0,1fr)_360px]">
-      <aside className="flex flex-col gap-4 xl:sticky xl:top-6">
-        <PlayerCard project={project} />
-        <RenderCard
-          editorActions={editorActions}
-          renderState={renderState}
-          startRender={startRender}
-          voicesAvailable={voicesAvailable}
-        />
-      </aside>
-
-      <EditorCard
-        project={project}
-        voices={voices}
-        loadVoices={loadVoices}
-        editorActions={editorActions}
-      />
+    <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_500px]">
+      <FormProvider {...form}>
+        <EditorContextProvider value={editorContextValue}>
+          <section className="flex flex-col gap-4">
+            <EditorPane />
+          </section>
+          <section className="flex flex-col gap-4 xl:sticky xl:top-6">
+            <PlayerCard project={project} />
+            <ConfigPane />
+          </section>
+        </EditorContextProvider>
+      </FormProvider>
     </div>
-  );
-}
-
-export function AppContent({
-  project,
-  voices,
-  voicesAvailable,
-  loadVoices,
-  editorActions,
-  renderState,
-  startRender,
-}: AppContentProps) {
-  return (
-    <ProjectWorkspace
-      project={project}
-      voices={voices}
-      voicesAvailable={voicesAvailable}
-      loadVoices={loadVoices}
-      editorActions={editorActions}
-      renderState={renderState}
-      startRender={startRender}
-    />
   );
 }

@@ -3,9 +3,16 @@
 import type React from "react";
 import { Clapperboard, Download } from "lucide-react";
 import { Button, buttonVariants } from "@/_shared/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/_shared/components/ui/dialog";
 import { cn } from "@/_shared/lib/utils";
-import { type useEditorActions } from "@/app/features/editor/editor-actions";
 import { type useRenderState } from "@/app/features/render/render-state";
 import { type useVoices } from "@/app/features/voisona/voices";
 
@@ -49,24 +56,15 @@ function RenderLogs({ logs }: { logs: string[] }) {
   );
 }
 
-function RenderStartButton({
-  disabled,
-  startRender,
-}: {
-  disabled: boolean;
-  startRender: () => Promise<void>;
-}) {
+function RenderError({ message }: { message: string | null }) {
+  if (!message) {
+    return null;
+  }
+
   return (
-    <Button
-      type="button"
-      size="icon"
-      disabled={disabled}
-      onClick={() => void startRender()}
-      title="Render"
-      aria-label="Render"
-    >
-      <Clapperboard />
-    </Button>
+    <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+      {message}
+    </div>
   );
 }
 
@@ -89,51 +87,52 @@ function RenderVideoLink({ videoHref }: { videoHref?: string }) {
   );
 }
 
-function RenderError({ message }: { message: string | null }) {
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-      {message}
-    </div>
-  );
-}
-
-export function RenderCard({
-  editorActions,
+export function RenderDialog({
+  executeLabel,
+  isExecuteDisabled,
+  onExecute,
+  onOpenChange,
+  open,
+  renderError,
   renderState,
-  startRender,
-  voicesAvailable,
 }: {
-  editorActions: ReturnType<typeof useEditorActions>;
+  executeLabel: string;
+  isExecuteDisabled: boolean;
+  onExecute: () => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  renderError: string | null;
   renderState: ReturnType<typeof useRenderState>["renderState"];
-  startRender: () => Promise<void>;
-  voicesAvailable: boolean;
 }) {
   const videoHref = renderState.videoPath
     ? `${renderState.videoPath}?t=${renderState.logs.length}`
     : undefined;
-  const renderDisabled =
-    !voicesAvailable || editorActions.saving || renderState.status === "running";
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between gap-3">
-          <CardTitle className="text-xl">Render</CardTitle>
-          <StatusChip status={renderState.status}>{renderState.status}</StatusChip>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <div className="flex items-center justify-between gap-3 pr-10">
+            <DialogTitle>Render</DialogTitle>
+            <StatusChip status={renderState.status}>{renderState.status}</StatusChip>
+          </div>
+          <DialogDescription>保存済みの最新内容から動画を書き出す。</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4">
+          <div className="flex flex-wrap gap-2">
+            <RenderVideoLink videoHref={videoHref} />
+          </div>
+          <RenderLogs logs={renderState.logs} />
+          <RenderError message={renderError ?? renderState.lastError} />
         </div>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="flex flex-wrap gap-2">
-          <RenderStartButton disabled={renderDisabled} startRender={startRender} />
-          <RenderVideoLink videoHref={videoHref} />
-        </div>
-        <RenderLogs logs={renderState.logs} />
-        <RenderError message={renderState.lastError} />
-      </CardContent>
-    </Card>
+        <DialogFooter>
+          <DialogClose render={<Button type="button" variant="outline" />}>閉じる</DialogClose>
+          <Button type="button" disabled={isExecuteDisabled} onClick={onExecute}>
+            <Clapperboard />
+            {executeLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

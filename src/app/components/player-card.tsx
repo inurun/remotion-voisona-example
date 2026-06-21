@@ -39,7 +39,6 @@ function PreviewHeader() {
   return (
     <div className="flex items-center justify-between gap-3">
       <CardTitle className="text-xl">Preview</CardTitle>
-      <span className="text-xs text-muted-foreground sm:text-sm">{COMP_NAME}</span>
     </div>
   );
 }

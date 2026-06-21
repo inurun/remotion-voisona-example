@@ -1,6 +1,6 @@
 "use client";
 
-import { FilePlus2, RefreshCw, Save } from "lucide-react";
+import { FilePlus2, RefreshCw } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
 import { cn } from "@/_shared/lib/utils";
@@ -63,32 +63,12 @@ function AppendPageButton() {
   );
 }
 
-function SaveButton() {
-  const { canRunTts, onSave, pageFields, saving } = useEditorContext();
-  const disabled = !canRunTts || pageFields.length === 0;
-  const label = saving ? "Saving" : "Save";
-
-  return (
-    <Button
-      type="button"
-      disabled={disabled}
-      size="icon"
-      onClick={onSave}
-      title={label}
-      aria-label={label}
-    >
-      <Save className={saving ? "animate-pulse" : undefined} />
-    </Button>
-  );
-}
-
 function EditorToolbar() {
   return (
     <CardAction className="flex flex-wrap items-center justify-end gap-2">
       <VoicesStatusChip />
       <ReloadVoicesButton />
       <AppendPageButton />
-      <SaveButton />
     </CardAction>
   );
 }

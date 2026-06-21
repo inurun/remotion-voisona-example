@@ -91,8 +91,7 @@ export function useEditorActions({
 
   async function saveProject(project: DraftProject) {
     if (!projectPath) {
-      onError("Project path is required");
-      return;
+      throw new Error("Project path is required");
     }
 
     setSaving(true);
@@ -100,9 +99,9 @@ export function useEditorActions({
     try {
       const savedProject = await requestSaveProject(projectPath, project);
       onSavedProjectChange(savedProject);
-      onSuccess("保存して音声を更新した。");
+      return savedProject;
     } catch (saveError) {
-      onError(saveError instanceof Error ? saveError.message : "Save failed");
+      throw saveError instanceof Error ? saveError : new Error("Save failed");
     } finally {
       setSaving(false);
     }
