@@ -1,3 +1,4 @@
+savePrefix: ""
 allowBuilds:
   esbuild: true
   fallow: true
