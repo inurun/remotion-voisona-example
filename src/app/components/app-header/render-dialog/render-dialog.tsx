@@ -10,9 +10,10 @@ import {
   DialogTitle,
 } from "@/_shared/components/ui/dialog";
 import { cn } from "@/_shared/lib/utils";
-import { type useRenderState } from "@/app/features/render/render-state";
+import { useRender } from "@/app/contexts/render-context/render-context";
+import type { RenderState } from "@/app/contexts/render-context/render-context.hook";
 
-function getStatusChipClass(status: ReturnType<typeof useRenderState>["renderState"]["status"]) {
+function getStatusChipClass(status: RenderState["status"]) {
   return {
     error: "border-destructive/20 bg-destructive/10 text-destructive",
     idle: "border-border bg-secondary text-secondary-foreground",
@@ -23,7 +24,7 @@ function getStatusChipClass(status: ReturnType<typeof useRenderState>["renderSta
   }[status];
 }
 
-function getVideoHref(renderState: ReturnType<typeof useRenderState>["renderState"]) {
+function getVideoHref(renderState: RenderState) {
   if (!renderState.videoPath) {
     return undefined;
   }
@@ -52,28 +53,21 @@ function RenderVideoLink({ videoHref }: { videoHref?: string }) {
   );
 }
 
-export function RenderDialog({
-  executeLabel,
-  isExecuteDisabled,
-  onExecute,
-  onOpenChange,
-  open,
-  renderError,
-  renderState,
-}: {
-  executeLabel: string;
-  isExecuteDisabled: boolean;
-  onExecute: () => void;
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
-  renderError: string | null;
-  renderState: ReturnType<typeof useRenderState>["renderState"];
-}) {
+export function RenderDialog() {
+  const {
+    handleRenderExecute,
+    renderDialogOpen,
+    renderError,
+    renderExecuteDisabled,
+    renderExecuteLabel,
+    renderState,
+    setRenderDialogOpen,
+  } = useRender();
   const videoHref = getVideoHref(renderState);
   const errorMessage = renderError ?? renderState.lastError;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={renderDialogOpen} onOpenChange={setRenderDialogOpen}>
       <DialogContent>
         <DialogHeader>
           <div className="flex items-center justify-between gap-3 pr-10">
@@ -104,9 +98,9 @@ export function RenderDialog({
         </div>
         <DialogFooter>
           <DialogClose render={<Button type="button" variant="outline" />}>閉じる</DialogClose>
-          <Button type="button" disabled={isExecuteDisabled} onClick={onExecute}>
+          <Button type="button" disabled={renderExecuteDisabled} onClick={handleRenderExecute}>
             <Clapperboard />
-            {executeLabel}
+            {renderExecuteLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

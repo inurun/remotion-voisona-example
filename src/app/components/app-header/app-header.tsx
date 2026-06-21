@@ -1,23 +1,14 @@
 import { Clapperboard, Save } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { SidebarTrigger } from "@/_shared/components/ui/sidebar";
-import { useAppHeader } from "@/app/components/app-header/app-header.hook";
-import { RenderDialog } from "@/app/components/app-header/render-dialog";
+import { RenderDialog } from "@/app/components/app-header/render-dialog/render-dialog";
+import { useEditor } from "@/app/contexts/editor-context/editor-context";
+import { useRender } from "@/app/contexts/render-context/render-context";
 
 export function AppHeader() {
-  const {
-    canSave,
-    onSave,
-    openRenderDialog,
-    renderDialogOpen,
-    renderError,
-    renderExecuteDisabled,
-    renderExecuteLabel,
-    renderState,
-    saving,
-    setRenderDialogOpen,
-    handleRenderExecute,
-  } = useAppHeader();
+  const { onSave, saving } = useEditor();
+  const { openRenderDialog } = useRender();
+
   return (
     <>
       <header className="grid gap-3 sm:grid-cols-[auto_1fr_auto] sm:items-center">
@@ -33,26 +24,12 @@ export function AppHeader() {
           <Button type="button" size="icon" title="Render" onClick={openRenderDialog}>
             <Clapperboard />
           </Button>
-          <Button
-            type="button"
-            size="icon"
-            title={saving ? "Saving" : "Save"}
-            disabled={!canSave}
-            onClick={onSave}
-          >
+          <Button type="button" size="icon" title={saving ? "Saving" : "Save"} onClick={onSave}>
             <Save className={saving ? "animate-pulse" : undefined} />
           </Button>
         </div>
       </header>
-      <RenderDialog
-        open={renderDialogOpen}
-        onOpenChange={setRenderDialogOpen}
-        renderState={renderState}
-        renderError={renderError}
-        executeLabel={renderExecuteLabel}
-        isExecuteDisabled={renderExecuteDisabled}
-        onExecute={handleRenderExecute}
-      />
+      <RenderDialog />
     </>
   );
 }

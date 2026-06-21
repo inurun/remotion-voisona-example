@@ -11,11 +11,11 @@
           "voiceName": "futaba-minato_ja_JP",
           "voiceVersion": "2.0.2",
           "speech": {
-            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"hll\" original=\"テスト\" phoneme=\"t,e|s,U|t,o\" pos=\"名詞\" pos_group1=\"サ変接続\" pronunciation=\"テス’ト\">テスト</word></acoustic_phrase></tsml>"
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"hll\" original=\"テスト\" phoneme=\"t,e|s,U|t,o\" pos=\"名詞\" pos_group1=\"サ変接続\" pronunciation=\"テス’ト\">テスト</word><word chain=\"1\" hl=\"ll\" original=\"ａ\" phoneme=\"e|i\" pos=\"記号\" pos_group1=\"アルファベット\" pronunciation=\"エイ\">ａ</word><word chain=\"1\" hl=\"hl\" original=\"ａ\" phoneme=\"e|i\" pos=\"記号\" pos_group1=\"アルファベット\" pronunciation=\"エイ\">ａ</word><word chain=\"1\" hl=\"ll\" original=\"ああ\" phoneme=\"a|a\" pos=\"感動詞\" pronunciation=\"アー\">ああ</word><word chain=\"0\" hl=\"hl\" original=\"ああ\" phoneme=\"a|a\" pos=\"感動詞\" pronunciation=\"アー\">ああ</word></acoustic_phrase></tsml>"
           },
-          "durationSec": 0.815,
+          "durationSec": 2.045,
           "audio": {
-            "src": "/tts/db6c2c481ce46e25d40350b6efe3cd0e.wav"
+            "src": "/tts/fff286d78ddd82dc5dfbca148d87dc57.wav"
           }
         },
         {
