@@ -1,26 +1,26 @@
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
+import { usePage } from "@/app/contexts/page-context/page-context";
 
 export function SelectedPageHeader() {
-  const { onMovePageDown, onMovePageUp, onRemovePage, pageFields, selectedPageIndex } = useEditor();
+  const { pageNumber, canMoveUp, canMoveDown, moveUp, moveDown, remove } = usePage();
 
-  if (selectedPageIndex === null) {
+  if (pageNumber === null) {
     return null;
   }
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <div className="text-sm text-muted-foreground">Page {selectedPageIndex + 1}</div>
+      <div className="text-sm text-muted-foreground">Page {pageNumber}</div>
       <div className="flex items-center gap-2">
         <Button
           type="button"
           size="icon-sm"
           variant="outline"
-          disabled={selectedPageIndex === 0}
+          disabled={!canMoveUp}
           title="上へ"
           aria-label="上へ"
-          onClick={() => onMovePageUp(selectedPageIndex)}
+          onClick={moveUp}
         >
           <ArrowUp />
         </Button>
@@ -28,10 +28,10 @@ export function SelectedPageHeader() {
           type="button"
           size="icon-sm"
           variant="outline"
-          disabled={selectedPageIndex === pageFields.length - 1}
+          disabled={!canMoveDown}
           title="下へ"
           aria-label="下へ"
-          onClick={() => onMovePageDown(selectedPageIndex)}
+          onClick={moveDown}
         >
           <ArrowDown />
         </Button>
@@ -41,7 +41,7 @@ export function SelectedPageHeader() {
           variant="destructive"
           title="削除"
           aria-label="削除"
-          onClick={() => onRemovePage(selectedPageIndex)}
+          onClick={remove}
         >
           <Trash2 />
         </Button>

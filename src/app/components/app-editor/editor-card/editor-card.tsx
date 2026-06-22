@@ -1,25 +1,27 @@
-import { FilePlus2, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { AddTtsButton } from "@/app/components/app-editor/editor-card/add-tts-button/add-tts-button";
+import { AppendPageButton } from "@/app/components/app-editor/editor-card/append-page-button/append-page-button";
 import { PageList } from "@/app/components/app-editor/editor-card/page-list/page-list";
 import { RichTextField } from "@/app/components/app-editor/editor-card/rich-text-field/rich-text-field";
 import { SelectedPageHeader } from "@/app/components/app-editor/editor-card/selected-page-header/selected-page-header";
 import { TtsList } from "@/app/components/app-editor/editor-card/tts-list/tts-list";
+import { usePage } from "@/app/contexts/page-context/page-context";
+import { useVoices } from "@/app/contexts/voices-context/voices-context";
 
 function VoicesStatusChip() {
-  const { voiceSelectOptions } = useEditor();
+  const { options } = useVoices();
 
   return (
     <span className="inline-flex items-center rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">
-      {`${voiceSelectOptions.length} voices`}
+      {`${options.length} voices`}
     </span>
   );
 }
 
 function ReloadVoicesButton() {
-  const { onLoadVoices } = useEditor();
+  const { loadVoices } = useVoices();
 
   return (
     <Button
@@ -28,32 +30,16 @@ function ReloadVoicesButton() {
       title="voices 再取得"
       aria-label="voices 再取得"
       variant="outline"
-      onClick={() => void onLoadVoices()}
+      onClick={() => void loadVoices()}
     >
       <RefreshCw />
     </Button>
   );
 }
 
-function AppendPageButton() {
-  const { onAppendPage } = useEditor();
-
-  return (
-    <Button
-      type="button"
-      size="icon"
-      title="ページ追加"
-      aria-label="ページ追加"
-      variant="secondary"
-      onClick={onAppendPage}
-    >
-      <FilePlus2 />
-    </Button>
-  );
-}
-
 export function EditorCard() {
-  const { pageFields, selectedPageIndex } = useEditor();
+  const { pageFields, selectedPageIndex } = usePage();
+
   return (
     <Card>
       <CardHeader>

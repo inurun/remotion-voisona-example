@@ -1,8 +1,8 @@
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
+import { usePage } from "@/app/contexts/page-context/page-context";
 import { TsmlEditor } from "@/app/features/editor/tsml-editor";
 
 export function TsmlField() {
-  const { selectedPageIndex, selectedTtsIndex } = useEditor();
+  const { selectedPageIndex, selectedTtsIndex } = usePage();
 
   if (selectedPageIndex === null || selectedTtsIndex === null) {
     return null;

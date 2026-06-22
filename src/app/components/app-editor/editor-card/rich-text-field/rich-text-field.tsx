@@ -1,12 +1,12 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { Field, FieldError } from "@/_shared/components/ui/field";
 import { type DraftProject } from "@/_schemas";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
+import { usePage } from "@/app/contexts/page-context/page-context";
 import { RichTextEditor } from "@/app/features/editor/rich-text-editor";
 
 export function RichTextField() {
   const { control } = useFormContext<DraftProject>();
-  const { selectedPageIndex } = useEditor();
+  const { selectedPageIndex } = usePage();
 
   if (selectedPageIndex === null) {
     return null;

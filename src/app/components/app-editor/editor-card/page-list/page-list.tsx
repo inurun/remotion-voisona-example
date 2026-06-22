@@ -1,8 +1,8 @@
 import { cn } from "@/_shared/lib/utils";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
+import { usePage } from "@/app/contexts/page-context/page-context";
 
 export function PageList() {
-  const { onSelectPage, pageFields, selectedPageIndex } = useEditor();
+  const { pageFields, selectedPageIndex, selectPage } = usePage();
 
   if (pageFields.length === 0) {
     return (
@@ -18,7 +18,7 @@ export function PageList() {
         <button
           key={field.fieldKey}
           type="button"
-          onClick={() => onSelectPage(index)}
+          onClick={() => selectPage(index)}
           className={cn(
             "grid cursor-pointer gap-2 rounded-xl border p-3 text-left transition-colors",
             selectedPageIndex === index ? "border-primary bg-primary/8" : "border-border bg-card",

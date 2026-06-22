@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import {
@@ -9,7 +9,6 @@ import {
   type SavedProject,
   type VoiceOption,
 } from "@/_schemas";
-import { createUuid } from "@/_shared/lib/utils";
 
 function toDraftPages(project: SavedProject): DraftPage[] {
   return project.pages.map((page) => ({
@@ -28,40 +27,19 @@ function toDraftPages(project: SavedProject): DraftPage[] {
   }));
 }
 
-function createDraftPage(): DraftPage {
-  return {
-    id: createUuid(),
-    richText: "<p></p>",
-    tts: [],
-  };
-}
-
-function getDefaultVoiceFields(defaultVoice?: VoiceOption) {
-  if (!defaultVoice) {
-    return { voiceName: "", voiceVersion: "" };
-  }
-
-  return {
-    voiceName: defaultVoice.voiceName,
-    voiceVersion: defaultVoice.voiceVersion ?? "",
-  };
-}
-
-function createDraftTts(defaultVoice?: VoiceOption): DraftTts {
-  return {
-    id: createUuid(),
-    text: "",
-    readText: "",
-    ...getDefaultVoiceFields(defaultVoice),
-    speech: {},
-  };
-}
-
-export function getVoiceValue(item: Pick<DraftTts, "voiceName" | "voiceVersion">) {
+export function getVoiceValue(item: { voiceName: string; voiceVersion?: string }) {
   return `${item.voiceName}::${item.voiceVersion ?? ""}`;
 }
 
-export function useEditorForm({
+type FormContextValue = {
+  pageFields: Array<DraftPage & { fieldKey: string }>;
+  appendPage: (page: DraftPage) => void;
+  movePage: (fromIndex: number, toIndex: number) => void;
+  removePage: (index: number) => void;
+  appendTtsToPage: (pageIndex: number, tts: DraftTts) => number | null;
+};
+
+export function useFormProviderValue({
   initialProject,
   voiceOptions,
 }: {
@@ -75,11 +53,12 @@ export function useEditorForm({
     },
   });
 
-  const { fields, append, move, remove } = useFieldArray({
+  const pageFieldArray = useFieldArray({
     control: form.control,
     keyName: "fieldKey",
     name: "pages",
   });
+  const { append, move, remove } = pageFieldArray;
 
   useEffect(() => {
     form.reset({
@@ -119,18 +98,53 @@ export function useEditorForm({
     });
   }, [form, voiceOptions]);
 
-  return {
-    form,
-    pageFields: fields,
-    appendPage: () => {
-      append(createDraftPage());
+  const appendPage = useCallback(
+    (page: DraftPage) => {
+      append(page);
     },
-    removePage: (index: number) => {
+    [append],
+  );
+
+  const movePage = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      move(fromIndex, toIndex);
+    },
+    [move],
+  );
+
+  const removePage = useCallback(
+    (index: number) => {
       remove(index);
     },
-    movePage: (from: number, to: number) => {
-      move(from, to);
+    [remove],
+  );
+
+  const appendTtsToPage = useCallback(
+    (pageIndex: number, tts: DraftTts): number | null => {
+      const page = form.getValues(`pages.${pageIndex}`);
+      if (!page) {
+        return null;
+      }
+
+      const nextTtsIndex = page.tts.length;
+      form.setValue(`pages.${pageIndex}.tts`, [...page.tts, tts], {
+        shouldDirty: true,
+      });
+      return nextTtsIndex;
     },
-    createDraftTts: () => createDraftTts(voiceOptions[0]),
+    [form],
+  );
+
+  const value: FormContextValue = {
+    pageFields: pageFieldArray.fields,
+    appendPage,
+    movePage,
+    removePage,
+    appendTtsToPage,
+  };
+
+  return {
+    form,
+    value,
   };
 }

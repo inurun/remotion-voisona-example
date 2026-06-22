@@ -15,11 +15,14 @@ import { Textarea } from "@/_shared/components/ui/textarea";
 import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
 import { useEditor } from "@/app/contexts/editor-context/editor-context";
-import { getVoiceValue } from "@/app/features/editor/editor-form";
+import { usePage } from "@/app/contexts/page-context/page-context";
+import { useVoices } from "@/app/contexts/voices-context/voices-context";
+import { getVoiceValue } from "@/app/contexts/form-context/form-context";
 
 function TtsVoiceField({ index, onRemove }: { index: number; onRemove: () => void }) {
   const { control, setValue } = useFormContext<DraftProject>();
-  const { onSelectTts, selectedPageIndex, voiceSelectOptions } = useEditor();
+  const { setSelectedTtsIndex, selectedPageIndex } = usePage();
+  const { options } = useVoices();
   const pageIndex = selectedPageIndex ?? 0;
   const voiceVersion = useWatch({
     control,
@@ -55,14 +58,14 @@ function TtsVoiceField({ index, onRemove }: { index: number; onRemove: () => voi
                   nextVoiceVersion ?? "",
                   { shouldDirty: true },
                 );
-                onSelectTts(index);
+                setSelectedTtsIndex(index);
               }}
             >
               <SelectTrigger aria-invalid={fieldState.invalid} className="w-full">
                 <SelectValue placeholder="Actor" />
               </SelectTrigger>
               <SelectContent>
-                {voiceSelectOptions.map((option) => (
+                {options.map((option) => (
                   <SelectItem
                     key={`${option.voiceName}:${option.voiceVersion ?? ""}`}
                     value={`${option.voiceName}::${option.voiceVersion ?? ""}`}
@@ -92,7 +95,7 @@ function TtsVoiceField({ index, onRemove }: { index: number; onRemove: () => voi
 
 function TtsTextField({ index }: { index: number }) {
   const { control, setValue } = useFormContext<DraftProject>();
-  const { onSelectTts, selectedPageIndex } = useEditor();
+  const { setSelectedTtsIndex, selectedPageIndex } = usePage();
 
   if (selectedPageIndex === null) {
     return null;
@@ -120,7 +123,7 @@ function TtsTextField({ index }: { index: number }) {
                 shouldDirty: true,
               });
             }}
-            onFocus={() => onSelectTts(index)}
+            onFocus={() => setSelectedTtsIndex(index)}
           />
           <FieldError errors={[fieldState.error]} />
         </Field>
@@ -130,7 +133,8 @@ function TtsTextField({ index }: { index: number }) {
 }
 
 function TtsBusyBadge({ ttsIndex }: { ttsIndex: number }) {
-  const { busyById, selectedPageIndex } = useEditor();
+  const { busyById } = useEditor();
+  const { selectedPageIndex } = usePage();
   const { control } = useFormContext<DraftProject>();
   const pageIndex = selectedPageIndex ?? 0;
   const itemId = useWatch({ control, name: `pages.${pageIndex}.tts.${ttsIndex}.id` });
@@ -153,7 +157,7 @@ function TtsBusyBadge({ ttsIndex }: { ttsIndex: number }) {
 }
 
 function TtsItem({ index, onRemove }: { index: number; onRemove: () => void }) {
-  const { selectedTtsIndex } = useEditor();
+  const { selectedTtsIndex } = usePage();
 
   return (
     <article
@@ -173,7 +177,7 @@ function TtsItem({ index, onRemove }: { index: number; onRemove: () => void }) {
 
 export function TtsList() {
   const { control } = useFormContext<DraftProject>();
-  const { onSelectTts, selectedPageIndex, selectedTtsIndex } = useEditor();
+  const { selectedPageIndex, selectedTtsIndex, setSelectedTtsIndex } = usePage();
   const pageIndex = selectedPageIndex ?? 0;
   const { fields, remove } = useFieldArray({
     control,
@@ -187,19 +191,19 @@ export function TtsList() {
     }
 
     if (fields.length === 0) {
-      onSelectTts(null);
+      setSelectedTtsIndex(null);
       return;
     }
 
     if (selectedTtsIndex === null) {
-      onSelectTts(0);
+      setSelectedTtsIndex(0);
       return;
     }
 
     if (selectedTtsIndex >= fields.length) {
-      onSelectTts(fields.length - 1);
+      setSelectedTtsIndex(fields.length - 1);
     }
-  }, [fields.length, onSelectTts, selectedPageIndex, selectedTtsIndex]);
+  }, [fields.length, selectedPageIndex, selectedTtsIndex, setSelectedTtsIndex]);
 
   if (selectedPageIndex === null) {
     return null;
@@ -221,7 +225,7 @@ export function TtsList() {
           <TtsItem
             index={index}
             onRemove={() => {
-              onSelectTts(fields.length <= 1 ? null : Math.min(index, fields.length - 2));
+              setSelectedTtsIndex(fields.length <= 1 ? null : Math.min(index, fields.length - 2));
               remove(index);
             }}
           />

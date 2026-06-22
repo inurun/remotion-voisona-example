@@ -6,8 +6,8 @@
       "tts": [
         {
           "id": "c5f2c912-a909-4758-8559-108481802bc6",
-          "text": "テストaaああああ",
-          "readText": "テストaaああああ",
+          "text": "テストaaa",
+          "readText": "テストaaa",
           "voiceName": "futaba-minato_ja_JP",
           "voiceVersion": "2.0.2",
           "speech": {
@@ -15,13 +15,13 @@
           },
           "durationSec": 2.045,
           "audio": {
-            "src": "/tts/fff286d78ddd82dc5dfbca148d87dc57.wav"
+            "src": "/tts/269b4c5f43e2f74d3dbea251c84eeb87.wav"
           }
         },
         {
           "id": "b704d231-f137-4455-966c-ff537dcf8472",
-          "text": "ランニング竹山",
-          "readText": "ランニング竹山",
+          "text": "ランニング竹山aaaa",
+          "readText": "ランニング竹山aaaa",
           "voiceName": "futaba-minato_ja_JP",
           "voiceVersion": "2.0.2",
           "speech": {
@@ -29,7 +29,7 @@
           },
           "durationSec": 1.4100000000000001,
           "audio": {
-            "src": "/tts/15793b73616f5308654e4cbafa46de09.wav"
+            "src": "/tts/c580c7f0bee8b59286c2ef90429872bb.wav"
           }
         }
       ]

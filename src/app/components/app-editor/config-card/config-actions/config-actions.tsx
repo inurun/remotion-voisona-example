@@ -3,6 +3,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { Button } from "@/_shared/components/ui/button";
 import { type DraftProject } from "@/_schemas";
 import { useEditor } from "@/app/contexts/editor-context/editor-context";
+import { usePage } from "@/app/contexts/page-context/page-context";
 
 function isVoiceActionDisabled({
   busy,
@@ -75,8 +76,8 @@ function PreviewButton({
 }
 
 export function ConfigActions() {
-  const { busyById, canRunTts, onAnalyzeTts, onPreviewTts, selectedPageIndex, selectedTtsIndex } =
-    useEditor();
+  const { busyById, canRunTts, onAnalyzeTts, onPreviewTts } = useEditor();
+  const { selectedPageIndex, selectedTtsIndex } = usePage();
   const { control } = useFormContext<DraftProject>();
   const pageIndex = selectedPageIndex ?? 0;
   const ttsIndex = selectedTtsIndex ?? 0;
