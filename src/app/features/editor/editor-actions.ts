@@ -5,17 +5,16 @@ import {
   requestSaveProject,
   requestTextAnalysis,
 } from "@/app/features/editor/editor-api";
-import { getProjectPathFromLocation } from "../project/project-path";
-import { useMemo } from "react";
 
 export function useEditorActions({
   onError,
   onSuccess,
+  projectPath,
 }: {
   onError: (message: string) => void;
   onSuccess: (message: string) => void;
+  projectPath: string | null;
 }) {
-  const projectPath = useMemo(() => getProjectPathFromLocation(window.location.pathname), []);
   const [busyById, setBusyById] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);

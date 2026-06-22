@@ -1,80 +1,46 @@
-import { type DraftProject, type DraftTts, type SavedProject } from "@/_schemas";
-import { getProjectApiPath } from "@/app/features/project/project-path";
-
-type ApiErrorResponse = {
-  error?: string;
-};
-
-async function readJson<T>(response: Response): Promise<T> {
-  return (await response.json()) as T;
-}
-
-function toHttpError(response: Response, payload: ApiErrorResponse, fallback: string) {
-  return new Error(payload.error ?? `HTTP ${response.status}` ?? fallback);
-}
+import { type DraftProject, type DraftTts } from "@/_schemas";
+import { analyzeText, synthesize } from "@/app/core/api/voisona";
+import { saveProject } from "@/app/core/api/project";
 
 function getPreviewPayload(item: DraftTts) {
   const analyzedText = item.speech?.analyzedText?.trim();
   const voiceVersion = item.voiceVersion?.trim();
+  const voiceName = item.voiceName?.trim();
+
+  if (!voiceName) {
+    throw new Error("Voice name is required");
+  }
 
   return {
     text: item.readText?.trim() || item.text,
     ...(analyzedText ? { analyzedText } : {}),
-    voiceName: item.voiceName,
+    voiceName,
     ...(voiceVersion ? { voiceVersion } : {}),
   };
 }
 
 export async function requestTextAnalysis(item: DraftTts) {
-  const response = await fetch("/api/voisona/text-analysis", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      text: item.readText?.trim() || item.text,
-      language: "ja_JP",
-    }),
+  const data = await analyzeText({
+    text: item.readText?.trim() || item.text,
   });
-  const data = await readJson<{ analyzedText?: string; error?: string }>(response);
 
-  if (!response.ok || !data.analyzedText) {
-    throw toHttpError(response, data, "Analyze failed");
+  if (!data.analyzedText) {
+    throw new Error("Analyze failed");
   }
 
   return data.analyzedText;
 }
 
 export async function requestPreviewSynthesis(item: DraftTts) {
-  const response = await fetch("/api/voisona/synthesize", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(getPreviewPayload(item)),
-  });
-  const data = await readJson<{ audioSrc?: string; error?: string }>(response);
+  const data = await synthesize(getPreviewPayload(item));
 
-  if (!response.ok || !data.audioSrc) {
-    throw toHttpError(response, data, "Preview failed");
+  if (!data.audioSrc) {
+    throw new Error("Preview failed");
   }
 
   return data.audioSrc;
 }
 
 export async function requestSaveProject(projectPath: string, project: DraftProject) {
-  const response = await fetch(getProjectApiPath(projectPath), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(project),
-  });
-  const data = await readJson<SavedProject | { error: string }>(response);
-
-  if (!response.ok || !("pages" in data)) {
-    throw toHttpError(response, data, "Save failed");
-  }
-
-  return data;
+  return saveProject(projectPath, project);
 }

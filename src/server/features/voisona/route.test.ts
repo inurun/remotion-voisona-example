@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { Hono } from "hono";
-import { registerVoisonaRoutes } from "./route";
+import { voisonaApp } from "./route";
 
 const { listVoisonaVoicesMock, analyzeVoisonaTextMock, synthesizeVoisonaMock } = vi.hoisted(() => ({
   listVoisonaVoicesMock: vi.fn(),
@@ -20,10 +19,7 @@ describe("voisona routes", () => {
       { voiceName: "voice", displayName: "voice", voiceVersion: "1" },
     ]);
 
-    const app = new Hono();
-    registerVoisonaRoutes(app);
-
-    const response = await app.request("/voisona/voices");
+    const response = await voisonaApp.request("/voisona/voices");
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
       options: [{ voiceName: "voice", displayName: "voice", voiceVersion: "1" }],
@@ -31,10 +27,7 @@ describe("voisona routes", () => {
   });
 
   it("validates synthesize payloads", async () => {
-    const app = new Hono();
-    registerVoisonaRoutes(app);
-
-    const response = await app.request("/voisona/synthesize", {
+    const response = await voisonaApp.request("/voisona/synthesize", {
       method: "POST",
       body: JSON.stringify({ text: "", voiceName: "" }),
       headers: { "Content-Type": "application/json" },

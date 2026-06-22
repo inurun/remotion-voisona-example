@@ -100,6 +100,10 @@ export async function waitForVoisonaRequest<T extends { state: string }>(
     const result = await fetchVoisonaRequestState<T>(serverEnv, endpoint, uuid);
     const outcome = getVoisonaRequestOutcome(result);
     if (outcome === "success") {
+      if (!result) {
+        throw new Error(`VoiSona ${endpoint} succeeded without a response body`);
+      }
+
       return result;
     }
 

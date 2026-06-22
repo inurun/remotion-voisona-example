@@ -3,18 +3,18 @@ import { useFormContext } from "react-hook-form";
 import useSWR from "swr";
 import { toast } from "sonner";
 import type { DraftProject } from "@/_schemas";
-import { fetchJson } from "@/_shared/lib/fetch-json";
+import {
+  fetchRenderState,
+  RENDER_STREAM_URL,
+  renderKeys,
+  startRender,
+  type RenderState,
+} from "@/app/core/api/render";
 import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { useProject } from "@/app/contexts/project-context/project-context";
 import { requestSaveProject } from "@/app/features/editor/editor-api";
 
-export type RenderState = {
-  status: "idle" | "running" | "success" | "error";
-  logs: string[];
-  videoPath: string | null;
-  updatedAt?: number;
-  lastError: string | null;
-};
+export type { RenderState };
 
 const initialRenderState: RenderState = {
   status: "idle",
@@ -35,21 +35,6 @@ function getRenderExecuteLabel(saving: boolean, status: RenderState["status"]) {
   return "実行";
 }
 
-async function postRenderStart(projectPath: string) {
-  const response = await fetch("/api/render", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ projectPath }),
-  });
-  const data = (await response.json()) as { started?: boolean; error?: string };
-
-  if (!response.ok || !data.started) {
-    throw new Error(data.error ?? "Render start failed");
-  }
-}
-
 export type RenderContextValue = {
   renderState: RenderState;
   renderDialogOpen: boolean;
@@ -65,7 +50,7 @@ export function useRenderProviderValue(): RenderContextValue {
   const { handleSubmit } = useFormContext<DraftProject>();
   const { canRunTts, pageFields, saving } = useEditor();
   const { projectPath } = useProject();
-  const { data, mutate } = useSWR<RenderState>("/api/render", fetchJson, {
+  const { data, mutate } = useSWR(renderKeys.snapshot(), fetchRenderState, {
     revalidateOnFocus: false,
   });
   const [renderState, setRenderState] = useState<RenderState>(initialRenderState);
@@ -79,7 +64,7 @@ export function useRenderProviderValue(): RenderContextValue {
   }, [data]);
 
   useEffect(() => {
-    const eventSource = new EventSource("/api/render/stream");
+    const eventSource = new EventSource(RENDER_STREAM_URL);
     eventSource.onmessage = (event) => {
       const payload = JSON.parse(event.data) as RenderState;
       setRenderState(payload);
@@ -91,12 +76,12 @@ export function useRenderProviderValue(): RenderContextValue {
     };
   }, [mutate]);
 
-  const startRender = useCallback(async () => {
+  const startRenderJob = useCallback(async () => {
     if (!projectPath) {
       throw new Error("Project path is required");
     }
 
-    await postRenderStart(projectPath);
+    await startRender(projectPath);
     void mutate();
   }, [mutate, projectPath]);
 
@@ -127,13 +112,13 @@ export function useRenderProviderValue(): RenderContextValue {
       }
 
       try {
-        await startRender();
+        await startRenderJob();
         toast.success("Render を開始した。");
       } catch (error) {
         setRenderError(JSON.stringify(error));
       }
     })();
-  }, [handleSubmit, projectPath, startRender]);
+  }, [handleSubmit, projectPath, startRenderJob]);
 
   return {
     renderState,

@@ -11,10 +11,10 @@ import {
   ProjectNotFoundError,
   readSavedProject,
 } from "@/server/_shared/storage";
-import { registerProjectRoutes } from "@/server/features/project";
-import { registerRenderRoutes } from "@/server/features/render";
-import { registerUploadRoutes } from "@/server/features/uploads";
-import { registerVoisonaRoutes } from "@/server/features/voisona";
+import { projectApp } from "@/server/features/project";
+import { renderApp } from "@/server/features/render";
+import { uploadsApp } from "@/server/features/uploads";
+import { voisonaApp } from "@/server/features/voisona";
 
 const CONTENT_TYPES = new Map([
   [".gif", "image/gif"],
@@ -57,59 +57,53 @@ async function assertProjectRouteExists(requestPath: string) {
 }
 
 function createApi() {
-  const api = new Hono();
-
-  registerProjectRoutes(api);
-  registerVoisonaRoutes(api);
-  registerRenderRoutes(api);
-  registerUploadRoutes(api);
-
-  return api;
+  return new Hono()
+    .route("/", projectApp)
+    .route("/", voisonaApp)
+    .route("/", renderApp)
+    .route("/", uploadsApp);
 }
 
+export type ApiApp = ReturnType<typeof createApi>;
+
 export const createApp = () => {
-  const app = new Hono();
-
-  app.route("/api", createApi());
-
-  app.get("/uploads/*", async (c) => {
-    try {
-      await ensureProjectDirs();
-      return await servePublicAsset(c.req.path.replace(/^\/+/u, ""));
-    } catch {
-      return new Response("Not found", { status: 404 });
-    }
-  });
-
-  app.get("/tts/*", async (c) => {
-    try {
-      await ensureProjectDirs();
-      return await servePublicAsset(c.req.path.replace(/^\/+/u, ""));
-    } catch {
-      return new Response("Not found", { status: 404 });
-    }
-  });
-
-  app.get("/", async (c) => {
-    try {
-      return c.redirect(await resolveRootProjectPath());
-    } catch {
-      return c.html(renderToString(layoutHtml), 404);
-    }
-  });
-
-  app.get("*", async (c) => {
-    try {
-      await assertProjectRouteExists(c.req.path);
-      return c.html(renderToString(layoutHtml));
-    } catch (error) {
-      if (error instanceof InvalidProjectPathError || error instanceof ProjectNotFoundError) {
+  const app = new Hono()
+    .route("/api", createApi())
+    .get("/uploads/*", async (c) => {
+      try {
+        await ensureProjectDirs();
+        return await servePublicAsset(c.req.path.replace(/^\/+/u, ""));
+      } catch {
+        return new Response("Not found", { status: 404 });
+      }
+    })
+    .get("/tts/*", async (c) => {
+      try {
+        await ensureProjectDirs();
+        return await servePublicAsset(c.req.path.replace(/^\/+/u, ""));
+      } catch {
+        return new Response("Not found", { status: 404 });
+      }
+    })
+    .get("/", async (c) => {
+      try {
+        return c.redirect(await resolveRootProjectPath());
+      } catch {
         return c.html(renderToString(layoutHtml), 404);
       }
+    })
+    .get("*", async (c) => {
+      try {
+        await assertProjectRouteExists(c.req.path);
+        return c.html(renderToString(layoutHtml));
+      } catch (error) {
+        if (error instanceof InvalidProjectPathError || error instanceof ProjectNotFoundError) {
+          return c.html(renderToString(layoutHtml), 404);
+        }
 
-      return c.html(renderToString(layoutHtml), 500);
-    }
-  });
+        return c.html(renderToString(layoutHtml), 500);
+      }
+    });
 
   return app;
 };

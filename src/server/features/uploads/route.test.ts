@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
-import { Hono } from "hono";
-import { registerUploadRoutes } from "./route";
+import { uploadsApp } from "./route";
 
 vi.mock("node:fs/promises", () => ({
   default: {
@@ -22,13 +21,10 @@ vi.mock("@/server/_shared/storage", async () => {
 
 describe("upload routes", () => {
   it("rejects unsupported image types", async () => {
-    const app = new Hono();
-    registerUploadRoutes(app);
-
     const formData = new FormData();
     formData.set("file", new File(["x"], "test.svg", { type: "image/svg+xml" }));
 
-    const response = await app.request("/uploads/image", {
+    const response = await uploadsApp.request("/uploads/image", {
       method: "POST",
       body: formData,
     });
@@ -38,13 +34,10 @@ describe("upload routes", () => {
   });
 
   it("stores supported images", async () => {
-    const app = new Hono();
-    registerUploadRoutes(app);
-
     const formData = new FormData();
     formData.set("file", new File(["png"], "test.png", { type: "image/png" }));
 
-    const response = await app.request("/uploads/image", {
+    const response = await uploadsApp.request("/uploads/image", {
       method: "POST",
       body: formData,
     });

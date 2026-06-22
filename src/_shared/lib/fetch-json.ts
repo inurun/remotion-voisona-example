@@ -14,8 +14,7 @@ function getResponseErrorMessage(json: unknown, status: number) {
   return getJsonError(json) ?? getDefaultHttpError(status);
 }
 
-export async function fetchJson<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-  const response = await fetch(input, init);
+export async function parseApiJson<T>(response: Response): Promise<T> {
   const json = (await response.json()) as T;
 
   if (!response.ok) {

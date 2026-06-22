@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { Editor } from "@tiptap/react";
+import { uploadImage } from "@/app/core/api/uploads";
 
 type UploadState = {
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
@@ -22,23 +23,6 @@ function insertUploadedImage(editor: Editor, src: string, fileName: string) {
       type: "image",
     })
     .run();
-}
-
-async function uploadImage(file: File) {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const response = await fetch("/api/uploads/image", {
-    body: formData,
-    method: "POST",
-  });
-  const data = (await response.json()) as { error?: string; src?: string };
-
-  if (!response.ok || !data.src) {
-    throw new Error(data.error ?? `HTTP ${response.status}`);
-  }
-
-  return data.src;
 }
 
 export function useRichTextImageUpload(editor: Editor | null): UploadState {

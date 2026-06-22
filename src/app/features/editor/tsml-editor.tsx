@@ -4,6 +4,7 @@ import { Button } from "@/_shared/components/ui/button";
 import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
 import { useTsmlEditor } from "@/app/features/editor/tsml-editor.hook";
+import type { TsmlPhrase } from "@/app/features/editor/tsml";
 
 function MoraButtons({
   moraButtons,
@@ -248,13 +249,7 @@ function TsmlPhraseView({
 }: {
   fieldOnChange: (value: string) => void;
   getWordAttribute: ReturnType<typeof useTsmlEditor>["getWordAttribute"];
-  phrase: ReturnType<typeof useTsmlEditor>["parsed"] extends { status: "ready"; document: infer T }
-    ? T extends { phrases: infer P }
-      ? P extends Array<infer V>
-        ? V
-        : never
-      : never
-    : never;
+  phrase: TsmlPhrase;
   phraseIndex: number;
   setPhraseBoundaryChain: ReturnType<typeof useTsmlEditor>["setPhraseBoundaryChain"];
   splitPronunciationIntoMoras: ReturnType<typeof useTsmlEditor>["splitPronunciationIntoMoras"];

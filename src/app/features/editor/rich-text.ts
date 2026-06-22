@@ -125,7 +125,7 @@ function handleClosingTag(token: string, stack: RichTextNode[]) {
 
 function handleOpeningTag(token: string, stack: RichTextNode[]) {
   const node = createElementNode(token);
-  if (!node) {
+  if (!node || node.type !== "element") {
     return;
   }
 

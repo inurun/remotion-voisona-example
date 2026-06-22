@@ -23,7 +23,7 @@ type UseEditorScreenParams = {
   onLoadVoices: () => Promise<void>;
   pageFields: Array<DraftPage & { fieldKey: string }>;
   removePage: (index: number) => void;
-  saveProject: (project: DraftProject) => Promise<unknown>;
+  saveProject: (project: DraftProject) => Promise<void>;
   voiceOptions: VoiceOption[];
 };
 

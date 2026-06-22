@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import type { Dirent } from "node:fs";
 import path from "node:path";
 
 import {
@@ -134,18 +135,19 @@ async function readProjectSummaryFile(relativePath: string, absolutePath: string
 }
 
 async function collectProjectEntrySummaries(
-  entry: Awaited<ReturnType<typeof fs.readdir>>[number],
+  entry: Dirent,
   dirPath: string,
   nestedPath: string,
 ): Promise<ProjectFileSummary[]> {
-  const relativePath = nestedPath ? path.join(nestedPath, entry.name) : entry.name;
-  const absolutePath = path.join(dirPath, entry.name);
+  const entryName = entry.name.toString();
+  const relativePath = nestedPath ? path.join(nestedPath, entryName) : entryName;
+  const absolutePath = path.join(dirPath, entryName);
 
   if (entry.isDirectory()) {
     return collectProjectFiles(absolutePath, relativePath);
   }
 
-  if (!shouldIncludeProjectFile(entry.name, entry.isFile())) {
+  if (!shouldIncludeProjectFile(entryName, entry.isFile())) {
     return [];
   }
 
@@ -160,7 +162,7 @@ async function collectProjectFiles(
   dirPath: string,
   nestedPath = "",
 ): Promise<ProjectFileSummary[]> {
-  const entries = await fs.readdir(dirPath, { withFileTypes: true });
+  const entries = await fs.readdir(dirPath, { encoding: "utf8", withFileTypes: true });
   const nestedSummaries = await Promise.all(
     entries.map((entry) => collectProjectEntrySummaries(entry, dirPath, nestedPath)),
   );

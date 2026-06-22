@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { type VoiceOption } from "@/_schemas";
-import { fetchJson } from "@/_shared/lib/fetch-json";
+import { fetchVoices, voisonaKeys } from "@/app/core/api/voisona";
 import { toast } from "sonner";
 
 export type VoicesContextValue = {
@@ -9,7 +9,7 @@ export type VoicesContextValue = {
 };
 
 function useVoicesQuery() {
-  const { data, mutate } = useSWR<{ options: VoiceOption[] }>("/api/voisona/voices", fetchJson, {
+  const { data, mutate } = useSWR(voisonaKeys.voices(), fetchVoices, {
     revalidateOnFocus: false,
     onError(err, key, config) {
       console.error(err, key, config);

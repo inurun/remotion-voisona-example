@@ -20,9 +20,51 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/_shared/components/ui/sidebar";
-import { groupProjectsByDirectory } from "@/app/features/project/project-navigation";
-import { getProjectHref } from "@/app/features/project/project-path";
 import { useProject } from "@/app/contexts/project-context/project-context";
+
+function encodeProjectPathForUrl(projectPath: string) {
+  return projectPath
+    .split("/")
+    .filter(Boolean)
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
+function getProjectHref(projectPath: string) {
+  return `/${encodeProjectPathForUrl(projectPath)}`;
+}
+
+function getDirectoryPath(project: ProjectFileSummary) {
+  return project.segments.slice(0, -1).join("/");
+}
+
+function getDirectoryName(directoryPath: string) {
+  if (!directoryPath) {
+    return "Root";
+  }
+
+  const segments = directoryPath.split("/");
+  return segments[segments.length - 1] ?? "Root";
+}
+
+function groupProjectsByDirectory(projects: ProjectFileSummary[]) {
+  const groups = new Map<string, ProjectFileSummary[]>();
+
+  for (const project of projects) {
+    const directoryPath = getDirectoryPath(project);
+    const current = groups.get(directoryPath) ?? [];
+    current.push(project);
+    groups.set(directoryPath, current);
+  }
+
+  return [...groups.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([directoryPath, items]) => ({
+      directoryPath,
+      directoryName: getDirectoryName(directoryPath),
+      items: [...items].sort((left, right) => right.updatedAt - left.updatedAt),
+    }));
+}
 
 function Directory({
   directoryName,

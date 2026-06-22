@@ -1,7 +1,6 @@
 import useSWR from "swr";
 import type { ProjectFileSummary, SavedProject } from "@/_schemas";
-import { fetchJson } from "@/_shared/lib/fetch-json";
-import { getProjectApiPath, getProjectPathFromLocation } from "@/app/features/project/project-path";
+import { fetchProject, fetchProjects, projectKeys } from "@/app/core/api/project";
 import { toast } from "sonner";
 
 export type ProjectContextValue = {
@@ -13,16 +12,17 @@ export type ProjectContextValue = {
   reloadProject: () => Promise<void>;
 };
 
-function getProjectRequestPath(projectPath: string | null) {
-  return projectPath ? getProjectApiPath(projectPath) : null;
+function getProjectPathFromLocation(pathname: string) {
+  const normalizedPath = pathname.replace(/^\/+|\/+$/g, "");
+  return normalizedPath ? decodeURIComponent(normalizedPath) : null;
 }
 
 async function mutateProjectIfPresent(
-  projectApiPath: string | null,
+  projectPath: string | null,
   mutate: ReturnType<typeof useSWR<SavedProject>>["mutate"],
   project?: SavedProject,
 ) {
-  if (!projectApiPath) {
+  if (!projectPath) {
     return;
   }
 
@@ -35,7 +35,7 @@ async function mutateProjectIfPresent(
 }
 
 function useProjects() {
-  const { data, mutate } = useSWR<ProjectFileSummary[]>("/api/projects", fetchJson, {
+  const { data, mutate } = useSWR(projectKeys.list(), fetchProjects, {
     revalidateOnFocus: false,
     onError(err, key, config) {
       console.error(err, key, config);
@@ -52,22 +52,25 @@ function useProjects() {
 }
 
 function useSelectedProject(projectPath: string | null) {
-  const projectApiPath = getProjectRequestPath(projectPath);
-  const { data, mutate } = useSWR<SavedProject>(projectApiPath, fetchJson, {
-    revalidateOnFocus: false,
-    onError(err, key, config) {
-      console.error(err, key, config);
-      toast.error("Project loading failed");
+  const { data, mutate } = useSWR(
+    projectPath ? projectKeys.detail(projectPath) : null,
+    () => fetchProject(projectPath!),
+    {
+      revalidateOnFocus: false,
+      onError(err, key, config) {
+        console.error(err, key, config);
+        toast.error("Project loading failed");
+      },
     },
-  });
+  );
 
   return {
     project: data ?? { pages: [] },
     mutateProject: async (project: SavedProject) => {
-      await mutateProjectIfPresent(projectApiPath, mutate, project);
+      await mutateProjectIfPresent(projectPath, mutate, project);
     },
     reloadProject: async () => {
-      await mutateProjectIfPresent(projectApiPath, mutate);
+      await mutateProjectIfPresent(projectPath, mutate);
     },
   };
 }

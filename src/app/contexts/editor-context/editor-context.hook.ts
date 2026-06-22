@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { toast } from "sonner";
 import type { DraftPage, DraftProject, DraftTts, SavedProject, VoiceOption } from "@/_schemas";
 import { useVoices } from "@/app/contexts/voices-context/voices-context";
+import { useProject } from "@/app/contexts/project-context/project-context";
 import { useEditorActions } from "@/app/features/editor/editor-actions";
 import { useEditorForm } from "@/app/features/editor/editor-form";
 import { useEditorScreen } from "@/app/features/editor/editor-screen";
@@ -29,12 +30,14 @@ export type EditorContextValue = {
 };
 
 export function useEditorProviderValue(project: SavedProject) {
+  const { projectPath, mutateProject } = useProject();
   const { options, loadVoices } = useVoices();
   const { form, pageFields, appendPage, createDraftTts, movePage, removePage } = useEditorForm({
     initialProject: project,
     voiceOptions: options,
   });
   const editorActions = useEditorActions({
+    projectPath,
     onError: (message) => {
       toast.error(message);
     },
@@ -45,7 +48,7 @@ export function useEditorProviderValue(project: SavedProject) {
 
   const saveCurrentProject = useCallback(
     async (draftProject: DraftProject) => {
-      return toast.promise(editorActions.saveProject(draftProject), {
+      await toast.promise(editorActions.saveProject(draftProject), {
         loading: "保存中...",
         success: "保存して音声を更新した。",
         error: "Save failed",

@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { Hono } from "hono";
-import { registerProjectRoutes } from "./route";
+import { projectApp } from "./route";
 import { InvalidProjectPathError, ProjectNotFoundError } from "@/server/_shared/storage";
 
 const { listProjectsMock, loadProjectMock, saveProjectMock } = vi.hoisted(() => ({
@@ -21,10 +20,7 @@ describe("project routes", () => {
       { path: "project", name: "project", segments: ["project"], updatedAt: 1 },
     ]);
 
-    const app = new Hono();
-    registerProjectRoutes(app);
-
-    const response = await app.request("/projects");
+    const response = await projectApp.request("/projects");
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual([
       { path: "project", name: "project", segments: ["project"], updatedAt: 1 },
@@ -34,10 +30,7 @@ describe("project routes", () => {
   it("loads a nested project", async () => {
     loadProjectMock.mockResolvedValueOnce({ pages: [] });
 
-    const app = new Hono();
-    registerProjectRoutes(app);
-
-    const response = await app.request("/project/nested/example");
+    const response = await projectApp.request("/project/nested/example");
     expect(response.status).toBe(200);
     expect(loadProjectMock).toHaveBeenCalledWith("nested/example");
   });
@@ -45,20 +38,14 @@ describe("project routes", () => {
   it("returns not found for missing project", async () => {
     loadProjectMock.mockRejectedValueOnce(new ProjectNotFoundError("missing"));
 
-    const app = new Hono();
-    registerProjectRoutes(app);
-
-    const response = await app.request("/project/missing");
+    const response = await projectApp.request("/project/missing");
     expect(response.status).toBe(404);
   });
 
   it("returns bad request for missing path", async () => {
     saveProjectMock.mockRejectedValueOnce(new InvalidProjectPathError("bad"));
 
-    const app = new Hono();
-    registerProjectRoutes(app);
-
-    const response = await app.request("/project/bad.json", {
+    const response = await projectApp.request("/project/bad.json", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

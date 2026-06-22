@@ -44,6 +44,10 @@ function TtsVoiceField({ index, onRemove }: { index: number; onRemove: () => voi
                 voiceVersion: voiceVersion ?? "",
               })}
               onValueChange={(value) => {
+                if (!value) {
+                  return;
+                }
+
                 const [nextVoiceName, nextVoiceVersion] = value.split("::");
                 controllerField.onChange(nextVoiceName ?? "");
                 setValue(
