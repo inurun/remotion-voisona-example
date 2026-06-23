@@ -1,6 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import { useEffect } from "react";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Button } from "@/_shared/components/ui/button";
 import { Field, FieldError, FieldGroup } from "@/_shared/components/ui/field";
 import {
@@ -14,14 +13,23 @@ import { Separator } from "@/_shared/components/ui/separator";
 import { Textarea } from "@/_shared/components/ui/textarea";
 import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { usePage } from "@/app/contexts/page-context/page-context";
+import { useTts } from "@/app/contexts/tts-context/tts-context";
 import { useVoices } from "@/app/contexts/voices-context/voices-context";
 import { getVoiceValue } from "@/app/contexts/form-context/form-context";
+import { useTtsList } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hook";
 
-function TtsVoiceField({ index, onRemove }: { index: number; onRemove: () => void }) {
+function TtsVoiceField({
+  index,
+  onRemove,
+  onSelect,
+}: {
+  index: number;
+  onRemove: () => void;
+  onSelect: (index: number) => void;
+}) {
   const { control, setValue } = useFormContext<DraftProject>();
-  const { setSelectedTtsIndex, selectedPageIndex } = usePage();
+  const { selectedPageIndex } = usePage();
   const { options } = useVoices();
   const pageIndex = selectedPageIndex ?? 0;
   const voiceVersion = useWatch({
@@ -58,7 +66,7 @@ function TtsVoiceField({ index, onRemove }: { index: number; onRemove: () => voi
                   nextVoiceVersion ?? "",
                   { shouldDirty: true },
                 );
-                setSelectedTtsIndex(index);
+                onSelect(index);
               }}
             >
               <SelectTrigger aria-invalid={fieldState.invalid} className="w-full">
@@ -93,9 +101,9 @@ function TtsVoiceField({ index, onRemove }: { index: number; onRemove: () => voi
   );
 }
 
-function TtsTextField({ index }: { index: number }) {
+function TtsTextField({ index, onFocus }: { index: number; onFocus: (index: number) => void }) {
   const { control, setValue } = useFormContext<DraftProject>();
-  const { setSelectedTtsIndex, selectedPageIndex } = usePage();
+  const { selectedPageIndex } = usePage();
 
   if (selectedPageIndex === null) {
     return null;
@@ -123,7 +131,7 @@ function TtsTextField({ index }: { index: number }) {
                 shouldDirty: true,
               });
             }}
-            onFocus={() => setSelectedTtsIndex(index)}
+            onFocus={() => onFocus(index)}
           />
           <FieldError errors={[fieldState.error]} />
         </Field>
@@ -133,7 +141,7 @@ function TtsTextField({ index }: { index: number }) {
 }
 
 function TtsBusyBadge({ ttsIndex }: { ttsIndex: number }) {
-  const { busyById } = useEditor();
+  const { busyById } = useTts();
   const { selectedPageIndex } = usePage();
   const { control } = useFormContext<DraftProject>();
   const pageIndex = selectedPageIndex ?? 0;
@@ -156,8 +164,18 @@ function TtsBusyBadge({ ttsIndex }: { ttsIndex: number }) {
   );
 }
 
-function TtsItem({ index, onRemove }: { index: number; onRemove: () => void }) {
-  const { selectedTtsIndex } = usePage();
+function TtsItem({
+  index,
+  onRemove,
+  onSelect,
+  onFocus,
+}: {
+  index: number;
+  onRemove: () => void;
+  onSelect: (index: number) => void;
+  onFocus: (index: number) => void;
+}) {
+  const { selectedTtsIndex } = useTts();
 
   return (
     <article
@@ -169,41 +187,14 @@ function TtsItem({ index, onRemove }: { index: number; onRemove: () => void }) {
       <div className="flex items-center gap-3">
         <TtsBusyBadge ttsIndex={index} />
       </div>
-      <TtsVoiceField index={index} onRemove={onRemove} />
-      <TtsTextField index={index} />
+      <TtsVoiceField index={index} onRemove={onRemove} onSelect={onSelect} />
+      <TtsTextField index={index} onFocus={onFocus} />
     </article>
   );
 }
 
 export function TtsList() {
-  const { control } = useFormContext<DraftProject>();
-  const { selectedPageIndex, selectedTtsIndex, setSelectedTtsIndex } = usePage();
-  const pageIndex = selectedPageIndex ?? 0;
-  const { fields, remove } = useFieldArray({
-    control,
-    keyName: "fieldKey",
-    name: `pages.${pageIndex}.tts`,
-  });
-
-  useEffect(() => {
-    if (selectedPageIndex === null) {
-      return;
-    }
-
-    if (fields.length === 0) {
-      setSelectedTtsIndex(null);
-      return;
-    }
-
-    if (selectedTtsIndex === null) {
-      setSelectedTtsIndex(0);
-      return;
-    }
-
-    if (selectedTtsIndex >= fields.length) {
-      setSelectedTtsIndex(fields.length - 1);
-    }
-  }, [fields.length, selectedPageIndex, selectedTtsIndex, setSelectedTtsIndex]);
+  const { selectedPageIndex, fields, removeTts, selectTtsOnFocus, selectTts } = useTtsList();
 
   if (selectedPageIndex === null) {
     return null;
@@ -224,10 +215,9 @@ export function TtsList() {
           {index > 0 ? <Separator className="bg-border/70" /> : null}
           <TtsItem
             index={index}
-            onRemove={() => {
-              setSelectedTtsIndex(fields.length <= 1 ? null : Math.min(index, fields.length - 2));
-              remove(index);
-            }}
+            onRemove={() => removeTts(index)}
+            onSelect={selectTts}
+            onFocus={selectTtsOnFocus}
           />
         </div>
       ))}

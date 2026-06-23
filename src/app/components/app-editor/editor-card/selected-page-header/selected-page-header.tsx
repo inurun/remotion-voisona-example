@@ -1,9 +1,9 @@
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
-import { usePage } from "@/app/contexts/page-context/page-context";
+import { useSelectedPageHeader } from "@/app/components/app-editor/editor-card/selected-page-header/selected-page-header.hook";
 
 export function SelectedPageHeader() {
-  const { pageNumber, canMoveUp, canMoveDown, moveUp, moveDown, remove } = usePage();
+  const { pageNumber, canMoveUp, canMoveDown, moveUp, moveDown, remove } = useSelectedPageHeader();
 
   if (pageNumber === null) {
     return null;

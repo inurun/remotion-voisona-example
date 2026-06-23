@@ -1,9 +1,9 @@
 import { FilePlus2 } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
-import { usePage } from "@/app/contexts/page-context/page-context";
+import { useAppendPageButton } from "@/app/components/app-editor/editor-card/append-page-button/append-page-button.hook";
 
 export function AppendPageButton() {
-  const { append } = usePage();
+  const { append } = useAppendPageButton();
 
   return (
     <Button

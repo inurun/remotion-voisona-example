@@ -1,6 +1,9 @@
 import { useHotkeys } from "react-hotkeys-hook";
+import { useFormContext } from "react-hook-form";
+import type { DraftProject } from "@/_schemas";
 import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { usePage } from "@/app/contexts/page-context/page-context";
+import { useTts } from "@/app/contexts/tts-context/tts-context";
 
 function getHotkeyTarget() {
   const activeElement = document.activeElement;
@@ -23,8 +26,10 @@ function getHotkeyTarget() {
 }
 
 export function useEditorHotkeys() {
-  const { onAnalyzeTts, onAppendTtsToPage, onSave } = useEditor();
-  const { selectedPageIndex } = usePage();
+  const form = useFormContext<DraftProject>();
+  const { save: onSave } = useEditor();
+  const { selectedPageIndex, setSelectedPageIndex } = usePage();
+  const { appendToPage, selectTts, analyze, selectedTtsIndex } = useTts();
 
   useHotkeys(
     "mod+s",
@@ -44,16 +49,26 @@ export function useEditorHotkeys() {
     "mod+enter",
     (event) => {
       event.preventDefault();
-      if (selectedPageIndex !== null) {
-        onAppendTtsToPage(selectedPageIndex);
+      if (selectedPageIndex === null) {
+        return;
       }
+
+      const page = form.getValues(`pages.${selectedPageIndex}`);
+      const sourceTts = selectedTtsIndex !== null ? page?.tts[selectedTtsIndex] : undefined;
+      const result = appendToPage(selectedPageIndex, sourceTts);
+      if (!result) {
+        return;
+      }
+
+      setSelectedPageIndex(result.pageIndex);
+      selectTts(result.ttsIndex);
     },
     {
       enableOnContentEditable: true,
       enableOnFormTags: true,
       preventDefault: true,
     },
-    [onAppendTtsToPage, selectedPageIndex],
+    [appendToPage, form, selectTts, selectedPageIndex, selectedTtsIndex, setSelectedPageIndex],
   );
 
   useHotkeys(
@@ -65,13 +80,13 @@ export function useEditorHotkeys() {
         return;
       }
 
-      void onAnalyzeTts(target.pageIndex, target.ttsIndex);
+      void analyze(target.pageIndex, target.ttsIndex);
     },
     {
       enableOnContentEditable: true,
       enableOnFormTags: true,
       preventDefault: true,
     },
-    [onAnalyzeTts],
+    [analyze],
   );
 }

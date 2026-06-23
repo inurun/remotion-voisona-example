@@ -2,8 +2,8 @@ import { Sparkles, Volume2 } from "lucide-react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Button } from "@/_shared/components/ui/button";
 import { type DraftProject } from "@/_schemas";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { usePage } from "@/app/contexts/page-context/page-context";
+import { useTts } from "@/app/contexts/tts-context/tts-context";
 
 function isVoiceActionDisabled({
   busy,
@@ -76,8 +76,8 @@ function PreviewButton({
 }
 
 export function ConfigActions() {
-  const { busyById, canRunTts, onAnalyzeTts, onPreviewTts } = useEditor();
-  const { selectedPageIndex, selectedTtsIndex } = usePage();
+  const { busyById, canRunTts, analyze, preview, selectedTtsIndex } = useTts();
+  const { selectedPageIndex } = usePage();
   const { control } = useFormContext<DraftProject>();
   const pageIndex = selectedPageIndex ?? 0;
   const ttsIndex = selectedTtsIndex ?? 0;
@@ -97,12 +97,12 @@ export function ConfigActions() {
       <AnalyzeButton
         busy={busy}
         disabled={disabled}
-        onClick={() => void onAnalyzeTts(selectedPageIndex, selectedTtsIndex)}
+        onClick={() => void analyze(selectedPageIndex, selectedTtsIndex)}
       />
       <PreviewButton
         busy={busy}
         disabled={disabled}
-        onClick={() => void onPreviewTts(selectedPageIndex, selectedTtsIndex)}
+        onClick={() => void preview(selectedPageIndex, selectedTtsIndex)}
       />
     </div>
   );

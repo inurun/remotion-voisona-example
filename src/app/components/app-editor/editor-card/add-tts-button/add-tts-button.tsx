@@ -1,11 +1,9 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
-import { usePage } from "@/app/contexts/page-context/page-context";
+import { useAddTtsButton } from "@/app/components/app-editor/editor-card/add-tts-button/use-add-tts-button";
 
 export function AddTtsButton() {
-  const { onAppendTtsToPage } = useEditor();
-  const { selectedPageIndex } = usePage();
+  const { selectedPageIndex, append } = useAddTtsButton();
 
   if (selectedPageIndex === null) {
     return null;
@@ -19,7 +17,7 @@ export function AddTtsButton() {
         variant="secondary"
         title="TTS 追加"
         aria-label="TTS 追加"
-        onClick={() => onAppendTtsToPage(selectedPageIndex)}
+        onClick={append}
       >
         <Plus />
       </Button>

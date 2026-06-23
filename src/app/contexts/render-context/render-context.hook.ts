@@ -12,6 +12,7 @@ import {
 } from "@/app/core/api/render";
 import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { usePage } from "@/app/contexts/page-context/page-context";
+import { useTts } from "@/app/contexts/tts-context/tts-context";
 import { useProject } from "@/app/contexts/project-context/project-context";
 import { requestSaveProject } from "@/app/features/editor/editor-api";
 
@@ -49,7 +50,8 @@ export type RenderContextValue = {
 
 export function useRenderProviderValue(): RenderContextValue {
   const { handleSubmit } = useFormContext<DraftProject>();
-  const { canRunTts, saving } = useEditor();
+  const { isPending: saving } = useEditor();
+  const { canRunTts } = useTts();
   const { pageFields } = usePage();
   const { projectPath } = useProject();
   const { data, mutate } = useSWR(renderKeys.snapshot(), fetchRenderState, {

@@ -1,8 +1,8 @@
 import { cn } from "@/_shared/lib/utils";
-import { usePage } from "@/app/contexts/page-context/page-context";
+import { usePageList } from "@/app/components/app-editor/editor-card/page-list/use-page-list";
 
 export function PageList() {
-  const { pageFields, selectedPageIndex, selectPage } = usePage();
+  const { pageFields, selectedPageIndex, selectPage } = usePageList();
 
   if (pageFields.length === 0) {
     return (

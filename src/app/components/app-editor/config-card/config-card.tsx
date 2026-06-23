@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
 import { usePage } from "@/app/contexts/page-context/page-context";
+import { useTts } from "@/app/contexts/tts-context/tts-context";
 import { ConfigActions } from "@/app/components/app-editor/config-card/config-actions/config-actions";
 import { ReadTextField } from "@/app/components/app-editor/config-card/read-text-field/read-text-field";
 import { TsmlField } from "@/app/components/app-editor/config-card/tsml-field/tsml-field";
 
 export function ConfigCard() {
-  const { pageFields, selectedPageIndex, selectedTtsIndex } = usePage();
+  const { pageFields, selectedPageIndex } = usePage();
+  const { selectedTtsIndex } = useTts();
   const selectedTts =
     selectedPageIndex !== null && selectedTtsIndex !== null
       ? pageFields[selectedPageIndex]?.tts[selectedTtsIndex]

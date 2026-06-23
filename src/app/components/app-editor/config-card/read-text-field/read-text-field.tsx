@@ -3,10 +3,12 @@ import { Field, FieldError } from "@/_shared/components/ui/field";
 import { Input } from "@/_shared/components/ui/input";
 import { type DraftProject } from "@/_schemas";
 import { usePage } from "@/app/contexts/page-context/page-context";
+import { useTts } from "@/app/contexts/tts-context/tts-context";
 
 export function ReadTextField() {
   const { control } = useFormContext<DraftProject>();
-  const { selectedPageIndex, selectedTtsIndex } = usePage();
+  const { selectedPageIndex } = usePage();
+  const { selectedTtsIndex } = useTts();
 
   if (selectedPageIndex === null || selectedTtsIndex === null) {
     return null;

@@ -6,7 +6,7 @@ import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { useRender } from "@/app/contexts/render-context/render-context";
 
 export function AppHeader() {
-  const { onSave, saving } = useEditor();
+  const { save: onSave, isPending: saving } = useEditor();
   const { openRenderDialog } = useRender();
 
   return (
