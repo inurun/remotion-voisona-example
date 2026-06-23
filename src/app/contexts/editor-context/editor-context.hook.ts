@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 import type { DraftProject } from "@/_schemas";
 import { useProject } from "@/app/contexts/project-context/project-context";
-import { requestSaveProject } from "@/app/features/editor/editor-api";
+import { requestSaveProject } from "@/app/core/api/editor-api";
 
 type EditorContextValue = {
   isPending: boolean;

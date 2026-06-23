@@ -14,7 +14,7 @@ import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { usePage } from "@/app/contexts/page-context/page-context";
 import { useTts } from "@/app/contexts/tts-context/tts-context";
 import { useProject } from "@/app/contexts/project-context/project-context";
-import { requestSaveProject } from "@/app/features/editor/editor-api";
+import { requestSaveProject } from "@/app/core/api/editor-api";
 
 export type { RenderState };
 

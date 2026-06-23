@@ -8,7 +8,7 @@ import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { getVoiceValue } from "@/app/contexts/form-context/form-context.hook";
 import { useForm } from "@/app/contexts/form-context/form-context";
 import { resolveTtsIndexForPage } from "@/app/features/editor/selection";
-import { requestPreviewSynthesis, requestTextAnalysis } from "@/app/features/editor/editor-api";
+import { requestPreviewSynthesis, requestTextAnalysis } from "@/app/core/api/editor-api";
 
 type PendingTextFocus = {
   pageIndex: number;
