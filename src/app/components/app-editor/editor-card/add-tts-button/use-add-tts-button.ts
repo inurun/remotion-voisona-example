@@ -1,29 +1,129 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import type { DraftProject } from "@/_schemas";
+import type { DraftProject, DraftTts, VoiceOption } from "@/_schemas";
+import { createUuid } from "@/_shared/lib/utils";
+import { useForm } from "@/app/contexts/form-context/form-context";
 import { usePage } from "@/app/contexts/page-context/page-context";
 import { useTts } from "@/app/contexts/tts-context/tts-context";
+import { useVoices } from "@/app/contexts/voices-context/voices-context";
+
+type PendingTextFocus = {
+  pageIndex: number;
+  ttsIndex: number;
+};
+
+const emptyVoice = {
+  voiceName: "",
+  voiceVersion: "",
+};
+
+function hasVoiceName(voice: DraftTts | VoiceOption | undefined) {
+  return Boolean(voice?.voiceName);
+}
+
+function getInitialVoice(options: VoiceOption[], sourceTts: DraftTts | undefined) {
+  const voice = [sourceTts, options[0]].find(hasVoiceName) ?? emptyVoice;
+  return {
+    voiceName: voice.voiceName,
+    voiceVersion: voice.voiceVersion ?? "",
+  };
+}
+
+function createDraftTts(options: VoiceOption[], sourceTts: DraftTts | undefined): DraftTts {
+  const voice = getInitialVoice(options, sourceTts);
+
+  return {
+    id: createUuid(),
+    text: "",
+    readText: "",
+    voiceName: voice.voiceName,
+    voiceVersion: voice.voiceVersion,
+    speech: {},
+  };
+}
+
+function focusTextArea(
+  form: ReturnType<typeof useFormContext<DraftProject>>,
+  pendingTextFocus: PendingTextFocus,
+  onSettled: () => void,
+) {
+  const fieldName =
+    `pages.${pendingTextFocus.pageIndex}.tts.${pendingTextFocus.ttsIndex}.text` as const;
+  let retryFrame: number | null = null;
+
+  const focusAndScroll = () => {
+    form.setFocus(fieldName);
+    const textArea = document.querySelector<HTMLTextAreaElement>(`textarea[name="${fieldName}"]`);
+    if (textArea) {
+      textArea.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    onSettled();
+  };
+
+  const frame = window.requestAnimationFrame(() => {
+    const textArea = document.querySelector<HTMLTextAreaElement>(`textarea[name="${fieldName}"]`);
+    if (textArea) {
+      focusAndScroll();
+      return;
+    }
+
+    retryFrame = window.requestAnimationFrame(focusAndScroll);
+  });
+
+  return () => {
+    window.cancelAnimationFrame(frame);
+    if (retryFrame !== null) {
+      window.cancelAnimationFrame(retryFrame);
+    }
+  };
+}
 
 export function useAddTtsButton() {
   const form = useFormContext<DraftProject>();
+  const { appendTtsToPage } = useForm();
   const { selectedPageIndex, setSelectedPageIndex } = usePage();
-  const { selectedTtsIndex, appendToPage, selectTts } = useTts();
+  const { selectedTtsIndex, selectTts } = useTts();
+  const { options } = useVoices();
+  const [pendingTextFocus, setPendingTextFocus] = useState<PendingTextFocus | null>(null);
+
+  const clearPendingTextFocus = useCallback(() => {
+    setPendingTextFocus(null);
+  }, []);
+
+  useEffect(() => {
+    if (!pendingTextFocus) {
+      return;
+    }
+
+    return focusTextArea(form, pendingTextFocus, clearPendingTextFocus);
+  }, [clearPendingTextFocus, form, pendingTextFocus]);
 
   const append = useCallback(() => {
     if (selectedPageIndex === null) {
-      return;
+      return null;
     }
 
     const page = form.getValues(`pages.${selectedPageIndex}`);
     const sourceTts = selectedTtsIndex !== null ? page?.tts[selectedTtsIndex] : undefined;
-    const result = appendToPage(selectedPageIndex, sourceTts);
-    if (!result) {
-      return;
+    const nextTtsIndex = appendTtsToPage(selectedPageIndex, createDraftTts(options, sourceTts));
+
+    if (nextTtsIndex === null) {
+      return null;
     }
 
-    setSelectedPageIndex(result.pageIndex);
-    selectTts(result.ttsIndex);
-  }, [appendToPage, form, selectTts, selectedPageIndex, selectedTtsIndex, setSelectedPageIndex]);
+    setPendingTextFocus({ pageIndex: selectedPageIndex, ttsIndex: nextTtsIndex });
+    setSelectedPageIndex(selectedPageIndex);
+    selectTts(nextTtsIndex);
+    return { pageIndex: selectedPageIndex, ttsIndex: nextTtsIndex };
+  }, [
+    appendTtsToPage,
+    form,
+    options,
+    selectTts,
+    selectedPageIndex,
+    selectedTtsIndex,
+    setSelectedPageIndex,
+  ]);
 
   return {
     selectedPageIndex,

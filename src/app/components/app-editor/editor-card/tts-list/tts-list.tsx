@@ -18,6 +18,7 @@ import { useTts } from "@/app/contexts/tts-context/tts-context";
 import { useVoices } from "@/app/contexts/voices-context/voices-context";
 import { getVoiceValue } from "@/app/contexts/form-context/form-context";
 import { useTtsList } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hook";
+import { useTtsListHotkeys } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hotkeys";
 
 function TtsVoiceField({
   index,
@@ -140,30 +141,6 @@ function TtsTextField({ index, onFocus }: { index: number; onFocus: (index: numb
   );
 }
 
-function TtsBusyBadge({ ttsIndex }: { ttsIndex: number }) {
-  const { busyById } = useTts();
-  const { selectedPageIndex } = usePage();
-  const { control } = useFormContext<DraftProject>();
-  const pageIndex = selectedPageIndex ?? 0;
-  const itemId = useWatch({ control, name: `pages.${pageIndex}.tts.${ttsIndex}.id` });
-
-  if (selectedPageIndex === null) {
-    return null;
-  }
-
-  const busy = itemId ? busyById[itemId] : undefined;
-
-  if (!busy) {
-    return null;
-  }
-
-  return (
-    <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-      {busy}
-    </span>
-  );
-}
-
 function TtsItem({
   index,
   onRemove,
@@ -184,9 +161,6 @@ function TtsItem({
         selectedTtsIndex === index ? "bg-muted/20" : "bg-card",
       )}
     >
-      <div className="flex items-center gap-3">
-        <TtsBusyBadge ttsIndex={index} />
-      </div>
       <TtsVoiceField index={index} onRemove={onRemove} onSelect={onSelect} />
       <TtsTextField index={index} onFocus={onFocus} />
     </article>
@@ -195,6 +169,7 @@ function TtsItem({
 
 export function TtsList() {
   const { selectedPageIndex, fields, removeTts, selectTtsOnFocus, selectTts } = useTtsList();
+  useTtsListHotkeys();
 
   if (selectedPageIndex === null) {
     return null;

@@ -1,39 +1,14 @@
 import { Sparkles, Volume2 } from "lucide-react";
-import { useFormContext, useWatch } from "react-hook-form";
 import { Button } from "@/_shared/components/ui/button";
-import { type DraftProject } from "@/_schemas";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { useTts } from "@/app/contexts/tts-context/tts-context";
-
-function isVoiceActionDisabled({
-  busy,
-  canRunTts,
-  text,
-  voiceName,
-}: {
-  busy?: string;
-  canRunTts: boolean;
-  text?: string;
-  voiceName?: string;
-}) {
-  if (!canRunTts || Boolean(busy)) {
-    return true;
-  }
-
-  if (!(text ?? "").trim()) {
-    return true;
-  }
-
-  return !voiceName;
-}
+import { useConfigTtsActions } from "@/app/components/app-editor/config-card/config-actions/config-actions.hook";
 
 function AnalyzeButton({
-  busy,
   disabled,
+  isAnalyzing,
   onClick,
 }: {
-  busy?: string;
   disabled: boolean;
+  isAnalyzing: boolean;
   onClick: () => void;
 }) {
   return (
@@ -43,23 +18,15 @@ function AnalyzeButton({
       variant="secondary"
       disabled={disabled}
       onClick={onClick}
-      title={busy === "analyze" ? "Analyzing" : "Analyze"}
-      aria-label={busy === "analyze" ? "Analyzing" : "Analyze"}
+      title={isAnalyzing ? "Analyzing" : "Analyze"}
+      aria-label={isAnalyzing ? "Analyzing" : "Analyze"}
     >
-      <Sparkles className={busy === "analyze" ? "animate-pulse" : undefined} />
+      <Sparkles className={isAnalyzing ? "animate-pulse" : undefined} />
     </Button>
   );
 }
 
-function PreviewButton({
-  busy,
-  disabled,
-  onClick,
-}: {
-  busy?: string;
-  disabled: boolean;
-  onClick: () => void;
-}) {
+function PreviewButton({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
   return (
     <Button
       type="button"
@@ -67,43 +34,36 @@ function PreviewButton({
       variant="outline"
       disabled={disabled}
       onClick={onClick}
-      title={busy === "preview" ? "Previewing" : "Preview"}
-      aria-label={busy === "preview" ? "Previewing" : "Preview"}
+      title="Preview"
+      aria-label="Preview"
     >
-      <Volume2 className={busy === "preview" ? "animate-pulse" : undefined} />
+      <Volume2 />
     </Button>
   );
 }
 
 export function ConfigActions() {
-  const { busyById, canRunTts, analyze, preview, selectedTtsIndex } = useTts();
-  const { selectedPageIndex } = usePage();
-  const { control } = useFormContext<DraftProject>();
-  const pageIndex = selectedPageIndex ?? 0;
-  const ttsIndex = selectedTtsIndex ?? 0;
-  const itemId = useWatch({ control, name: `pages.${pageIndex}.tts.${ttsIndex}.id` });
-  const text = useWatch({ control, name: `pages.${pageIndex}.tts.${ttsIndex}.text` });
-  const voiceName = useWatch({ control, name: `pages.${pageIndex}.tts.${ttsIndex}.voiceName` });
+  const {
+    analyzeDisabled,
+    analyzeSelected,
+    hasSelection,
+    isAnalyzing,
+    previewDisabled,
+    previewSelected,
+  } = useConfigTtsActions();
 
-  if (selectedPageIndex === null || selectedTtsIndex === null) {
+  if (!hasSelection) {
     return null;
   }
-
-  const busy = itemId ? busyById[itemId] : undefined;
-  const disabled = isVoiceActionDisabled({ busy, canRunTts, text, voiceName });
 
   return (
     <div className="flex flex-wrap gap-2">
       <AnalyzeButton
-        busy={busy}
-        disabled={disabled}
-        onClick={() => void analyze(selectedPageIndex, selectedTtsIndex)}
+        disabled={analyzeDisabled}
+        isAnalyzing={isAnalyzing}
+        onClick={analyzeSelected}
       />
-      <PreviewButton
-        busy={busy}
-        disabled={disabled}
-        onClick={() => void preview(selectedPageIndex, selectedTtsIndex)}
-      />
+      <PreviewButton disabled={previewDisabled} onClick={previewSelected} />
     </div>
   );
 }
