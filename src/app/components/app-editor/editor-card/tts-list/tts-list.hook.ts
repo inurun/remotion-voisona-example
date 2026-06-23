@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
 import { useFieldArray } from "react-hook-form";
-import type { DraftProject, DraftTts } from "@/_schemas";
+import type { DraftProject } from "@/_schemas";
 import { usePage } from "@/app/contexts/page-context/page-context";
 import { useTts } from "@/app/contexts/tts-context/tts-context";
 import { resolveTtsIndexAfterRemove } from "@/app/features/editor/selection";

@@ -1,4 +1,4 @@
-import { SidebarInset, SidebarProvider, SidebarRail } from "@/_shared/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/_shared/components/ui/sidebar";
 import { AppSidebar } from "@/app/components/app-sidebar/app-sidebar";
 import { AppEditor } from "@/app/components/app-editor/app-editor";
 import { EditorContextProvider } from "@/app/contexts/editor-context/editor-context";
