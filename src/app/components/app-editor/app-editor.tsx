@@ -2,10 +2,10 @@ import { ConfigCard } from "@/app/components/app-editor/config-card/config-card"
 import { EditorCard } from "@/app/components/app-editor/editor-card/editor-card";
 import { PlayerCard } from "./player-card/player-card";
 import { useAppEditorHotkeys } from "@/app/components/app-editor/app-editor.hotkeys";
-import { useEditorSelectionSync } from "@/app/hooks/use-editor-selection-sync";
+import { useAppEditor } from "@/app/components/app-editor/app-editor.hook";
 
 export function AppEditor() {
-  useEditorSelectionSync();
+  useAppEditor();
   useAppEditorHotkeys();
 
   return (
