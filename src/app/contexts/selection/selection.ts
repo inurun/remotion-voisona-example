@@ -16,14 +16,18 @@ export function resolveSelectedPageIndexAfterRemove(
   }
 
   if (removedIndex !== current) {
-    return current + (removedIndex < current ? -1 : 0);
+    return shiftPageIndexAfterRemove(current, removedIndex);
   }
 
-  if (nextLength === 0) {
-    return null;
-  }
+  return resolveReplacementPageIndex(removedIndex, nextLength);
+}
 
-  return Math.min(removedIndex, nextLength - 1);
+function shiftPageIndexAfterRemove(current: number, removedIndex: number) {
+  return current + (removedIndex < current ? -1 : 0);
+}
+
+function resolveReplacementPageIndex(removedIndex: number, nextLength: number) {
+  return nextLength === 0 ? null : Math.min(removedIndex, nextLength - 1);
 }
 
 export function resolvePageIndexFromFieldCount(

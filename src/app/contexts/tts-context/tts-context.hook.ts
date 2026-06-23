@@ -6,7 +6,7 @@ import type { DraftProject, DraftTts } from "@/_schemas";
 import { useEditor } from "@/app/contexts/editor-context/editor-context";
 import { useVoices } from "@/app/contexts/voices-context/voices-context";
 import { requestPreviewSynthesis, requestTextAnalysis } from "@/app/core/api/editor-api";
-import { resolveTtsIndexForPage } from "@/app/features/editor/selection";
+import { resolveTtsIndexForPage } from "@/app/contexts/selection/selection";
 
 type AnalyzeTextArg = {
   item: DraftTts;

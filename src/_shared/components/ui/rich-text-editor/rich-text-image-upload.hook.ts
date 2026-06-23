@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import type { Editor } from "@tiptap/react";
-import { uploadImage } from "@/app/core/api/uploads";
+
+export type UploadImage = (file: File) => Promise<string>;
 
 type UploadState = {
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
@@ -25,7 +26,13 @@ function insertUploadedImage(editor: Editor, src: string, fileName: string) {
     .run();
 }
 
-export function useRichTextImageUpload(editor: Editor | null): UploadState {
+export function useRichTextImageUpload({
+  editor,
+  uploadImage,
+}: {
+  editor: Editor | null;
+  uploadImage: UploadImage;
+}): UploadState {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);

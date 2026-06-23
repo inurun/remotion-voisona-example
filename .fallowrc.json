@@ -1,5 +1,5 @@
 {
   "dynamicallyLoaded": ["src/app/core/client.tsx"],
-  "ignorePatterns": ["**/*.test.*", "**/__test__/**"],
+  "ignorePatterns": ["**/*.test.*", "**/__test__/**", "**/__tests__/**"],
   "ignoreDependencies": ["@hono/node-server", "@remotion/studio"]
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { usePage } from "@/app/contexts/page-context/page-context";
 import { useTts } from "@/app/contexts/tts-context/tts-context";
-import { resolvePageIndexFromFieldCount } from "@/app/features/editor/selection";
+import { resolvePageIndexFromFieldCount } from "@/app/contexts/selection/selection";
 
 export function useAppEditor() {
   const { pageFields, selectedPageIndex, syncPageIndexFromFields } = usePage();

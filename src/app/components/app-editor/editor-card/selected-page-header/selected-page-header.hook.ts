@@ -4,7 +4,7 @@ import { useTts } from "@/app/contexts/tts-context/tts-context";
 import {
   getLandingPageTtsCount,
   resolveSelectedPageIndexAfterRemove,
-} from "@/app/features/editor/selection";
+} from "@/app/contexts/selection/selection";
 
 export function useSelectedPageHeader() {
   const { pageFields, selectedPageIndex, setSelectedPageIndex, movePage, removePage } = usePage();

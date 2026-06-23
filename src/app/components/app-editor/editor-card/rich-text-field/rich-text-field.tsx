@@ -1,8 +1,9 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { Field, FieldError } from "@/_shared/components/ui/field";
+import { RichTextEditor } from "@/_shared/components/ui/rich-text-editor/rich-text-editor";
 import { type DraftProject } from "@/_schemas";
 import { usePage } from "@/app/contexts/page-context/page-context";
-import { RichTextEditor } from "@/app/features/editor/rich-text-editor";
+import { uploadImage } from "@/app/core/api/uploads";
 
 export function RichTextField() {
   const { control } = useFormContext<DraftProject>();
@@ -18,7 +19,11 @@ export function RichTextField() {
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid} className="grid gap-2">
-          <RichTextEditor value={field.value ?? ""} onChange={field.onChange} />
+          <RichTextEditor
+            value={field.value ?? ""}
+            onChange={field.onChange}
+            uploadImage={uploadImage}
+          />
           <FieldError errors={[fieldState.error]} />
         </Field>
       )}

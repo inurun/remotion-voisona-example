@@ -3,18 +3,20 @@ import StarterKit from "@tiptap/starter-kit";
 import { useEffect } from "react";
 
 import { cn } from "@/_shared/lib/utils";
-import { RichTextEditorToolbar } from "@/app/features/editor/rich-text-editor-toolbar";
-import { useRichTextImageUpload } from "@/app/features/editor/rich-text-image-upload";
-import { isSingleImageRichText } from "@/app/features/editor/rich-text";
-import { TiptapImage } from "@/app/features/editor/tiptap-image";
-import { TiptapMarker } from "@/app/features/editor/tiptap-marker";
+import { RichTextEditorToolbar } from "./rich-text-editor-toolbar";
+import { useRichTextImageUpload, type UploadImage } from "./rich-text-image-upload.hook";
+import { isSingleImageRichText } from "./rich-text";
+import { TiptapImage } from "./tiptap-image";
+import { TiptapMarker } from "./tiptap-marker";
 
 export function RichTextEditor({
   value,
   onChange,
+  uploadImage,
 }: {
   value: string;
   onChange: (value: string) => void;
+  uploadImage: UploadImage;
 }) {
   const imageOnly = isSingleImageRichText(value);
   const editor = useEditor({
@@ -32,7 +34,7 @@ export function RichTextEditor({
     },
   });
   const { handleFileChange, inputRef, openFileDialog, uploadError, uploadingImage } =
-    useRichTextImageUpload(editor);
+    useRichTextImageUpload({ editor, uploadImage });
 
   useEffect(() => {
     if (!editor) {

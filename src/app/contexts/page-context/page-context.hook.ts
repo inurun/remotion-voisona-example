@@ -1,6 +1,6 @@
 import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import type { DraftPage } from "@/_schemas";
-import { resolvePageIndexFromFieldCount } from "@/app/features/editor/selection";
+import { resolvePageIndexFromFieldCount } from "@/app/contexts/selection/selection";
 import { useForm } from "@/app/contexts/form-context/form-context";
 
 type PageContextValue = {

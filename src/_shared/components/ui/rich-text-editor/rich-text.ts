@@ -94,7 +94,9 @@ function getTagAttributesSource(cleanedTag: string) {
   return spaceIndex === -1 ? "" : cleanedTag.slice(spaceIndex + 1);
 }
 
-function createElementNode(token: string): RichTextNode | null {
+type RichTextElementNode = Extract<RichTextNode, { type: "element" }>;
+
+function createElementNode(token: string): RichTextElementNode | null {
   const cleanedTag = normalizeOpeningTag(getOpeningTagSource(token));
   const rawTagName = getTagName(cleanedTag);
 
@@ -125,17 +127,21 @@ function handleClosingTag(token: string, stack: RichTextNode[]) {
 
 function handleOpeningTag(token: string, stack: RichTextNode[]) {
   const node = createElementNode(token);
-  if (!node || node.type !== "element") {
+  if (!node) {
     return;
   }
 
   appendChild(stack[stack.length - 1]!, node);
 
-  if (token.endsWith("/>") || node.tagName === "img") {
+  if (isSelfContainedElement(token, node)) {
     return;
   }
 
   stack.push(node);
+}
+
+function isSelfContainedElement(token: string, node: RichTextElementNode) {
+  return token.endsWith("/>") || node.tagName === "img";
 }
 
 function handleTextToken(token: string, stack: RichTextNode[]) {
