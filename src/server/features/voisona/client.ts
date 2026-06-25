@@ -86,6 +86,48 @@ async function fetchVoisonaRequestState<T extends { state: string }>(
   return readSuccessfulResponse<T>(response);
 }
 
+async function waitForNextPoll() {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+}
+
+function requireSuccessfulVoisonaResult<T extends { state: string }>(
+  endpoint: "speech-syntheses" | "text-analyses",
+  result: T | null,
+) {
+  if (!result) {
+    throw new Error(`VoiSona ${endpoint} succeeded without a response body`);
+  }
+
+  return result;
+}
+
+function resolveVoisonaRequestPoll<T extends { state: string }>(
+  endpoint: "speech-syntheses" | "text-analyses",
+  result: T | null,
+) {
+  const outcome = getVoisonaRequestOutcome(result);
+
+  if (outcome === "success") {
+    return requireSuccessfulVoisonaResult(endpoint, result);
+  }
+
+  if (outcome === "failed") {
+    throw new Error(`VoiSona ${endpoint} failed: ${JSON.stringify(result)}`);
+  }
+
+  return null;
+}
+
+async function pollVoisonaRequest<T extends { state: string }>(
+  serverEnv: ServerEnv,
+  endpoint: "speech-syntheses" | "text-analyses",
+  uuid: string,
+) {
+  await waitForNextPoll();
+  const result = await fetchVoisonaRequestState<T>(serverEnv, endpoint, uuid);
+  return resolveVoisonaRequestPoll(endpoint, result);
+}
+
 export async function waitForVoisonaRequest<T extends { state: string }>(
   serverEnv: ServerEnv,
   endpoint: "speech-syntheses" | "text-analyses",
@@ -95,20 +137,10 @@ export async function waitForVoisonaRequest<T extends { state: string }>(
 
   while (attempts > 0) {
     attempts -= 1;
-    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const result = await fetchVoisonaRequestState<T>(serverEnv, endpoint, uuid);
-    const outcome = getVoisonaRequestOutcome(result);
-    if (outcome === "success") {
-      if (!result) {
-        throw new Error(`VoiSona ${endpoint} succeeded without a response body`);
-      }
-
+    const result = await pollVoisonaRequest<T>(serverEnv, endpoint, uuid);
+    if (result) {
       return result;
-    }
-
-    if (outcome === "failed") {
-      throw new Error(`VoiSona ${endpoint} failed: ${JSON.stringify(result)}`);
     }
   }
 

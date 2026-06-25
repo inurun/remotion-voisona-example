@@ -30,7 +30,7 @@ export type TsmlPhraseViewModel = {
   words: TsmlWordView[];
 };
 
-type ParsedTsmlState =
+export type ParsedTsmlState =
   | { status: "loading" }
   | { status: "empty" }
   | { status: "error"; message: string }

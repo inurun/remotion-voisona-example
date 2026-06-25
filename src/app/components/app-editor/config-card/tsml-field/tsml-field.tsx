@@ -3,7 +3,12 @@ import { useController, useFormContext } from "react-hook-form";
 import { Button } from "@/_shared/components/ui/button";
 import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
-import { type TsmlMoraButton, type TsmlPhraseViewModel, useTsmlEditor } from "./tsml-field.hook";
+import {
+  type ParsedTsmlState,
+  type TsmlMoraButton,
+  type TsmlPhraseViewModel,
+  useTsmlEditor,
+} from "./tsml-field.hook";
 import { usePage } from "@/app/features/page";
 import { useTts } from "@/app/features/tts";
 
@@ -103,7 +108,51 @@ function TsmlPhraseView({ phrase }: { phrase: TsmlPhraseViewModel }) {
   );
 }
 
-export function TsmlEditor() {
+function TsmlStatusMessage({ parsed }: { parsed: ParsedTsmlState }) {
+  if (parsed.status === "ready") {
+    return null;
+  }
+
+  if (parsed.status === "error") {
+    return (
+      <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        {parsed.message}
+      </div>
+    );
+  }
+
+  const message = parsed.status === "loading" ? "TSML を読み込み中..." : "No TSML";
+
+  return (
+    <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+      {message}
+    </div>
+  );
+}
+
+function TsmlReadyPhrases({
+  getPhraseViews,
+  onChange,
+  parsed,
+}: {
+  getPhraseViews: (fieldOnChange: (value: string) => void) => TsmlPhraseViewModel[];
+  onChange: (value: string) => void;
+  parsed: ParsedTsmlState;
+}) {
+  if (parsed.status !== "ready") {
+    return null;
+  }
+
+  return (
+    <div className="grid gap-3">
+      {getPhraseViews(onChange).map((phrase) => (
+        <TsmlPhraseView key={phrase.key} phrase={phrase} />
+      ))}
+    </div>
+  );
+}
+
+function TsmlEditor() {
   const { selectedPageIndex } = usePage();
   const { selectedTtsIndex } = useTts();
 
@@ -117,36 +166,11 @@ export function TsmlEditor() {
   });
   const { parsed, getPhraseViews } = useTsmlEditor(field.value);
 
-  if (parsed.status === "loading") {
-    return (
-      <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-        TSML を読み込み中...
-      </div>
-    );
-  }
-
-  if (parsed.status === "empty") {
-    return (
-      <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-        No TSML
-      </div>
-    );
-  }
-
-  if (parsed.status === "error") {
-    return (
-      <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-        {parsed.message}
-      </div>
-    );
-  }
-
   return (
-    <div className="grid gap-3">
-      {getPhraseViews(field.onChange).map((phrase) => (
-        <TsmlPhraseView key={phrase.key} phrase={phrase} />
-      ))}
-    </div>
+    <>
+      <TsmlStatusMessage parsed={parsed} />
+      <TsmlReadyPhrases parsed={parsed} getPhraseViews={getPhraseViews} onChange={field.onChange} />
+    </>
   );
 }
 
