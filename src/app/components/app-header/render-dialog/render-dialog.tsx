@@ -10,8 +10,8 @@ import {
   DialogTitle,
 } from "@/_shared/components/ui/dialog";
 import { cn } from "@/_shared/lib/utils";
-import { useRender } from "@/app/contexts/render-context/render-context";
-import type { RenderState } from "@/app/contexts/render-context/render-context.hook";
+import { useRender } from "@/app/features/render";
+import type { RenderState } from "@/app/features/render";
 
 function getStatusChipClass(status: RenderState["status"]) {
   return {

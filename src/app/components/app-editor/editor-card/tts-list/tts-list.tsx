@@ -13,10 +13,10 @@ import { Separator } from "@/_shared/components/ui/separator";
 import { Textarea } from "@/_shared/components/ui/textarea";
 import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { useTts } from "@/app/contexts/tts-context/tts-context";
-import { useVoices } from "@/app/contexts/voices-context/voices-context";
-import { getVoiceValue } from "@/app/contexts/form-context/form-context";
+import { usePage } from "@/app/features/page";
+import { useTts } from "@/app/features/tts";
+import { useVoices } from "@/app/features/voices";
+import { getVoiceValue } from "@/app/features/editor";
 import { useTtsList } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hook";
 import { useTtsListHotkeys } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hotkeys";
 

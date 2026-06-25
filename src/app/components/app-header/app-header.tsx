@@ -2,8 +2,8 @@ import { Clapperboard, Save } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { SidebarTrigger } from "@/_shared/components/ui/sidebar";
 import { RenderDialog } from "@/app/components/app-header/render-dialog/render-dialog";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
-import { useRender } from "@/app/contexts/render-context/render-context";
+import { useEditor } from "@/app/features/editor";
+import { useRender } from "@/app/features/render";
 
 export function AppHeader() {
   const { save: onSave, isPending: saving } = useEditor();

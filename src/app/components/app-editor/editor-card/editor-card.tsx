@@ -7,8 +7,8 @@ import { PageList } from "@/app/components/app-editor/editor-card/page-list/page
 import { RichTextField } from "@/app/components/app-editor/editor-card/rich-text-field/rich-text-field";
 import { SelectedPageHeader } from "@/app/components/app-editor/editor-card/selected-page-header/selected-page-header";
 import { TtsList } from "@/app/components/app-editor/editor-card/tts-list/tts-list";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { useVoices } from "@/app/contexts/voices-context/voices-context";
+import { usePage } from "@/app/features/page";
+import { useVoices } from "@/app/features/voices";
 
 function VoicesStatusChip() {
   const { options } = useVoices();

@@ -2,8 +2,8 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Field, FieldError } from "@/_shared/components/ui/field";
 import { RichTextEditor } from "@/_shared/components/ui/rich-text-editor/rich-text-editor";
 import { type DraftProject } from "@/_schemas";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { uploadImage } from "@/app/core/api/uploads";
+import { usePage } from "@/app/features/page";
+import { uploadImage } from "@/app/features/uploads";
 
 export function RichTextField() {
   const { control } = useFormContext<DraftProject>();

@@ -1,0 +1,56 @@
+type PageWithTts = {
+  tts: unknown[];
+};
+
+export function resolveSelectedPageIndexAfterRemove(
+  current: number | null,
+  removedIndex: number,
+  nextLength: number,
+): number | null {
+  if (current === null) {
+    return null;
+  }
+
+  if (removedIndex !== current) {
+    return shiftPageIndexAfterRemove(current, removedIndex);
+  }
+
+  return resolveReplacementPageIndex(removedIndex, nextLength);
+}
+
+function shiftPageIndexAfterRemove(current: number, removedIndex: number) {
+  return current + (removedIndex < current ? -1 : 0);
+}
+
+function resolveReplacementPageIndex(removedIndex: number, nextLength: number) {
+  return nextLength === 0 ? null : Math.min(removedIndex, nextLength - 1);
+}
+
+export function resolvePageIndexFromFieldCount(
+  current: number | null,
+  pageCount: number,
+): number | null {
+  if (pageCount === 0) {
+    return null;
+  }
+
+  if (current === null) {
+    return 0;
+  }
+
+  return current < pageCount ? current : pageCount - 1;
+}
+
+export function getLandingPageTtsCount(
+  pageFields: PageWithTts[],
+  removedPageIndex: number,
+  nextPageIndex: number | null,
+): number {
+  if (nextPageIndex === null) {
+    return 0;
+  }
+
+  const oldPageIndex = nextPageIndex < removedPageIndex ? nextPageIndex : nextPageIndex + 1;
+
+  return pageFields[oldPageIndex]?.tts.length ?? 0;
+}

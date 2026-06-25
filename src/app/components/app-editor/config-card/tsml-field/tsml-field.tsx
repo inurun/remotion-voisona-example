@@ -4,8 +4,8 @@ import { Button } from "@/_shared/components/ui/button";
 import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
 import { type TsmlMoraButton, type TsmlPhraseViewModel, useTsmlEditor } from "./tsml-field.hook";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { useTts } from "@/app/contexts/tts-context/tts-context";
+import { usePage } from "@/app/features/page";
+import { useTts } from "@/app/features/tts";
 
 function MoraButtons({ moraButtons }: { moraButtons: TsmlMoraButton[] }) {
   return (

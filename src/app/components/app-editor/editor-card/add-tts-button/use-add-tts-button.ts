@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { DraftProject, DraftTts, VoiceOption } from "@/_schemas";
 import { createUuid } from "@/_shared/lib/utils";
-import { useForm } from "@/app/contexts/form-context/form-context";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { useTts } from "@/app/contexts/tts-context/tts-context";
-import { useVoices } from "@/app/contexts/voices-context/voices-context";
+import { useForm } from "@/app/features/editor";
+import { usePage } from "@/app/features/page";
+import { useTts } from "@/app/features/tts";
+import { useVoices } from "@/app/features/voices";
 
 type PendingTextFocus = {
   pageIndex: number;

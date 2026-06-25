@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { createUuid } from "@/_shared/lib/utils";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { useTts } from "@/app/contexts/tts-context/tts-context";
+import { usePage } from "@/app/features/page";
+import { useTts } from "@/app/features/tts";
 
 export function useAppendPageButton() {
   const { pageFields, setSelectedPageIndex, appendPage } = usePage();

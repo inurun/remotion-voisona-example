@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
 import { getProjectPlayback } from "@/_shared/lib/project-playback";
 import { VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
-import { useProject } from "../../../contexts/project-context/project-context";
+import { useProject } from "@/app/features/project";
 import { usePlayerCard } from "./player-card.hook";
 
 export function PlayerCard() {

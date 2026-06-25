@@ -1,5 +1,5 @@
 import { useHotkeys } from "react-hotkeys-hook";
-import { useEditor } from "@/app/contexts/editor-context/editor-context";
+import { useEditor } from "@/app/features/editor";
 
 export function useAppEditorHotkeys() {
   const { save } = useEditor();

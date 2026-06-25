@@ -1,5 +1,6 @@
 import { useHotkeys } from "react-hotkeys-hook";
-import { useTts } from "@/app/contexts/tts-context/tts-context";
+import { useTts } from "@/app/features/tts";
+import { getTtsHotkeyTarget } from "@/app/features/tts/lib/tts-hotkey-target";
 
 function getHotkeyTarget() {
   const activeElement = document.activeElement;
@@ -7,18 +8,7 @@ function getHotkeyTarget() {
     return null;
   }
 
-  if (activeElement.dataset.ttsHotkeyTarget !== "text") {
-    return null;
-  }
-
-  const pageIndex = Number(activeElement.dataset.pageIndex);
-  const ttsIndex = Number(activeElement.dataset.ttsIndex);
-
-  if (Number.isNaN(pageIndex) || Number.isNaN(ttsIndex)) {
-    return null;
-  }
-
-  return { pageIndex, ttsIndex };
+  return getTtsHotkeyTarget(activeElement.dataset);
 }
 
 export function useTtsListHotkeys() {

@@ -1,13 +1,13 @@
 import { SidebarInset, SidebarProvider } from "@/_shared/components/ui/sidebar";
 import { AppSidebar } from "@/app/components/app-sidebar/app-sidebar";
 import { AppEditor } from "@/app/components/app-editor/app-editor";
-import { EditorContextProvider } from "@/app/contexts/editor-context/editor-context";
-import { FormContextProvider } from "@/app/contexts/form-context/form-context";
-import { PageContextProvider } from "@/app/contexts/page-context/page-context";
-import { ProjectContextProvider } from "@/app/contexts/project-context/project-context";
-import { RenderContextProvider } from "@/app/contexts/render-context/render-context";
-import { TtsContextProvider } from "@/app/contexts/tts-context/tts-context";
-import { VoicesContextProvider } from "@/app/contexts/voices-context/voices-context";
+import { EditorContextProvider } from "@/app/features/editor";
+import { FormContextProvider } from "@/app/features/editor";
+import { PageContextProvider } from "@/app/features/page";
+import { ProjectContextProvider } from "@/app/features/project";
+import { RenderContextProvider } from "@/app/features/render";
+import { TtsContextProvider } from "@/app/features/tts";
+import { VoicesContextProvider } from "@/app/features/voices";
 import { AppHeader } from "../components/app-header/app-header";
 
 function AppProviders({ children }: { children: React.ReactNode }) {

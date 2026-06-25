@@ -2,8 +2,8 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Field, FieldError } from "@/_shared/components/ui/field";
 import { Input } from "@/_shared/components/ui/input";
 import { type DraftProject } from "@/_schemas";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { useTts } from "@/app/contexts/tts-context/tts-context";
+import { usePage } from "@/app/features/page";
+import { useTts } from "@/app/features/tts";
 
 export function ReadTextField() {
   const { control } = useFormContext<DraftProject>();

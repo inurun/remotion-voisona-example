@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import type { DraftProject } from "@/_schemas";
-import { usePage } from "@/app/contexts/page-context/page-context";
-import { useTts } from "@/app/contexts/tts-context/tts-context";
+import { usePage } from "@/app/features/page";
+import { useTts } from "@/app/features/tts";
 
 function isVoiceActionDisabled({
   canRunTts,

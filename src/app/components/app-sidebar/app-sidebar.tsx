@@ -20,7 +20,7 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/_shared/components/ui/sidebar";
-import { useProject } from "@/app/contexts/project-context/project-context";
+import { useProject } from "@/app/features/project";
 
 function encodeProjectPathForUrl(projectPath: string) {
   return projectPath
