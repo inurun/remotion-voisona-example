@@ -1,4 +1,4 @@
-import { Clapperboard, Globe, Save } from "lucide-react";
+import { Clapperboard, Save } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { SidebarTrigger } from "@/_shared/components/ui/sidebar";
 import { RenderDialog } from "@/app/components/app-header/render-dialog/render-dialog";
@@ -33,11 +33,6 @@ export function AppHeader() {
           <Button type="button" title="Render" onClick={openRenderDialog}>
             <Clapperboard />
             Render
-          </Button>
-          {/* TODO: */}
-          <Button type="button" title="Render">
-            <Globe />
-            Publish
           </Button>
         </div>
       </header>

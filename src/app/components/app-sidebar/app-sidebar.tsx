@@ -1,4 +1,4 @@
-import { FolderOpen, FileJson, Files } from "lucide-react";
+import { FolderOpen, File, Projector } from "lucide-react";
 import type { ProjectFileSummary } from "@/_schemas";
 import {
   Accordion,
@@ -12,7 +12,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -99,7 +98,7 @@ function Directory({
           {items.map((project, i) => (
             <SidebarMenuItem
               key={project.path}
-              className="animate-in fade-in fill-mode-both"
+              className="animate-in fade-in fill-mode-both pl-2"
               style={{ animationDelay: `${i * 50}ms` }}
             >
               <SidebarMenuButton
@@ -107,7 +106,7 @@ function Directory({
                 isActive={project.path === selectedProjectPath}
                 className="gap-2"
               >
-                <FileJson className="size-4" />
+                <File className="size-4" />
                 <span>{project.name}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -120,23 +119,19 @@ function Directory({
 
 export function AppSidebar() {
   const { projects, projectPath } = useProject();
-
   const groups = groupProjectsByDirectory(projects);
 
   return (
     <>
       <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader className="gap-1 px-3 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <Files className="size-4 shrink-0" />
-            <span className="group-data-[collapsible=icon]:hidden">Projects</span>
+          <div className="flex items-center gap-2 text-sm font-semibold w-full">
+            <Projector className="size-4" />
+            <span className="group-data-[collapsible=icon]:hidden font-serif">Projects</span>
           </div>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="pt-0">
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
-              Project Files
-            </SidebarGroupLabel>
             <SidebarGroupContent className="group-data-[collapsible=icon]:hidden">
               {projects.length > 0 && (
                 <Accordion
