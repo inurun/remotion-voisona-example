@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useProjectProviderValue } from "@/app/features/project/context/project-context.hook";
+import { useProjectProviderValue } from "@/app/features/project/context/use-project-context";
 
 const ProjectContext = createContext<ReturnType<typeof useProjectProviderValue> | null>(null);
 

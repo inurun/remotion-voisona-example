@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import { cn } from "@/_shared/lib/utils";
 import { RichTextEditorToolbar } from "./rich-text-editor-toolbar";
-import { useRichTextImageUpload, type UploadImage } from "./rich-text-image-upload.hook";
+import { useRichTextImageUpload, type UploadImage } from "./use-rich-text-image-upload";
 import { isSingleImageRichText } from "./rich-text";
 import { TiptapImage } from "./tiptap-image";
 import { TiptapMarker } from "./tiptap-marker";

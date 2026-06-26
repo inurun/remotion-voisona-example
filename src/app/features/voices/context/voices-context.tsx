@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useVoicesProviderValue } from "@/app/features/voices/context/voices-context.hook";
+import { useVoicesProviderValue } from "@/app/features/voices/context/use-voices-context";
 
 const VoicesContext = createContext<ReturnType<typeof useVoicesProviderValue> | null>(null);
 

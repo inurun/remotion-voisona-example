@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { usePageProviderValue } from "@/app/features/page/context/page-context.hook";
+import { usePageProviderValue } from "@/app/features/page/context/use-page-context";
 
 const PageContext = createContext<ReturnType<typeof usePageProviderValue> | null>(null);
 

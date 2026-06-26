@@ -1,6 +1,6 @@
 import { Sparkles, Volume2 } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
-import { useConfigTtsActions } from "@/app/components/app-editor/config-card/config-actions/config-actions.hook";
+import { useConfigTtsActions } from "@/app/components/app-editor/config-card/config-actions/use-config-actions";
 
 function AnalyzeButton({
   disabled,

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useRenderProviderValue } from "@/app/features/render/context/render-context.hook";
+import { useRenderProviderValue } from "@/app/features/render/context/use-render-context";
 
 const RenderContext = createContext<ReturnType<typeof useRenderProviderValue> | null>(null);
 

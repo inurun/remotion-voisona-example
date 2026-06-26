@@ -16,7 +16,7 @@ import { usePage } from "@/app/features/page";
 import { useTts } from "@/app/features/tts";
 import { useVoices } from "@/app/features/voices";
 import { getVoiceValue } from "@/app/features/editor";
-import { useTtsList } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hook";
+import { useTtsList } from "@/app/components/app-editor/editor-card/tts-list/use-tts-list";
 import { useTtsListHotkeys } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hotkeys";
 import { AddTtsButton } from "./add-tts-button/add-tts-button";
 

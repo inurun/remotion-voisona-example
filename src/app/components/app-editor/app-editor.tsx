@@ -2,7 +2,7 @@ import { ConfigCard } from "@/app/components/app-editor/config-card/config-card"
 import { EditorCard } from "@/app/components/app-editor/editor-card/editor-card";
 import { PreviewCard } from "./preview-card/preview-card";
 import { useAppEditorHotkeys } from "@/app/components/app-editor/app-editor.hotkeys";
-import { useAppEditor } from "@/app/components/app-editor/app-editor.hook";
+import { useAppEditor } from "@/app/components/app-editor/use-app-editor";
 
 export function AppEditor() {
   useAppEditor();

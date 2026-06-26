@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useTtsProviderValue } from "@/app/features/tts/context/tts-context.hook";
+import { useTtsProviderValue } from "@/app/features/tts/context/use-tts-context";
 
 const TtsContext = createContext<ReturnType<typeof useTtsProviderValue> | null>(null);
 

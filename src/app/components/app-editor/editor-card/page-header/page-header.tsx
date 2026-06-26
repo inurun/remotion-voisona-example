@@ -1,4 +1,4 @@
-import { usePageHeader } from "@/app/components/app-editor/editor-card/page-header/page-header.hook";
+import { usePageHeader } from "@/app/components/app-editor/editor-card/page-header/use-page-header";
 
 export function PageHeader() {
   const { pageNumber } = usePageHeader();

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/_shared/components/u
 import { getProjectPlayback } from "@/_shared/lib/project-playback";
 import { VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
 import { useProject } from "@/app/features/project";
-import { usePreviewCard } from "./preview-card.hook";
+import { usePreviewCard } from "./use-preview-card";
 
 export function PreviewCard() {
   const { project } = useProject();

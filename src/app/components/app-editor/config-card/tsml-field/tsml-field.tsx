@@ -8,7 +8,7 @@ import {
   type TsmlMoraButton,
   type TsmlPhraseViewModel,
   useTsmlEditor,
-} from "./tsml-field.hook";
+} from "./use-tsml-field";
 import { usePage } from "@/app/features/page";
 import { useTts } from "@/app/features/tts";
 

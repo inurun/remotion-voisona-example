@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { FormProvider } from "react-hook-form";
-import { useFormProviderValue } from "@/app/features/editor/context/form-context.hook";
+import { useFormProviderValue } from "@/app/features/editor/context/use-form-context";
 import { useProject } from "@/app/features/project";
 import { useVoices } from "@/app/features/voices";
 
@@ -29,4 +29,4 @@ export function useForm() {
   return context;
 }
 
-export { getVoiceValue } from "@/app/features/editor/context/form-context.hook";
+export { getVoiceValue } from "@/app/features/editor/context/use-form-context";

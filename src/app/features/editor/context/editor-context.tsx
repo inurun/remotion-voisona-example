@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { useEditorProviderValue } from "@/app/features/editor/context/editor-context.hook";
+import { useEditorProviderValue } from "@/app/features/editor/context/use-editor-context";
 
 const EditorContext = createContext<ReturnType<typeof useEditorProviderValue> | null>(null);
 
