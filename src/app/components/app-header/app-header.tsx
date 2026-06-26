@@ -1,4 +1,4 @@
-import { Clapperboard, Save } from "lucide-react";
+import { Clapperboard, Globe, Save } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { SidebarTrigger } from "@/_shared/components/ui/sidebar";
 import { RenderDialog } from "@/app/components/app-header/render-dialog/render-dialog";
@@ -16,16 +16,28 @@ export function AppHeader() {
           <SidebarTrigger />
         </div>
         <div className="grid gap-1">
-          <h1 className="font-heading text-lg tracking-tight sm:text-xl">
+          <h1 className="font-heading tracking-tight text-xl font-bold">
             Remotion + VoiSona Template
           </h1>
         </div>
         <div className="flex items-center justify-end gap-2">
-          <Button type="button" size="icon" title="Render" onClick={openRenderDialog}>
-            <Clapperboard />
-          </Button>
-          <Button type="button" size="icon" title={saving ? "Saving" : "Save"} onClick={onSave}>
+          <Button
+            type="button"
+            variant="secondary"
+            title={saving ? "Saving" : "Save"}
+            onClick={onSave}
+          >
             <Save className={saving ? "animate-pulse" : undefined} />
+            {saving ? "Saving" : "Save"}
+          </Button>
+          <Button type="button" title="Render" onClick={openRenderDialog}>
+            <Clapperboard />
+            Render
+          </Button>
+          {/* TODO: */}
+          <Button type="button" title="Render">
+            <Globe />
+            Publish
           </Button>
         </div>
       </header>

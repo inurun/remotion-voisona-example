@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
-import { useAddTtsButtonHotkeys } from "@/app/components/app-editor/editor-card/add-tts-button/add-tts-button.hotkeys";
-import { useAddTtsButton } from "@/app/components/app-editor/editor-card/add-tts-button/use-add-tts-button";
+import { useAddTtsButtonHotkeys } from "@/app/components/app-editor/editor-card/tts-list/add-tts-button/add-tts-button.hotkeys";
+import { useAddTtsButton } from "@/app/components/app-editor/editor-card/tts-list/add-tts-button/use-add-tts-button";
 
 export function AddTtsButton() {
   const { selectedPageIndex, append } = useAddTtsButton();
@@ -12,7 +12,7 @@ export function AddTtsButton() {
   }
 
   return (
-    <div className="flex justify-end">
+    <div className="flex">
       <Button
         type="button"
         size="icon"

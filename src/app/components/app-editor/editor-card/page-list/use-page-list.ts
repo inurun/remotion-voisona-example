@@ -12,12 +12,14 @@ import { useProject } from "@/app/features/project";
 import { usePage } from "@/app/features/page";
 import { getLandingPageTtsCount, resolveSelectedPageIndexAfterRemove } from "@/app/features/page";
 import { useTts } from "@/app/features/tts";
+import { createUuid } from "@/_shared/lib/utils";
 
 export function usePageList() {
   const { project } = useProject();
   const component = useRemotionComposition();
-  const { pageFields, selectedPageIndex, setSelectedPageIndex, movePage, removePage } = usePage();
-  const { syncForPage } = useTts();
+  const { pageFields, selectedPageIndex, setSelectedPageIndex, movePage, removePage, appendPage } =
+    usePage();
+  const { syncForPage, clearSelection } = useTts();
   const playback = getProjectPlayback(project);
   const durationInFrames = Math.max(1, Math.ceil(playback.durationSec * VIDEO_FPS));
   const savedPagesById = new Map(playback.pages.map((page) => [page.id, page]));
@@ -29,6 +31,16 @@ export function usePageList() {
     },
     [pageFields, setSelectedPageIndex, syncForPage],
   );
+
+  const append = useCallback(() => {
+    setSelectedPageIndex(pageFields.length);
+    clearSelection();
+    appendPage({
+      id: createUuid(),
+      richText: "<p></p>",
+      tts: [],
+    });
+  }, [appendPage, clearSelection, pageFields.length, setSelectedPageIndex]);
 
   const remove = useCallback(
     (index: number) => {
@@ -89,6 +101,7 @@ export function usePageList() {
     pageFields,
     selectedPageIndex,
     selectPage,
+    append,
     remove,
     handleDragEnd,
     getThumbnailFrame: (pageId: string) => {

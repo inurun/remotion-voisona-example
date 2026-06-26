@@ -5,7 +5,6 @@ import { FilePlus2, GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import type { SavedProject } from "@/_schemas";
 import { VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
-import { AppendPageButton } from "@/app/components/app-editor/editor-card/append-page-button/append-page-button";
 import { usePageList } from "@/app/components/app-editor/editor-card/page-list/use-page-list";
 import type { ComponentType } from "react";
 
@@ -156,6 +155,7 @@ export function PageList() {
     remove,
     selectedPageIndex,
     selectPage,
+    append,
   } = usePageList();
 
   if (!component) {
@@ -195,12 +195,18 @@ export function PageList() {
           </div>
         </DragDropProvider>
       )}
-      <AppendPageButton
-        className="w-full justify-start"
-        icon={<FilePlus2 />}
-        label="ページ追加"
+      <Button
+        type="button"
         size="sm"
-      />
+        title="ページ追加"
+        aria-label="ページ追加"
+        variant="default"
+        className="w-full justify-center"
+        onClick={append}
+      >
+        <FilePlus2 />
+        ページ追加
+      </Button>
     </aside>
   );
 }

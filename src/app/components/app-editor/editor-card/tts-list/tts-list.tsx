@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/_shared/components/ui/select";
-import { Separator } from "@/_shared/components/ui/separator";
 import { Textarea } from "@/_shared/components/ui/textarea";
 import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
@@ -19,6 +18,7 @@ import { useVoices } from "@/app/features/voices";
 import { getVoiceValue } from "@/app/features/editor";
 import { useTtsList } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hook";
 import { useTtsListHotkeys } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hotkeys";
+import { AddTtsButton } from "./add-tts-button/add-tts-button";
 
 function TtsVoiceField({
   index,
@@ -155,12 +155,7 @@ function TtsItem({
   const { selectedTtsIndex } = useTts();
 
   return (
-    <article
-      className={cn(
-        "grid gap-2 rounded-xl px-3 py-3",
-        selectedTtsIndex === index ? "bg-muted/20" : "bg-card",
-      )}
-    >
+    <article className={cn("grid gap-2", selectedTtsIndex === index ? "bg-muted/20" : "bg-card")}>
       <TtsVoiceField index={index} onRemove={onRemove} onSelect={onSelect} />
       <TtsTextField index={index} onFocus={onFocus} />
     </article>
@@ -176,18 +171,13 @@ export function TtsList() {
   }
 
   if (fields.length === 0) {
-    return (
-      <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-sm text-muted-foreground">
-        tts がない。追加して開始。
-      </div>
-    );
+    return null;
   }
 
   return (
     <FieldGroup className="gap-2">
       {fields.map((field, index) => (
         <div key={field.fieldKey} className="grid">
-          {index > 0 ? <Separator className="bg-border/70" /> : null}
           <TtsItem
             index={index}
             onRemove={() => removeTts(index)}
@@ -196,6 +186,7 @@ export function TtsList() {
           />
         </div>
       ))}
+      <AddTtsButton />
     </FieldGroup>
   );
 }
