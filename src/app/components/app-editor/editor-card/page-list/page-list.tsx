@@ -58,12 +58,10 @@ function PageThumbnail({
 
 function PageListItemContent({
   handleRef,
-  index,
   onSelect,
   thumbnail,
 }: {
   handleRef: (element: Element | null) => void;
-  index: number;
   onSelect: () => void;
   thumbnail: PageThumbnailProps;
 }) {
@@ -76,11 +74,10 @@ function PageListItemContent({
       <div className="overflow-hidden rounded-md border border-border bg-muted/30">
         <PageThumbnail {...thumbnail} />
       </div>
-      <div className="flex min-w-0 items-center justify-between gap-2 px-0.5">
-        <span className="truncate text-xs font-medium text-foreground">Page {index + 1}</span>
+      <div className="absolute bottom-3 right-2 min-w-0 items-center justify-end gap-2 px-0.5">
         <span
           ref={handleRef}
-          className="inline-flex size-6 cursor-grab items-center justify-center rounded-md text-muted-foreground active:cursor-grabbing"
+          className="inline-flex size-6 cursor-grab items-center justify-center rounded-md text-white active:cursor-grabbing"
           aria-label="並び替え"
           title="並び替え"
         >
@@ -133,12 +130,7 @@ function PageListItem({
       data-selected={isSelected}
       className="group/page relative grid gap-2 rounded-lg border border-border bg-card p-2 transition data-[dragging=true]:opacity-70 data-[drop-target=true]:border-primary/60 data-[selected=true]:border-primary data-[selected=true]:ring-2 data-[selected=true]:ring-primary/20"
     >
-      <PageListItemContent
-        handleRef={handleRef}
-        index={index}
-        onSelect={onSelect}
-        thumbnail={thumbnail}
-      />
+      <PageListItemContent handleRef={handleRef} onSelect={onSelect} thumbnail={thumbnail} />
       <PageRemoveButton index={index} onRemove={onRemove} />
     </article>
   );
