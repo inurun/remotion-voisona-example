@@ -40,16 +40,16 @@
       "tts": [
         {
           "id": "8eea5d7c-5e4d-4530-863b-4fedc7a2d1c5",
-          "text": "ランボルギーニ",
-          "readText": "ランボルギーニ",
+          "text": "ランボルギーニ\nでしょう",
+          "readText": "ランボルギーニ。でしょう",
           "voiceName": "chis-a_ja_JP",
           "voiceVersion": "2.1.0",
           "speech": {
-            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhhll\" original=\"ランボルギーニ\" phoneme=\"r,a|N|b,o|r,u|g,i|i|n,i\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"一般\" pronunciation=\"ランボルギーニ\">ランボルギーニ</word></acoustic_phrase></tsml>"
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhhll\" original=\"ランボルギーニ\" phoneme=\"r,a|N|b,o|r,u|g,i|i|n,i\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"一般\" pronunciation=\"ランボルギーニ\">ランボルギーニ</word><word chain=\"1\" original=\"。\" phoneme=\"\" pos=\"記号\" pos_group1=\"句点\" pronunciation=\"\">。</word></acoustic_phrase><acoustic_phrase><word cform=\"未然形\" chain=\"0\" ctype=\"特殊・デス\" hl=\"hl\" original=\"です\" phoneme=\"d,e|sh,o\" pos=\"助動詞\" pronunciation=\"デショ\">でしょ</word><word cform=\"基本形\" chain=\"1\" ctype=\"不変化型\" hl=\"l\" original=\"う\" phoneme=\"o\" pos=\"助動詞\" pronunciation=\"ー\">う</word></acoustic_phrase></tsml>"
           },
-          "durationSec": 1.465,
+          "durationSec": 2.4,
           "audio": {
-            "src": "/tts/a4b56eabfc049484ac121729a5cbfabc.wav"
+            "src": "/tts/293ae4b2b46945d77dd344ee066d9f31.wav"
           }
         }
       ]

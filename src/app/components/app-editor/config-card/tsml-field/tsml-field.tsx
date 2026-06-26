@@ -84,7 +84,7 @@ function TsmlWordCard({
   onToggleChain?: () => void;
 }) {
   return (
-    <div className="flex gap-3 rounded-xl border border-border bg-card p-3 shadow-xs">
+    <div className="flex gap-3 bg-card">
       <MoraButtons moraButtons={moraButtons} />
       <ChainButton isChained={isChained} onToggleChain={onToggleChain} />
     </div>
