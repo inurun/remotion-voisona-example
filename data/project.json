@@ -33,6 +33,26 @@
           }
         }
       ]
+    },
+    {
+      "id": "041de60d-fca9-462c-9f46-6733479b07cb",
+      "richText": "<p></p>",
+      "tts": [
+        {
+          "id": "8eea5d7c-5e4d-4530-863b-4fedc7a2d1c5",
+          "text": "ランボルギーニ",
+          "readText": "ランボルギーニ",
+          "voiceName": "chis-a_ja_JP",
+          "voiceVersion": "2.1.0",
+          "speech": {
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhhll\" original=\"ランボルギーニ\" phoneme=\"r,a|N|b,o|r,u|g,i|i|n,i\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"一般\" pronunciation=\"ランボルギーニ\">ランボルギーニ</word></acoustic_phrase></tsml>"
+          },
+          "durationSec": 1.465,
+          "audio": {
+            "src": "/tts/a4b56eabfc049484ac121729a5cbfabc.wav"
+          }
+        }
+      ]
     }
   ]
 }

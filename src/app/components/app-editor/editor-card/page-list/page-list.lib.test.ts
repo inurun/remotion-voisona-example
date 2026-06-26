@@ -1,0 +1,41 @@
+import { describe, expect, it } from "vitest";
+import {
+  getPageThumbnailFrame,
+  getPageMoveState,
+} from "@/app/components/app-editor/editor-card/page-list/page-list.lib";
+
+describe("page list", () => {
+  it("uses a frame one second after the page starts", () => {
+    expect(getPageThumbnailFrame({ startSec: 2, endSec: 5 }, 24, 120)).toBe(72);
+  });
+
+  it("keeps short-page thumbnails inside the page range", () => {
+    expect(getPageThumbnailFrame({ startSec: 0, endSec: 0.5 }, 24, 120)).toBe(11);
+  });
+
+  it("keeps thumbnails inside the project range", () => {
+    expect(getPageThumbnailFrame({ startSec: 4, endSec: 8 }, 24, 100)).toBe(99);
+  });
+
+  it("keeps the selected page selected after moving pages", () => {
+    const pageIds = ["a", "b", "c", "d"];
+
+    expect(getPageMoveState(pageIds, 2, 0, 3)?.nextSelectedPageIndex).toBe(1);
+    expect(getPageMoveState(pageIds, 1, 1, 3)?.nextSelectedPageIndex).toBe(3);
+    expect(getPageMoveState(pageIds, null, 1, 3)?.nextSelectedPageIndex).toBeNull();
+  });
+
+  it("resolves valid page moves", () => {
+    expect(getPageMoveState(["a", "b", "c"], 1, 0, 2)).toEqual({
+      fromIndex: 0,
+      toIndex: 2,
+      nextSelectedPageIndex: 0,
+    });
+  });
+
+  it("rejects invalid page moves", () => {
+    expect(getPageMoveState(["a", "b"], 0, 0, 0)).toBeNull();
+    expect(getPageMoveState(["a", "b"], 0, -1, 1)).toBeNull();
+    expect(getPageMoveState(["a", "b"], 0, 0, 2)).toBeNull();
+  });
+});

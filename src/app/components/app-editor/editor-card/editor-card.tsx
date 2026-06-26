@@ -2,7 +2,6 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
 import { AddTtsButton } from "@/app/components/app-editor/editor-card/add-tts-button/add-tts-button";
-import { AppendPageButton } from "@/app/components/app-editor/editor-card/append-page-button/append-page-button";
 import { PageList } from "@/app/components/app-editor/editor-card/page-list/page-list";
 import { RichTextField } from "@/app/components/app-editor/editor-card/rich-text-field/rich-text-field";
 import { SelectedPageHeader } from "@/app/components/app-editor/editor-card/selected-page-header/selected-page-header";
@@ -48,12 +47,11 @@ export function EditorCard() {
           <CardAction className="flex flex-wrap items-center justify-end gap-2">
             <VoicesStatusChip />
             <ReloadVoicesButton />
-            <AppendPageButton />
           </CardAction>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid gap-4">
+      <CardContent>
+        <div className="grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]">
           <PageList />
           {selectedPageIndex !== null && pageFields[selectedPageIndex] && (
             <div key={pageFields[selectedPageIndex].id} className="grid gap-4">
