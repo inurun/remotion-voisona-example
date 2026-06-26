@@ -64,4 +64,30 @@ describe("storage", () => {
     ]);
     expect(writeFileMock).toHaveBeenCalledTimes(1);
   });
+
+  it("creates a new project and returns its summary", async () => {
+    accessMock.mockRejectedValueOnce({ code: "ENOENT" });
+    statMock.mockResolvedValueOnce({ mtimeMs: 42 });
+
+    const { createSavedProject } = await import("./storage");
+    const summary = await createSavedProject("nested/new", { pages: [] });
+
+    expect(summary).toEqual({
+      path: "nested/new",
+      name: "new",
+      segments: ["nested", "new"],
+      updatedAt: 42,
+    });
+    expect(writeFileMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects creating a project over an existing file", async () => {
+    accessMock.mockResolvedValueOnce(undefined);
+
+    const { createSavedProject, ProjectAlreadyExistsError } = await import("./storage");
+    await expect(createSavedProject("project", { pages: [] })).rejects.toBeInstanceOf(
+      ProjectAlreadyExistsError,
+    );
+    expect(writeFileMock).not.toHaveBeenCalled();
+  });
 });

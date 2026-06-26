@@ -9,6 +9,7 @@ import {
   listSavedProjects,
   parseDraftPayload,
   readSavedProject,
+  createSavedProject,
   writeSavedProject,
 } from "@/server/_shared/storage";
 import type { ServerEnv } from "@/server/core/env";
@@ -191,6 +192,15 @@ async function buildSavedProject(
 
 export async function listProjects(): Promise<ProjectFileSummary[]> {
   return listSavedProjects();
+}
+
+export async function createProject(projectPath: string) {
+  return createSavedProject(projectPath, savedProjectSchema.parse({ pages: [] }));
+}
+
+export async function copyProject(sourceProjectPath: string, targetProjectPath: string) {
+  const project = await readSavedProject(sourceProjectPath);
+  return createSavedProject(targetProjectPath, project);
 }
 
 export async function loadProject(projectPath: string) {

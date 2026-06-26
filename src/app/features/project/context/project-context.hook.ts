@@ -1,4 +1,5 @@
 import type { ProjectFileSummary, SavedProject } from "@/_schemas";
+import { getProjectPathFromLocation } from "@/app/features/project/lib/project-path";
 import {
   useProjectsQuery,
   useSelectedProjectQuery,
@@ -12,11 +13,6 @@ export type ProjectContextValue = {
   mutateProject: (project: SavedProject) => Promise<void>;
   reloadProject: () => Promise<void>;
 };
-
-function getProjectPathFromLocation(pathname: string) {
-  const normalizedPath = pathname.replace(/^\/+|\/+$/g, "");
-  return normalizedPath ? decodeURIComponent(normalizedPath) : null;
-}
 
 export function useProjectProviderValue(): ProjectContextValue {
   const projectPath = getProjectPathFromLocation(window.location.pathname);

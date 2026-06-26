@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const readSavedProjectMock = vi.fn();
 const writeSavedProjectMock = vi.fn();
+const createSavedProjectMock = vi.fn();
 const ensureSavedProjectFileMock = vi.fn();
 const listSavedProjectsMock = vi.fn();
 const parseDraftPayloadMock = vi.fn((payload: unknown) => payload);
@@ -9,6 +10,7 @@ const analyzeVoisonaTextMock = vi.fn();
 const synthesizeVoisonaMock = vi.fn();
 
 vi.mock("@/server/_shared/storage", () => ({
+  createSavedProject: createSavedProjectMock,
   ensureSavedProjectFile: ensureSavedProjectFileMock,
   listSavedProjects: listSavedProjectsMock,
   parseDraftPayload: parseDraftPayloadMock,
@@ -116,5 +118,36 @@ describe("project use-case", () => {
 
     const { listProjects } = await import("./use-case");
     await expect(listProjects()).resolves.toEqual(projects);
+  });
+
+  it("creates a blank project", async () => {
+    const summary = {
+      path: "new-project",
+      name: "new-project",
+      segments: ["new-project"],
+      updatedAt: 1,
+    };
+    createSavedProjectMock.mockResolvedValueOnce(summary);
+
+    const { createProject } = await import("./use-case");
+    await expect(createProject("new-project")).resolves.toEqual(summary);
+    expect(createSavedProjectMock).toHaveBeenCalledWith("new-project", { pages: [] });
+  });
+
+  it("copies a saved project", async () => {
+    const project = { pages: [] };
+    const summary = {
+      path: "copy",
+      name: "copy",
+      segments: ["copy"],
+      updatedAt: 1,
+    };
+    readSavedProjectMock.mockResolvedValueOnce(project);
+    createSavedProjectMock.mockResolvedValueOnce(summary);
+
+    const { copyProject } = await import("./use-case");
+    await expect(copyProject("source", "copy")).resolves.toEqual(summary);
+    expect(readSavedProjectMock).toHaveBeenCalledWith("source");
+    expect(createSavedProjectMock).toHaveBeenCalledWith("copy", project);
   });
 });

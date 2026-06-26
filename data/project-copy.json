@@ -1,0 +1,38 @@
+{
+  "pages": [
+    {
+      "id": "7eebee6b-70c7-42d4-a063-821a1b2e7998",
+      "richText": "<p>テストaaaaaaa</p>",
+      "tts": [
+        {
+          "id": "c5f2c912-a909-4758-8559-108481802bc6",
+          "text": "テストaaa",
+          "readText": "テストaaa",
+          "voiceName": "futaba-minato_ja_JP",
+          "voiceVersion": "2.0.2",
+          "speech": {
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"hll\" original=\"テスト\" phoneme=\"t,e|s,U|t,o\" pos=\"名詞\" pos_group1=\"サ変接続\" pronunciation=\"テス’ト\">テスト</word><word chain=\"1\" hl=\"ll\" original=\"ａ\" phoneme=\"e|i\" pos=\"記号\" pos_group1=\"アルファベット\" pronunciation=\"エイ\">ａ</word><word chain=\"1\" hl=\"hl\" original=\"ａ\" phoneme=\"e|i\" pos=\"記号\" pos_group1=\"アルファベット\" pronunciation=\"エイ\">ａ</word><word chain=\"1\" hl=\"ll\" original=\"ああ\" phoneme=\"a|a\" pos=\"感動詞\" pronunciation=\"アー\">ああ</word><word chain=\"0\" hl=\"hl\" original=\"ああ\" phoneme=\"a|a\" pos=\"感動詞\" pronunciation=\"アー\">ああ</word></acoustic_phrase></tsml>"
+          },
+          "durationSec": 2.045,
+          "audio": {
+            "src": "/tts/269b4c5f43e2f74d3dbea251c84eeb87.wav"
+          }
+        },
+        {
+          "id": "b704d231-f137-4455-966c-ff537dcf8472",
+          "text": "ランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaa",
+          "readText": "ランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaa",
+          "voiceName": "futaba-minato_ja_JP",
+          "voiceVersion": "2.0.2",
+          "speech": {
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word></acoustic_phrase></tsml>"
+          },
+          "durationSec": 1.4100000000000001,
+          "audio": {
+            "src": "/tts/53115f98feb9854dcf26eb15a4cc57e6.wav"
+          }
+        }
+      ]
+    }
+  ]
+}

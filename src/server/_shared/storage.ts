@@ -28,6 +28,8 @@ export class InvalidProjectPathError extends Error {}
 
 export class ProjectNotFoundError extends Error {}
 
+export class ProjectAlreadyExistsError extends Error {}
+
 function createInitialSavedProject() {
   return savedProjectSchema.parse({
     pages: [
@@ -134,6 +136,12 @@ async function readProjectSummaryFile(relativePath: string, absolutePath: string
   return toProjectSummary(relativePath, stats.mtimeMs);
 }
 
+async function readProjectSummary(projectPath: string) {
+  const filePath = createProjectFilePath(projectPath);
+  const relativePath = `${normalizeProjectPath(projectPath)}${PROJECT_FILE_EXTENSION}`;
+  return readProjectSummaryFile(relativePath, filePath);
+}
+
 async function collectProjectEntrySummaries(
   entry: Dirent,
   dirPath: string,
@@ -220,6 +228,24 @@ export async function writeSavedProject(projectPath: string, project: SavedProje
   const filePath = createProjectFilePath(projectPath);
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, JSON.stringify(project, null, 2));
+}
+
+export async function createSavedProject(projectPath: string, project: SavedProject) {
+  await ensureProjectDirs();
+  const filePath = createProjectFilePath(projectPath);
+
+  try {
+    await fs.access(filePath);
+    throw new ProjectAlreadyExistsError(`Project already exists: ${projectPath}`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw error;
+    }
+  }
+
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, JSON.stringify(project, null, 2));
+  return readProjectSummary(projectPath);
 }
 
 export function parseDraftPayload(payload: unknown) {

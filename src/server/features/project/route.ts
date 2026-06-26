@@ -1,8 +1,12 @@
 import { Hono } from "hono";
 import { getServerEnv } from "@/server/core/env";
 import { jsonError } from "@/server/_shared/http";
-import { InvalidProjectPathError, ProjectNotFoundError } from "@/server/_shared/storage";
-import { listProjects, loadProject, saveProject } from "./use-case";
+import {
+  InvalidProjectPathError,
+  ProjectAlreadyExistsError,
+  ProjectNotFoundError,
+} from "@/server/_shared/storage";
+import { copyProject, createProject, listProjects, loadProject, saveProject } from "./use-case";
 import { projectContract } from "./contract";
 
 function getProjectPath(pathParam: string | undefined) {
@@ -23,19 +27,31 @@ function getProjectErrorStatus(error: unknown) {
     return 404;
   }
 
+  if (error instanceof ProjectAlreadyExistsError) {
+    return 409;
+  }
+
   return 500;
 }
 
-function getProjectErrorMessage(status: number, action: "load" | "save" | "list") {
-  if (status === 400) {
-    return "Invalid project path";
-  }
+const PROJECT_ERROR_MESSAGES = {
+  400: "Invalid project path",
+  404: "Project not found",
+  409: "Project already exists",
+} as const;
 
-  if (status === 404) {
-    return "Project not found";
-  }
-
+function getFallbackProjectErrorMessage(action: "copy" | "create" | "load" | "save" | "list") {
   return action === "list" ? "Failed to list projects" : `Failed to ${action} project`;
+}
+
+function getProjectErrorMessage(
+  status: number,
+  action: "copy" | "create" | "load" | "save" | "list",
+) {
+  return (
+    PROJECT_ERROR_MESSAGES[status as keyof typeof PROJECT_ERROR_MESSAGES] ??
+    getFallbackProjectErrorMessage(action)
+  );
 }
 
 export const projectApp = new Hono()
@@ -45,6 +61,28 @@ export const projectApp = new Hono()
     } catch (error) {
       const status = getProjectErrorStatus(error);
       return jsonError(c, status, error, getProjectErrorMessage(status, "list"));
+    }
+  })
+  .post("/projects", async (c) => {
+    try {
+      const json = projectContract.create.json.parse(await c.req.json());
+      return c.json(projectContract.create.response.parse(await createProject(json.projectPath)));
+    } catch (error) {
+      const status = getProjectErrorStatus(error);
+      return jsonError(c, status, error, getProjectErrorMessage(status, "create"));
+    }
+  })
+  .post("/projects/copy", async (c) => {
+    try {
+      const json = projectContract.copy.json.parse(await c.req.json());
+      return c.json(
+        projectContract.copy.response.parse(
+          await copyProject(json.sourceProjectPath, json.targetProjectPath),
+        ),
+      );
+    } catch (error) {
+      const status = getProjectErrorStatus(error);
+      return jsonError(c, status, error, getProjectErrorMessage(status, "copy"));
     }
   })
   .get("/project/:projectPath{.+}", async (c) => {

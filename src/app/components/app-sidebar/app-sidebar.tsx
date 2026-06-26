@@ -20,19 +20,10 @@ import {
   SidebarTrigger,
 } from "@/_shared/components/ui/sidebar";
 import { useProject } from "@/app/features/project";
+import { getProjectHref } from "@/app/features/project/lib/project-path";
 import { cn } from "@/_shared/lib/utils";
-
-function encodeProjectPathForUrl(projectPath: string) {
-  return projectPath
-    .split("/")
-    .filter(Boolean)
-    .map((segment) => encodeURIComponent(segment))
-    .join("/");
-}
-
-function getProjectHref(projectPath: string) {
-  return `/${encodeProjectPathForUrl(projectPath)}`;
-}
+import { AddProjectDialog } from "@/app/components/app-sidebar/add-dialog/add-dialog";
+import { DuplicateProjectDialog } from "@/app/components/app-sidebar/duplicate-dialog/duplicate-dialog";
 
 function getDirectoryPath(project: ProjectFileSummary) {
   return project.segments.slice(0, -1).join("/");
@@ -109,6 +100,7 @@ function Directory({
                 <File className="size-4" />
                 <span>{project.name}</span>
               </SidebarMenuButton>
+              <DuplicateProjectDialog project={project} />
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -125,9 +117,12 @@ export function AppSidebar() {
     <>
       <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader className="gap-1 px-3 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
-          <div className="flex items-center gap-2 text-sm font-semibold w-full">
-            <Projector className="size-4" />
-            <span className="group-data-[collapsible=icon]:hidden font-serif">Projects</span>
+          <div className="flex w-full items-center justify-between gap-2 text-sm font-semibold">
+            <span className="flex min-w-0 items-center gap-2">
+              <Projector className="size-4 shrink-0" />
+              <span className="font-serif group-data-[collapsible=icon]:hidden">Projects</span>
+            </span>
+            <AddProjectDialog />
           </div>
         </SidebarHeader>
         <SidebarContent>

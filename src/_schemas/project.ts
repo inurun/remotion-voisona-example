@@ -51,6 +51,15 @@ export const savedProjectSchema = z.object({
   pages: z.array(savedPageSchema),
 });
 
+export const createProjectRequestSchema = z.object({
+  projectPath: z.string().min(1),
+});
+
+export const copyProjectRequestSchema = z.object({
+  sourceProjectPath: z.string().min(1),
+  targetProjectPath: z.string().min(1),
+});
+
 export const projectFileSummarySchema = z.object({
   path: z.string().min(1),
   name: z.string().min(1),
@@ -65,4 +74,6 @@ export type DraftPage = z.infer<typeof draftPageSchema>;
 export type SavedPage = z.infer<typeof savedPageSchema>;
 export type DraftProject = z.infer<typeof draftProjectSchema>;
 export type SavedProject = z.infer<typeof savedProjectSchema>;
+export type CreateProjectRequest = z.infer<typeof createProjectRequestSchema>;
+export type CopyProjectRequest = z.infer<typeof copyProjectRequestSchema>;
 export type ProjectFileSummary = z.infer<typeof projectFileSummarySchema>;

@@ -1,5 +1,5 @@
-savePrefix: ""
 allowBuilds:
+  agent-browser: set this to true or false
   esbuild: true
   fallow: true
   lefthook: true
@@ -7,3 +7,4 @@ allowBuilds:
 onlyBuiltDependencies:
   - esbuild
   - sharp
+savePrefix: ""
