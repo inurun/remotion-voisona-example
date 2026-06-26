@@ -12,16 +12,10 @@ export function AddTtsButton() {
   }
 
   return (
-    <div className="flex">
-      <Button
-        type="button"
-        size="icon"
-        variant="secondary"
-        title="TTS 追加"
-        aria-label="TTS 追加"
-        onClick={append}
-      >
+    <div className="flex absolute bottom-0 right-0">
+      <Button type="button" size="sm" title="TTS 追加" aria-label="TTS 追加" onClick={append}>
         <Plus />
+        Add
       </Button>
     </div>
   );

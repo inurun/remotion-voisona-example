@@ -5,7 +5,7 @@ import { type DraftProject } from "@/_schemas";
 import { usePage } from "@/app/features/page";
 import { uploadImage } from "@/app/features/uploads";
 
-export function RichTextField() {
+export function PageContent() {
   const { control } = useFormContext<DraftProject>();
   const { selectedPageIndex } = usePage();
 

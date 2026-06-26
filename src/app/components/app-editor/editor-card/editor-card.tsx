@@ -2,8 +2,8 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/_shared/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
 import { PageList } from "@/app/components/app-editor/editor-card/page-list/page-list";
-import { RichTextField } from "@/app/components/app-editor/editor-card/rich-text-field/rich-text-field";
-import { SelectedPageHeader } from "@/app/components/app-editor/editor-card/selected-page-header/selected-page-header";
+import { PageContent } from "@/app/components/app-editor/editor-card/page-content/page-content";
+import { PageHeader } from "@/app/components/app-editor/editor-card/page-header/page-header";
 import { TtsList } from "@/app/components/app-editor/editor-card/tts-list/tts-list";
 import { usePage } from "@/app/features/page";
 import { useVoices } from "@/app/features/voices";
@@ -54,8 +54,8 @@ export function EditorCard() {
           <PageList />
           {selectedPageIndex !== null && pageFields[selectedPageIndex] && (
             <div key={pageFields[selectedPageIndex].id} className="grid gap-4">
-              <SelectedPageHeader />
-              <RichTextField />
+              <PageHeader />
+              <PageContent />
               <TtsList />
             </div>
           )}

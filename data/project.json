@@ -20,8 +20,8 @@
         },
         {
           "id": "b704d231-f137-4455-966c-ff537dcf8472",
-          "text": "ランニング竹山aaaa",
-          "readText": "ランニング竹山aaaa",
+          "text": "ランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaa",
+          "readText": "ランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaa",
           "voiceName": "futaba-minato_ja_JP",
           "voiceVersion": "2.0.2",
           "speech": {
@@ -29,7 +29,7 @@
           },
           "durationSec": 1.4100000000000001,
           "audio": {
-            "src": "/tts/c580c7f0bee8b59286c2ef90429872bb.wav"
+            "src": "/tts/53115f98feb9854dcf26eb15a4cc57e6.wav"
           }
         }
       ]

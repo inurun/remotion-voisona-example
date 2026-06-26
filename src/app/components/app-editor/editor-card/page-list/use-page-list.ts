@@ -3,7 +3,7 @@ import type { DragEndEvent } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
 import { getProjectPlayback } from "@/_shared/lib/project-playback";
 import { VIDEO_FPS } from "@/constants";
-import { useRemotionComposition } from "@/app/components/app-editor/use-remotion-composition";
+import { useRemotionComposition } from "@/app/features/remotion/hook/use-remotion-composition";
 import {
   getPageMoveState,
   getPageThumbnailFrame,

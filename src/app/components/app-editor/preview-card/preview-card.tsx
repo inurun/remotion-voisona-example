@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/_shared/components/u
 import { getProjectPlayback } from "@/_shared/lib/project-playback";
 import { VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
 import { useProject } from "@/app/features/project";
-import { usePlayerCard } from "./player-card.hook";
+import { usePreviewCard } from "./preview-card.hook";
 
-export function PlayerCard() {
+export function PreviewCard() {
   const { project } = useProject();
-  const component = usePlayerCard();
+  const component = usePreviewCard();
   const durationInFrames = useMemo(() => {
     return Math.max(1, Math.ceil(getProjectPlayback(project).durationSec * VIDEO_FPS));
   }, [project]);
@@ -22,7 +22,7 @@ export function PlayerCard() {
       </CardHeader>
       <CardContent>
         {component ? (
-          <div className="overflow-hidden rounded-xl border border-border bg-muted/40">
+          <div className="overflow-hidden bg-muted/40">
             <Player
               component={component}
               inputProps={{ project }}

@@ -21,6 +21,7 @@ import {
   SidebarTrigger,
 } from "@/_shared/components/ui/sidebar";
 import { useProject } from "@/app/features/project";
+import { cn } from "@/_shared/lib/utils";
 
 function encodeProjectPathForUrl(projectPath: string) {
   return projectPath
@@ -71,14 +72,22 @@ function Directory({
   directoryPath,
   items,
   selectedProjectPath,
+  className,
+  style,
 }: {
   directoryName: string;
   directoryPath: string;
   items: ProjectFileSummary[];
   selectedProjectPath: string | null;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
-    <AccordionItem value={directoryPath || "root"} className="border-none">
+    <AccordionItem
+      value={directoryPath || "root"}
+      className={cn("border-none", className)}
+      style={style}
+    >
       <AccordionTrigger className="px-2 py-2 hover:no-underline">
         <span className="flex items-center gap-2">
           <FolderOpen className="size-4" />
@@ -87,8 +96,12 @@ function Directory({
       </AccordionTrigger>
       <AccordionContent className="pb-0">
         <SidebarMenu>
-          {items.map((project) => (
-            <SidebarMenuItem key={project.path}>
+          {items.map((project, i) => (
+            <SidebarMenuItem
+              key={project.path}
+              className="animate-in fade-in fill-mode-both"
+              style={{ animationDelay: `${i * 50}ms` }}
+            >
               <SidebarMenuButton
                 render={<a href={getProjectHref(project.path)} />}
                 isActive={project.path === selectedProjectPath}
@@ -107,7 +120,9 @@ function Directory({
 
 export function AppSidebar() {
   const { projects, projectPath } = useProject();
+
   const groups = groupProjectsByDirectory(projects);
+
   return (
     <>
       <Sidebar collapsible="icon" variant="inset">
@@ -123,21 +138,23 @@ export function AppSidebar() {
               Project Files
             </SidebarGroupLabel>
             <SidebarGroupContent className="group-data-[collapsible=icon]:hidden">
-              <Accordion
-                defaultValue={groups.map((group) => group.directoryPath || "root")}
-                multiple
-                className="w-full"
-              >
-                {groups.map((group) => (
-                  <Directory
-                    key={group.directoryPath || "root"}
-                    directoryName={group.directoryName}
-                    directoryPath={group.directoryPath}
-                    items={group.items}
-                    selectedProjectPath={projectPath}
-                  />
-                ))}
-              </Accordion>
+              {projects.length > 0 && (
+                <Accordion
+                  defaultValue={groups.map((group) => group.directoryPath || "root")}
+                  multiple
+                  className="w-full"
+                >
+                  {groups.map((group) => (
+                    <Directory
+                      key={group.directoryPath || "root"}
+                      directoryName={group.directoryName}
+                      directoryPath={group.directoryPath}
+                      items={group.items}
+                      selectedProjectPath={projectPath}
+                    />
+                  ))}
+                </Accordion>
+              )}
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>

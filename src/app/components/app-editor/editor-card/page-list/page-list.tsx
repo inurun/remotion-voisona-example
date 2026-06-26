@@ -205,7 +205,7 @@ export function PageList() {
         onClick={append}
       >
         <FilePlus2 />
-        ページ追加
+        Add
       </Button>
     </aside>
   );

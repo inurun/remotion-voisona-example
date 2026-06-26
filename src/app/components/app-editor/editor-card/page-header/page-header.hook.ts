@@ -1,6 +1,6 @@
 import { usePage } from "@/app/features/page";
 
-export function useSelectedPageHeader() {
+export function usePageHeader() {
   const { selectedPageIndex } = usePage();
 
   return {

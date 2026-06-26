@@ -175,9 +175,10 @@ export function TtsList() {
   }
 
   return (
-    <FieldGroup className="gap-2">
+    <FieldGroup className="gap-2 relative">
+      <AddTtsButton />
       {fields.map((field, index) => (
-        <div key={field.fieldKey} className="grid">
+        <div key={field.fieldKey} className="grid pb-10">
           <TtsItem
             index={index}
             onRemove={() => removeTts(index)}
@@ -186,7 +187,6 @@ export function TtsList() {
           />
         </div>
       ))}
-      <AddTtsButton />
     </FieldGroup>
   );
 }
