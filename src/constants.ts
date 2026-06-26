@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 const videoEnvSchema = z.object({
-  VITE_VIDEO_WIDTH: z.coerce.number().int().positive().default(1280),
-  VITE_VIDEO_HEIGHT: z.coerce.number().int().positive().default(720),
-  VITE_VIDEO_FPS: z.coerce.number().int().positive().default(24),
+  VITE_VIDEO_WIDTH: z.coerce.number().int().positive().default(1920),
+  VITE_VIDEO_HEIGHT: z.coerce.number().int().positive().default(1080),
+  VITE_VIDEO_FPS: z.coerce.number().int().positive().default(30),
 });
 
 const processEnv =
@@ -27,4 +27,4 @@ const parsed = videoEnvSchema.parse({
 export const VIDEO_WIDTH = parsed.VITE_VIDEO_WIDTH;
 export const VIDEO_HEIGHT = parsed.VITE_VIDEO_HEIGHT;
 export const VIDEO_FPS = parsed.VITE_VIDEO_FPS;
-export const COMP_NAME = "RemotionVoisonaExample";
+export const COMP_NAME = "Video";

@@ -24,6 +24,7 @@ export function PreviewCard() {
         {component ? (
           <div className="overflow-hidden bg-muted/40">
             <Player
+              acknowledgeRemotionLicense
               component={component}
               inputProps={{ project }}
               durationInFrames={durationInFrames}

@@ -1,5 +1,5 @@
 allowBuilds:
-  agent-browser: set this to true or false
+  agent-browser: true
   esbuild: true
   fallow: true
   lefthook: true

@@ -1,4 +1,4 @@
-import { FolderOpen, File, Projector } from "lucide-react";
+import { FolderOpen, File } from "lucide-react";
 import type { ProjectFileSummary } from "@/_schemas";
 import {
   Accordion,
@@ -118,9 +118,8 @@ export function AppSidebar() {
       <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader className="gap-1 px-3 py-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
           <div className="flex w-full items-center justify-between gap-2 text-sm font-semibold">
-            <span className="flex min-w-0 items-center gap-2">
-              <Projector className="size-4 shrink-0" />
-              <span className="font-serif group-data-[collapsible=icon]:hidden">Projects</span>
+            <span className="flex min-w-0 items-center gap-2 group-data-[collapsible=icon]:hidden font-serif">
+              Projects
             </span>
             <AddProjectDialog />
           </div>
