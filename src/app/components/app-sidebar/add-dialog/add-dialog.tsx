@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -34,8 +33,7 @@ export function AddProjectDialog() {
       <DialogContent className="w-[min(92vw,420px)]">
         <form className="grid gap-4" onSubmit={submit}>
           <DialogHeader>
-            <DialogTitle>Project 作成</DialogTitle>
-            <DialogDescription>保存先の project path を入力する。</DialogDescription>
+            <DialogTitle>Add Project</DialogTitle>
           </DialogHeader>
           <label className="grid gap-2 text-sm font-medium">
             Project path
