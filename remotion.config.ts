@@ -3,6 +3,7 @@ import { Config } from "@remotion/cli/config";
 import { enableTailwind } from "@remotion/tailwind-v4";
 
 Config.setVideoImageFormat("png");
+Config.setEntryPoint("./src/remotion/core/runtime.ts");
 Config.overrideWebpackConfig((currentConfiguration) => {
   const currentAlias =
     currentConfiguration.resolve?.alias && !Array.isArray(currentConfiguration.resolve.alias)

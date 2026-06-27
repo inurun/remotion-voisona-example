@@ -2,25 +2,25 @@ import type { SavedProject } from "@/_schemas";
 import { ProjectProvider } from "./context";
 import { MainPage } from "../pages/main/main-page";
 import { TransitionSeries } from "@remotion/transitions";
-import { msToFrame } from "../utils/timing";
+import { secondsToFrames } from "../utils/timing";
 import { Fragment } from "react/jsx-runtime";
 
 export function Composition({ project }: { project: SavedProject }) {
   return (
     <ProjectProvider value={project}>
-      <TransitionSeries>
-        {/* TODO: page.typeでmain, intro, outroの切り替え, それぞれのpageにdurationSecを設定してそこを参照したい */}
-        {project.pages.flatMap((page) => {
+      <TransitionSeries name={`project-ここにprojectのファイル名がほしい`}>
+        {/* TODO: page.typeでmain, intro, outroの切り替え */}
+        {project.pages.flatMap((page, index) => {
           return (
             <Fragment key={page.id}>
-              {/* padBeforeSec */}
-              <TransitionSeries.Sequence durationInFrames={msToFrame(1000)} />
-              {/* main page */}
-              <TransitionSeries.Sequence durationInFrames={msToFrame(10000)}>
+              <TransitionSeries.Sequence
+                // TODO: page.durationSecを参照したい
+                durationInFrames={secondsToFrames(12)}
+                name={`main-page-${String(index).padStart(2, "0")}`}
+                layout="none"
+              >
                 <MainPage page={page} />
               </TransitionSeries.Sequence>
-              {/* padAfterSec */}
-              <TransitionSeries.Sequence durationInFrames={msToFrame(1000)} />
             </Fragment>
           );
         })}

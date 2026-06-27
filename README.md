@@ -17,6 +17,7 @@ https://github.com/user-attachments/assets/7488dc5a-36bd-4a98-8333-38f514935c30
   - [ ] pad系はページの前後の秒数、padBeforeSecが1sなら、ページが始まる前に1秒の空白期間がある
   - [ ] 主にトランジションや余韻とかの表現用、トランジション表現用意できていないので今は0秒デフォルト、設定するUIも不要
   - [ ] durationInSecはpad系の値を加算した値（総時間として処理）
+  - [ ] getProjectPlaybackは削除、かわりにremedaの`sumBy()`関数で計算、getProjectPlaybackによる余計な計算コストを減らす
   - [ ] remotion側も合わせて修正
 - [ ] ページ設定の追加
   - [ ] page-header右端に設定アイコン、ダイアログ

@@ -37,7 +37,7 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
-  --font-sans: "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-sans: "Tsukushi B Round Gothic", "Hiragino Sans", "Yu Gothic", sans-serif;
   --font-serif: "Iowan Old Style", "Georgia", "Hiragino Mincho ProN", serif;
   --font-mono: "SFMono-Regular", "Roboto Mono", "Menlo", monospace;
   --radius: 8px;
@@ -154,7 +154,8 @@
   }
 
   .font-heading,
-  .font-serif {
+  .font-serif,
+  .font-sans {
     font-feature-settings: "palt";
   }
 

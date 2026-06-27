@@ -1,10 +1,17 @@
 import { Composition } from "remotion";
-import { savedProjectSchema } from "@/_schemas";
-import { getProjectPlayback } from "@/_shared/lib/project-playback";
+import { SavedProject, savedProjectSchema } from "@/_schemas";
 import { COMP_NAME, VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
 import projectJson from "../../../data/project.json";
 import { Composition as RemotionVideo } from "./composition";
-import { msToFrame } from "../utils/timing";
+import { secondsToFrames } from "../utils/timing";
+
+function calculateDurationInFrames(project: SavedProject) {
+  const sumDurationSec = project.pages.reduce(
+    (acc, page) => acc + page.tts.reduce((acc, tts) => acc + tts.durationSec, 0),
+    0,
+  );
+  return secondsToFrames(sumDurationSec, VIDEO_FPS);
+}
 
 export function RemotionRoot() {
   return (
@@ -20,9 +27,11 @@ export function RemotionRoot() {
         },
       }}
       calculateMetadata={() => {
-        const project = savedProjectSchema.parse(savedProjectSchema.parse(projectJson));
+        const project = savedProjectSchema.parse(projectJson);
+        const durationInFrames = calculateDurationInFrames(project);
         return {
-          durationInFrames: msToFrame(getProjectPlayback(project).durationSec * 1000, VIDEO_FPS),
+          props: { project },
+          durationInFrames,
         };
       }}
     />

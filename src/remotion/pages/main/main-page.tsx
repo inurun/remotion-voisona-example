@@ -4,7 +4,7 @@ import { TtsLayer } from "./layer-tts/layer-tts";
 
 export function MainPage(props: MainPageProps) {
   return (
-    <MainPageContextProvider {...props} key={props.page.id}>
+    <MainPageContextProvider {...props}>
       <BackgroundLayer />
       <TtsLayer />
     </MainPageContextProvider>

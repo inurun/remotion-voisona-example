@@ -11,10 +11,11 @@ export function TtsLayer() {
         return (
           <SequenceUnstyled
             key={ttsSegment.id}
+            name={ttsSegment.text}
             from={ttsSegment.start}
             durationInFrames={ttsSegment.duration}
           >
-            <p className="text-8xl font-bold">{ttsSegment.text}</p>
+            <p className="text-8xl font-bold font-sans">{ttsSegment.text}</p>
             <Html5Audio src={ttsSegment.audio.src} />
           </SequenceUnstyled>
         );
