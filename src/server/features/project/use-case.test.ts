@@ -124,6 +124,81 @@ describe("project use-case", () => {
     expect(writeSavedProjectMock).toHaveBeenCalledWith("project", saved);
   });
 
+  it("reanalyzes changed readText before synthesizing", async () => {
+    readSavedProjectMock.mockResolvedValueOnce({
+      pages: [
+        {
+          id: "page-1",
+          type: "main",
+          padBeforeSec: 0,
+          padAfterSec: 0,
+          durationSec: 1.2,
+          richText: "<p>Hello</p>",
+          tts: [
+            {
+              id: "tts-1",
+              text: "Hello",
+              readText: "old read",
+              voiceName: "voice",
+              voiceVersion: "1",
+              durationSec: 1.2,
+              audio: { src: "/tts/old.wav" },
+              speech: { analyzedText: "old analysis" },
+            },
+          ],
+        },
+      ],
+    });
+    analyzeVoisonaTextMock.mockResolvedValueOnce({ analyzedText: "new analysis" });
+    synthesizeVoisonaMock.mockResolvedValueOnce({
+      audioSrc: "/tts/new.wav",
+      outputPath: "/tmp/new.wav",
+      durationSec: 1.5,
+    });
+
+    const serverEnv = {};
+    const { saveProject } = await import("./use-case");
+    const saved = await saveProject(serverEnv, "project", {
+      pages: [
+        {
+          id: "page-1",
+          type: "main",
+          padBeforeSec: 0,
+          padAfterSec: 0,
+          richText: "<p>Hello</p>",
+          tts: [
+            {
+              id: "tts-1",
+              text: "Hello",
+              readText: "new read",
+              voiceName: "voice",
+              voiceVersion: "1",
+              speech: { analyzedText: "old analysis" },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(analyzeVoisonaTextMock).toHaveBeenCalledWith(serverEnv, {
+      text: "new read",
+      language: "ja_JP",
+    });
+    expect(synthesizeVoisonaMock).toHaveBeenCalledWith({
+      serverEnv,
+      text: "new read",
+      analyzedText: "new analysis",
+      voiceName: "voice",
+      voiceVersion: "1",
+    });
+    expect(saved.pages[0]?.tts[0]).toMatchObject({
+      readText: "new read",
+      durationSec: 1.6,
+      audio: { src: "/tts/new.wav" },
+      speech: { analyzedText: "new analysis" },
+    });
+  });
+
   it("updates page timing fields without regenerating unchanged tts", async () => {
     const previous = {
       pages: [

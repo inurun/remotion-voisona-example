@@ -5,35 +5,35 @@
       "type": "main",
       "padBeforeSec": 0,
       "padAfterSec": 0,
-      "durationSec": 13.645,
+      "durationSec": 3.1000000000000005,
       "richText": "<p>テストaaaaaaa</p>",
       "tts": [
         {
           "id": "c5f2c912-a909-4758-8559-108481802bc6",
-          "text": "テストまどろっこしいぜあああ",
-          "readText": "テストまどろっこしいぜあああ",
+          "text": "テストまどろっこしい",
+          "readText": "テストまどろっこしい",
           "voiceName": "futaba-minato_ja_JP",
           "voiceVersion": "2.0.2",
           "speech": {
-            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"hll\" original=\"テスト\" phoneme=\"t,e|s,U|t,o\" pos=\"名詞\" pos_group1=\"サ変接続\" pronunciation=\"テス’ト\">テスト</word><word cform=\"基本形\" chain=\"0\" ctype=\"形容詞・イ段\" hl=\"lhhhhhl\" original=\"まどろっこしい\" phoneme=\"m,a|d,o|r,o|cl|k,o|sh,i|i\" pos=\"形容詞\" pos_group1=\"自立\" pronunciation=\"マドロッコシー\">まどろっこしい</word><word chain=\"1\" hl=\"l\" original=\"ぜ\" phoneme=\"z,e\" pos=\"助詞\" pos_group1=\"終助詞\" pronunciation=\"ゼ\">ぜ</word></acoustic_phrase></tsml>"
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"hll\" original=\"テスト\" phoneme=\"t,e|s,U|t,o\" pos=\"名詞\" pos_group1=\"サ変接続\" pronunciation=\"テス’ト\">テスト</word><word cform=\"基本形\" chain=\"0\" ctype=\"形容詞・イ段\" hl=\"lhhhhhl\" original=\"まどろっこしい\" phoneme=\"m,a|d,o|r,o|cl|k,o|sh,i|i\" pos=\"形容詞\" pos_group1=\"自立\" pronunciation=\"マドロッコシー\">まどろっこしい</word></acoustic_phrase></tsml>"
           },
-          "durationSec": 1.85,
+          "durationSec": 1.6900000000000002,
           "audio": {
-            "src": "/tts/d36a39c02a66525a837ac1b4fea411fc.wav"
+            "src": "/tts/fbfd8e54a18b126aeb961bec03b8aa7e.wav"
           }
         },
         {
           "id": "b704d231-f137-4455-966c-ff537dcf8472",
-          "text": "ランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaa",
-          "readText": "ランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaaランニング竹山aaaa",
+          "text": "ランニング竹山",
+          "readText": "ランニング竹山",
           "voiceName": "futaba-minato_ja_JP",
           "voiceVersion": "2.0.2",
           "speech": {
-            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word><word chain=\"0\" hl=\"lhhhhhhh\" original=\"ａａａａ\" phoneme=\"e|e|e|e|e|e|e|e\" pos=\"フィラー\" pronunciation=\"エーエーエーエー\">ａａａａ</word><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word><word chain=\"0\" hl=\"lhhhhhhh\" original=\"ａａａａ\" phoneme=\"e|e|e|e|e|e|e|e\" pos=\"フィラー\" pronunciation=\"エーエーエーエー\">ａａａａ</word><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word><word chain=\"0\" hl=\"lhhhhhhh\" original=\"ａａａａ\" phoneme=\"e|e|e|e|e|e|e|e\" pos=\"フィラー\" pronunciation=\"エーエーエーエー\">ａａａａ</word><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word><word chain=\"0\" hl=\"lhhhhhhh\" original=\"ａａａａ\" phoneme=\"e|e|e|e|e|e|e|e\" pos=\"フィラー\" pronunciation=\"エーエーエーエー\">ａａａａ</word><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word><word chain=\"0\" hl=\"lhhhhhhh\" original=\"ａａａａ\" phoneme=\"e|e|e|e|e|e|e|e\" pos=\"フィラー\" pronunciation=\"エーエーエーエー\">ａａａａ</word><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word><word chain=\"0\" hl=\"lhhhhhhh\" original=\"ａａａａ\" phoneme=\"e|e|e|e|e|e|e|e\" pos=\"フィラー\" pronunciation=\"エーエーエーエー\">ａａａａ</word></acoustic_phrase></tsml>"
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhh\" original=\"ランニング\" phoneme=\"r,a|N|n,i|N|g,u\" pos=\"名詞\" pos_group1=\"一般\" pronunciation=\"ランニング\">ランニング</word><word chain=\"0\" hl=\"lhhh\" original=\"竹山\" phoneme=\"t,a|k,e|y,a|m,a\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"人名\" pos_group3=\"姓\" pronunciation=\"タケヤマ\">竹山</word></acoustic_phrase></tsml>"
           },
-          "durationSec": 11.795,
+          "durationSec": 1.4100000000000001,
           "audio": {
-            "src": "/tts/a6bd61810a8565ab83cba66af1e4697f.wav"
+            "src": "/tts/15793b73616f5308654e4cbafa46de09.wav"
           }
         }
       ]
@@ -43,21 +43,21 @@
       "type": "main",
       "padBeforeSec": 0,
       "padAfterSec": 0,
-      "durationSec": 2.4,
+      "durationSec": 3.335,
       "richText": "<p>aaaaaaa</p>",
       "tts": [
         {
           "id": "8eea5d7c-5e4d-4530-863b-4fedc7a2d1c5",
-          "text": "ランボルギーニ\nでしょう",
-          "readText": "ランボルギーニ。でしょう",
+          "text": "ランボルギーニ\nでしょう\nか？",
+          "readText": "ランボルギーニ。でしょう。か？",
           "voiceName": "chis-a_ja_JP",
           "voiceVersion": "2.1.0",
           "speech": {
-            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhhll\" original=\"ランボルギーニ\" phoneme=\"r,a|N|b,o|r,u|g,i|i|n,i\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"一般\" pronunciation=\"ランボルギーニ\">ランボルギーニ</word><word chain=\"1\" original=\"。\" phoneme=\"\" pos=\"記号\" pos_group1=\"句点\" pronunciation=\"\">。</word></acoustic_phrase><acoustic_phrase><word cform=\"未然形\" chain=\"0\" ctype=\"特殊・デス\" hl=\"hl\" original=\"です\" phoneme=\"d,e|sh,o\" pos=\"助動詞\" pronunciation=\"デショ\">でしょ</word><word cform=\"基本形\" chain=\"1\" ctype=\"不変化型\" hl=\"l\" original=\"う\" phoneme=\"o\" pos=\"助動詞\" pronunciation=\"ー\">う</word></acoustic_phrase></tsml>"
+            "analyzedText": "<tsml><acoustic_phrase><word chain=\"0\" hl=\"lhhhhll\" original=\"ランボルギーニ\" phoneme=\"r,a|N|b,o|r,u|g,i|i|n,i\" pos=\"名詞\" pos_group1=\"固有名詞\" pos_group2=\"一般\" pronunciation=\"ランボルギーニ\">ランボルギーニ</word><word chain=\"1\" original=\"。\" phoneme=\"\" pos=\"記号\" pos_group1=\"句点\" pronunciation=\"\">。</word></acoustic_phrase><acoustic_phrase><word cform=\"未然形\" chain=\"0\" ctype=\"特殊・デス\" hl=\"hl\" original=\"です\" phoneme=\"d,e|sh,o\" pos=\"助動詞\" pronunciation=\"デショ\">でしょ</word><word cform=\"基本形\" chain=\"1\" ctype=\"不変化型\" hl=\"l\" original=\"う\" phoneme=\"o\" pos=\"助動詞\" pronunciation=\"ー\">う</word><word chain=\"1\" original=\"。\" phoneme=\"\" pos=\"記号\" pos_group1=\"句点\" pronunciation=\"\">。</word></acoustic_phrase><acoustic_phrase><word chain=\"0\" hl=\"l\" original=\"か\" phoneme=\"k,a\" pos=\"助詞\" pos_group1=\"副助詞／並立助詞／終助詞\" pronunciation=\"カ\">か</word><word chain=\"1\" is_question=\"1\" original=\"？\" phoneme=\"\" pos=\"記号\" pos_group1=\"一般\" pronunciation=\"\">？</word></acoustic_phrase></tsml>"
           },
-          "durationSec": 2.4,
+          "durationSec": 3.335,
           "audio": {
-            "src": "/tts/293ae4b2b46945d77dd344ee066d9f31.wav"
+            "src": "/tts/f533dace2c1ccf609809232c1b2e2336.wav"
           }
         }
       ]

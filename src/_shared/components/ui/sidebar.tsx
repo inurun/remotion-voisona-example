@@ -5,10 +5,6 @@ import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { useIsMobile } from "@/_shared/hooks/use-mobile";
-import {
-  hasStoredUiPreferences,
-  useUiPreferencesStore,
-} from "@/_shared/hooks/use-ui-preferences-store";
 import { cn } from "@/_shared/lib/utils";
 import { Button } from "@/_shared/components/ui/button";
 import { Input } from "@/_shared/components/ui/input";
@@ -65,20 +61,18 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
-  const storedOpen = useUiPreferencesStore((state) => state.sidebarOpen);
-  const setStoredOpen = useUiPreferencesStore((state) => state.setSidebarOpen);
-  const [hasStoredOpen] = React.useState(() => hasStoredUiPreferences());
-  const open = openProp ?? (hasStoredOpen ? storedOpen : defaultOpen);
+  const [_open, _setOpen] = React.useState(defaultOpen);
+  const open = openProp ?? _open;
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value;
       if (setOpenProp) {
         setOpenProp(openState);
       } else {
-        setStoredOpen(openState);
+        _setOpen(openState);
       }
     },
-    [setOpenProp, open, setStoredOpen],
+    [setOpenProp, open],
   );
 
   // Helper to toggle the sidebar.

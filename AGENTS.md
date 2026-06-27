@@ -11,6 +11,7 @@
 - 実装前に周辺実装を確認すること
 - 実装後、lint, format, tsc, `fallow audit`を実行
 - fallowで指摘が入った場合はスキルを使って、修正方針をユーザに提示する
+- appに変更がある場合はagent-browserを使って動作確認を行う
 
 ### src/app
 

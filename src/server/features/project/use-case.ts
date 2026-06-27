@@ -80,8 +80,9 @@ function shouldReusePreviousTts(
 async function resolveAnalyzedText(
   serverEnv: ServerEnv,
   nextInput: ReturnType<typeof getTtsComparisonInput>,
+  options: { forceAnalyze: boolean },
 ) {
-  if (nextInput.analyzedText) {
+  if (!options.forceAnalyze && nextInput.analyzedText) {
     return nextInput.analyzedText;
   }
 
@@ -90,6 +91,17 @@ async function resolveAnalyzedText(
     language: "ja_JP",
   });
   return analysis.analyzedText;
+}
+
+function hasReadTextChanged(
+  nextInput: ReturnType<typeof getTtsComparisonInput>,
+  previous?: SavedProject["pages"][number]["tts"][number],
+) {
+  if (!previous) {
+    return false;
+  }
+
+  return getPreviousComparisonInput(previous).readText !== nextInput.readText;
 }
 
 async function buildSavedTts(
@@ -103,7 +115,9 @@ async function buildSavedTts(
   }
 
   const nextInput = getTtsComparisonInput(item);
-  const analyzedText = await resolveAnalyzedText(serverEnv, nextInput);
+  const analyzedText = await resolveAnalyzedText(serverEnv, nextInput, {
+    forceAnalyze: hasReadTextChanged(nextInput, previous),
+  });
   const voiceVersion = getOptionalVoiceVersion(nextInput.voiceVersion);
   const audio = await synthesizeVoisona(
     createSynthesisInput(serverEnv, nextInput, analyzedText, voiceVersion),

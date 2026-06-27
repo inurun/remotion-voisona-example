@@ -19,12 +19,12 @@ https://github.com/user-attachments/assets/7488dc5a-36bd-4a98-8333-38f514935c30
   - [x] durationSecはpad系の値を加算した値（総時間として処理）
   - [x] getProjectPlaybackは削除、かわりにremedaの`sumBy()`関数で計算、getProjectPlaybackによる余計な計算コストを減らす
   - [x] remotion側も合わせて修正
-- [ ] TTS、現状保存時にTSMLが更新されないため、テキストは変わるが音声データが変わらない
-  - [ ] readTextの更新時にはanalyzeを実施、TSMLを更新するように修正
+- [x] TTS、現状保存時にTSMLが更新されないため、テキストは変わるが音声データが変わらない
+  - [x] readTextの更新時にはanalyzeを実施、TSMLを更新するように修正
 - [ ] アプリケーション設定機能の追加
   - [ ] サイドバー一番下に設定アイコン、ダイアログ
   - [ ] voices再取得、ボイスごとのラベル・ホットキー（ctrl+1, ctrl+2...）、そのほかホットキー設定
-  - [ ] 全てLocalStorage管理
+  - [ ] 全てLocalStorage管理、基本的にはfeatures内部にstorageディレクトリを作って、
 - [ ] ページ設定の追加
   - [ ] page-header右端に設定アイコン、ダイアログ
   - [ ] サンプルなのでページタイトルのみ

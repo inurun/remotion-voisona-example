@@ -16,10 +16,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarProvider,
   SidebarRail,
   SidebarTrigger,
 } from "@/_shared/components/ui/sidebar";
 import { useProject } from "@/app/features/project";
+import { useUiPreferencesStore } from "@/app/features/ui/storage/use-ui-preferences-store";
 import { getProjectHref } from "@/app/features/project/lib/project-path";
 import { cn } from "@/_shared/lib/utils";
 import { AddProjectDialog } from "@/app/components/app-sidebar/add-dialog/add-dialog";
@@ -109,7 +111,7 @@ function Directory({
   );
 }
 
-export function AppSidebar() {
+function AppSidebarContent() {
   const { projects, projectPath } = useProject();
   const groups = groupProjectsByDirectory(projects);
 
@@ -153,5 +155,17 @@ export function AppSidebar() {
       </Sidebar>
       <SidebarRail />
     </>
+  );
+}
+
+export function AppSidebar({ children }: { children: React.ReactNode }) {
+  const open = useUiPreferencesStore((state) => state.sidebarOpen);
+  const onOpenChange = useUiPreferencesStore((state) => state.setSidebarOpen);
+
+  return (
+    <SidebarProvider open={open} onOpenChange={onOpenChange}>
+      <AppSidebarContent />
+      {children}
+    </SidebarProvider>
   );
 }

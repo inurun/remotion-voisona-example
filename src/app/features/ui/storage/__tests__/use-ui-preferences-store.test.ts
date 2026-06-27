@@ -28,7 +28,7 @@ async function importStoreWithStorage(storage: StorageMock) {
   vi.resetModules();
   vi.stubGlobal("localStorage", storage);
   vi.stubGlobal("window", { localStorage: storage });
-  return import("./use-ui-preferences-store");
+  return import("../use-ui-preferences-store");
 }
 
 beforeEach(() => {
