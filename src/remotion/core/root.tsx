@@ -1,9 +1,7 @@
 import { Composition } from "remotion";
-
 import { savedProjectSchema } from "@/_schemas";
 import { getProjectPlayback } from "@/_shared/lib/project-playback";
 import { COMP_NAME, VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
-
 import projectJson from "../../../data/project.json";
 import { Composition as RemotionVideo } from "./composition";
 import { msToFrame } from "../utils/timing";

@@ -1,14 +1,12 @@
-import { BackgroundLayer } from "./layers/background-layer";
-import { TtsLayer } from "./layers/tts-layer";
-import { MainPageProps, useMainPage } from "./use-main-page";
+import { MainPageContextProvider, MainPageProps } from "./context";
+import { BackgroundLayer } from "./layer-background/layer-background";
+import { TtsLayer } from "./layer-tts/layer-tts";
 
 export function MainPage(props: MainPageProps) {
-  const { page } = useMainPage(props);
-  console.log(page);
   return (
-    <>
+    <MainPageContextProvider {...props} key={props.page.id}>
       <BackgroundLayer />
-      <TtsLayer page={page} />
-    </>
+      <TtsLayer />
+    </MainPageContextProvider>
   );
 }
