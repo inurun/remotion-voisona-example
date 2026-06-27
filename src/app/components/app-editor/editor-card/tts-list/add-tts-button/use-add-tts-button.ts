@@ -5,7 +5,7 @@ import { createUuid } from "@/_shared/lib/utils";
 import { useForm } from "@/app/features/editor";
 import { usePage } from "@/app/features/page";
 import { useTts } from "@/app/features/tts";
-import { useVoices } from "@/app/features/voices";
+import { useSettings } from "@/app/features/settings";
 
 type PendingTextFocus = {
   pageIndex: number;
@@ -83,7 +83,7 @@ export function useAddTtsButton() {
   const { appendTtsToPage } = useForm();
   const { selectedPageIndex, setSelectedPageIndex } = usePage();
   const { selectedTtsIndex, selectTts } = useTts();
-  const { options } = useVoices();
+  const { options } = useSettings();
   const [pendingTextFocus, setPendingTextFocus] = useState<PendingTextFocus | null>(null);
 
   const clearPendingTextFocus = useCallback(() => {

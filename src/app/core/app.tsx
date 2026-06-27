@@ -7,12 +7,12 @@ import { PageContextProvider } from "@/app/features/page";
 import { ProjectContextProvider } from "@/app/features/project";
 import { RenderContextProvider } from "@/app/features/render";
 import { TtsContextProvider } from "@/app/features/tts";
-import { VoicesContextProvider } from "@/app/features/voices";
+import { SettingsContextProvider } from "@/app/features/settings";
 import { AppHeader } from "../components/app-header/app-header";
 
 function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <VoicesContextProvider>
+    <SettingsContextProvider>
       <ProjectContextProvider>
         <FormContextProvider>
           <PageContextProvider>
@@ -24,7 +24,7 @@ function AppProviders({ children }: { children: React.ReactNode }) {
           </PageContextProvider>
         </FormContextProvider>
       </ProjectContextProvider>
-    </VoicesContextProvider>
+    </SettingsContextProvider>
   );
 }
 

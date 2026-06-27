@@ -1,11 +1,13 @@
 import { useHotkeys } from "react-hotkeys-hook";
 import { useEditor } from "@/app/features/editor";
+import { useSettings } from "@/app/features/settings";
 
 export function useAppEditorHotkeys() {
   const { save } = useEditor();
+  const { hotkeys } = useSettings();
 
   useHotkeys(
-    "mod+s",
+    hotkeys.save,
     (event) => {
       event.preventDefault();
       save();
@@ -14,7 +16,8 @@ export function useAppEditorHotkeys() {
       enableOnContentEditable: true,
       enableOnFormTags: true,
       preventDefault: true,
+      enabled: Boolean(hotkeys.save),
     },
-    [save],
+    [hotkeys.save, save],
   );
 }

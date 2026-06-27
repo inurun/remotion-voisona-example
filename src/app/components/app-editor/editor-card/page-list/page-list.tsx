@@ -71,13 +71,13 @@ function PageListItemContent({
       onClick={onSelect}
       className="grid cursor-pointer gap-2 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <div className="overflow-hidden rounded-md border border-border bg-muted/30">
+      <div className="overflow-hidden rounded-md border border-border opacity-100 group-hover/page:opacity-30 transition-opacity">
         <PageThumbnail {...thumbnail} />
       </div>
       <div className="absolute bottom-3 right-2 min-w-0 items-center justify-end gap-2 px-0.5">
         <span
           ref={handleRef}
-          className="inline-flex size-6 cursor-grab items-center justify-center rounded-md text-white active:cursor-grabbing"
+          className="inline-flex size-6 cursor-grab items-center justify-center rounded-md opacity-30 group-hover/page:opacity-100 text-primary active:cursor-grabbing"
           aria-label="並び替え"
           title="並び替え"
         >
@@ -128,7 +128,7 @@ function PageListItem({
       data-dragging={isDragging}
       data-drop-target={isDropTarget && !isDragging}
       data-selected={isSelected}
-      className="group/page relative grid gap-2 rounded-lg border border-border bg-card p-2 transition data-[dragging=true]:opacity-70 data-[drop-target=true]:border-primary/60 data-[selected=true]:border-primary data-[selected=true]:ring-2 data-[selected=true]:ring-primary/20"
+      className="group/page relative min-w-30 aspect-video grid gap-2 rounded-lg border border-border bg-card p-2 transition data-[dragging=true]:opacity-70 data-[drop-target=true]:border-primary/60 data-[selected=true]:border-primary data-[selected=true]:ring-2 data-[selected=true]:ring-primary/20"
     >
       <PageListItemContent handleRef={handleRef} onSelect={onSelect} thumbnail={thumbnail} />
       <PageRemoveButton index={index} onRemove={onRemove} />
@@ -159,15 +159,27 @@ export function PageList() {
   }
 
   return (
-    <aside className="grid content-start gap-3">
-      <div className="text-xs font-medium text-muted-foreground">Pages</div>
+    <aside className="flex flex-col gap-3 max-w-full overflow-hidden">
+      <div className="text-xs font-medium text-muted-foreground flex items-center justify-between">
+        <span>Pages</span>
+        <Button
+          type="button"
+          size="icon-sm"
+          title="ページ追加"
+          aria-label="ページ追加"
+          variant="secondary"
+          onClick={append}
+        >
+          <FilePlus2 className="size-3" />
+        </Button>
+      </div>
       {pageFields.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
           No pages.
         </div>
       ) : (
         <DragDropProvider onDragEnd={handleDragEnd}>
-          <div className="grid gap-2">
+          <div className="flex sm:grid overflow-x-auto max-w-full gap-2">
             {pageFields.map((field, index) => (
               <PageListItem
                 key={field.fieldKey}
@@ -187,18 +199,6 @@ export function PageList() {
           </div>
         </DragDropProvider>
       )}
-      <Button
-        type="button"
-        size="sm"
-        title="ページ追加"
-        aria-label="ページ追加"
-        variant="default"
-        className="w-full justify-center"
-        onClick={append}
-      >
-        <FilePlus2 />
-        Add
-      </Button>
     </aside>
   );
 }

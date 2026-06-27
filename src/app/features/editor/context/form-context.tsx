@@ -2,13 +2,13 @@ import { createContext, useContext } from "react";
 import { FormProvider } from "react-hook-form";
 import { useFormProviderValue } from "@/app/features/editor/context/use-form-context";
 import { useProject } from "@/app/features/project";
-import { useVoices } from "@/app/features/voices";
+import { useSettings } from "@/app/features/settings";
 
 const FormContext = createContext<ReturnType<typeof useFormProviderValue>["value"] | null>(null);
 
 export function FormContextProvider({ children }: { children: React.ReactNode }) {
   const { project } = useProject();
-  const { options } = useVoices();
+  const { options } = useSettings();
   const { form, value } = useFormProviderValue({
     initialProject: project,
     voiceOptions: options,

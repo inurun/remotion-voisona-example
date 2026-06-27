@@ -1,4 +1,5 @@
 import type { SavedProject } from "@/_schemas";
+import { moveItem } from "@/app/features/ui/lib/reorder";
 
 type PageTiming = {
   id?: string;
@@ -8,17 +9,6 @@ type PageTiming = {
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
-}
-
-function moveItem<T>(items: T[], fromIndex: number, toIndex: number) {
-  const next = [...items];
-  const [item] = next.splice(fromIndex, 1);
-  if (item === undefined) {
-    return items;
-  }
-
-  next.splice(toIndex, 0, item);
-  return next;
 }
 
 export function getPageThumbnailFrame(page: PageTiming, fps: number, durationInFrames: number) {

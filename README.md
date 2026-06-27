@@ -21,12 +21,12 @@ https://github.com/user-attachments/assets/7488dc5a-36bd-4a98-8333-38f514935c30
   - [x] remotion側も合わせて修正
 - [x] TTS、現状保存時にTSMLが更新されないため、テキストは変わるが音声データが変わらない
   - [x] readTextの更新時にはanalyzeを実施、TSMLを更新するように修正
-- [ ] アプリケーション設定機能の追加
-  - [ ] サイドバー一番下に設定アイコン、ダイアログ
-  - [ ] voices再取得、ボイスごとのラベル・ホットキー（ctrl+1, ctrl+2...）、そのほかホットキー設定
-  - [ ] 今のfeatures/voicesを、features/settingsに意味を広げる（voicesもsettingsの一部と言えるので）
-  - [ ] use-settings-contextのようにリネーム、hooks分離とかはとりあえずせず、今のhooksを拡張する形で良い（fallowで怒られたら考える）
-  - [ ] 全てLocalStorage管理、基本的にはfeatures内部にstorageディレクトリを作って対応する、features/settings/storageかな？
+- [x] アプリケーション設定機能の追加
+  - [x] サイドバー一番下に設定アイコン、ダイアログ
+  - [x] voices再取得、ボイスごとのラベル・ホットキー（ctrl+1, ctrl+2...）、そのほかホットキー設定
+  - [x] 今のfeatures/voicesを、features/settingsに意味を広げる（voicesもsettingsの一部と言えるので）
+  - [x] use-settings-contextのようにリネーム、hooks分離とかはとりあえずせず、今のhooksを拡張する形で良い（fallowで怒られたら考える）
+  - [x] 全てLocalStorage管理、基本的にはfeatures内部にstorageディレクトリを作って対応する、features/settings/storageかな？
 - [ ] ページ設定の追加
   - [ ] page-header右端に設定アイコン、ダイアログ
   - [ ] サンプルなのでページタイトルのみ

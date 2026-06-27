@@ -14,7 +14,7 @@ import { type DraftProject } from "@/_schemas";
 import { cn } from "@/_shared/lib/utils";
 import { usePage } from "@/app/features/page";
 import { useTts } from "@/app/features/tts";
-import { useVoices } from "@/app/features/voices";
+import { useSettings } from "@/app/features/settings";
 import { getVoiceValue } from "@/app/features/editor";
 import { useTtsList } from "@/app/components/app-editor/editor-card/tts-list/use-tts-list";
 import { useTtsListHotkeys } from "@/app/components/app-editor/editor-card/tts-list/tts-list.hotkeys";
@@ -31,8 +31,12 @@ function TtsVoiceField({
 }) {
   const { control, setValue } = useFormContext<DraftProject>();
   const { selectedPageIndex } = usePage();
-  const { options } = useVoices();
+  const { options } = useSettings();
   const pageIndex = selectedPageIndex ?? 0;
+  const selectItems = options.map((option) => ({
+    value: getVoiceValue(option),
+    label: option.displayName,
+  }));
   const voiceVersion = useWatch({
     control,
     name: `pages.${pageIndex}.tts.${index}.voiceVersion`,
@@ -51,6 +55,7 @@ function TtsVoiceField({
           <div className="flex gap-2">
             <Select
               name={controllerField.name}
+              items={selectItems}
               value={getVoiceValue({
                 voiceName: controllerField.value ?? "",
                 voiceVersion: voiceVersion ?? "",
@@ -75,10 +80,7 @@ function TtsVoiceField({
               </SelectTrigger>
               <SelectContent>
                 {options.map((option) => (
-                  <SelectItem
-                    key={`${option.voiceName}:${option.voiceVersion ?? ""}`}
-                    value={`${option.voiceName}::${option.voiceVersion ?? ""}`}
-                  >
+                  <SelectItem key={getVoiceValue(option)} value={getVoiceValue(option)}>
                     {option.displayName}
                   </SelectItem>
                 ))}

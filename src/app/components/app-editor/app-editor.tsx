@@ -9,11 +9,11 @@ export function AppEditor() {
   useAppEditorHotkeys();
 
   return (
-    <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_500px]">
-      <section className="flex flex-col gap-4">
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_500px]">
+      <section className="flex flex-col gap-4 max-w-full overflow-hidden">
         <EditorCard />
       </section>
-      <section className="flex flex-col gap-4 xl:sticky xl:top-6">
+      <section className="flex flex-col gap-4 lg:sticky lg:top-6">
         <PreviewCard />
         <ConfigCard />
       </section>

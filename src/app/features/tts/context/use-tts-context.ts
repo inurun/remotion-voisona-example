@@ -7,7 +7,7 @@ import { requestPreviewSynthesis } from "@/app/features/tts/api/tts-api";
 import { isTtsActionReady } from "@/app/features/tts/lib/tts-action";
 import { resolveTtsIndexForPage } from "@/app/features/tts/lib/tts-selection";
 import { useAnalyzeTextMutation } from "@/app/features/tts/swr/use-tts-mutations";
-import { useVoices } from "@/app/features/voices";
+import { useSettings } from "@/app/features/settings";
 
 function useTtsSelection() {
   const [selectedTtsIndex, setSelectedTtsIndex] = useState<number | null>(null);
@@ -36,7 +36,7 @@ function useTtsSelection() {
 function useTtsCommands() {
   const { getValues, setValue } = useFormContext<DraftProject>();
   const { isPending: saving } = useEditor();
-  const { options } = useVoices();
+  const { options } = useSettings();
   const { trigger: analyzeText, isMutating: isAnalyzing } = useAnalyzeTextMutation();
 
   const canRunTts = options.length > 0 && !saving;

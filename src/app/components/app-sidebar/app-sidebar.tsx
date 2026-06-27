@@ -26,6 +26,7 @@ import { getProjectHref } from "@/app/features/project/lib/project-path";
 import { cn } from "@/_shared/lib/utils";
 import { AddProjectDialog } from "@/app/components/app-sidebar/add-dialog/add-dialog";
 import { DuplicateProjectDialog } from "@/app/components/app-sidebar/duplicate-dialog/duplicate-dialog";
+import { SettingsDialog } from "@/app/components/app-sidebar/settings-dialog/settings-dialog";
 
 function getDirectoryPath(project: ProjectFileSummary) {
   return project.segments.slice(0, -1).join("/");
@@ -149,7 +150,8 @@ function AppSidebarContent() {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className="items-end px-3 py-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
+        <SidebarFooter className="flex-row items-center justify-end gap-1 px-3 py-3 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:px-2">
+          <SettingsDialog />
           <SidebarTrigger />
         </SidebarFooter>
       </Sidebar>

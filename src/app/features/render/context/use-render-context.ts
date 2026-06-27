@@ -8,7 +8,7 @@ import { usePage } from "@/app/features/page";
 import { useProject } from "@/app/features/project";
 import { startRender, type RenderState } from "@/app/features/render/api/render-api";
 import { useRenderStateQuery } from "@/app/features/render/swr/use-render-query";
-import { useVoices } from "@/app/features/voices";
+import { useSettings } from "@/app/features/settings";
 
 export type { RenderState };
 
@@ -38,7 +38,7 @@ export type RenderContextValue = {
 export function useRenderProviderValue(): RenderContextValue {
   const { handleSubmit } = useFormContext<DraftProject>();
   const { isPending: saving } = useEditor();
-  const { options } = useVoices();
+  const { options } = useSettings();
   const { pageFields } = usePage();
   const { projectPath } = useProject();
   const { renderState, reloadRenderState } = useRenderStateQuery();
