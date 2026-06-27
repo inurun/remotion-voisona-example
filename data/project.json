@@ -10,8 +10,8 @@
       "tts": [
         {
           "id": "c5f2c912-a909-4758-8559-108481802bc6",
-          "text": "テストまどろっこしいぜ",
-          "readText": "テストまどろっこしいぜ",
+          "text": "テストまどろっこしいぜあああ",
+          "readText": "テストまどろっこしいぜあああ",
           "voiceName": "futaba-minato_ja_JP",
           "voiceVersion": "2.0.2",
           "speech": {
@@ -19,7 +19,7 @@
           },
           "durationSec": 1.85,
           "audio": {
-            "src": "/tts/87e713915c124919611c0ab29eff04ba.wav"
+            "src": "/tts/d36a39c02a66525a837ac1b4fea411fc.wav"
           }
         },
         {
