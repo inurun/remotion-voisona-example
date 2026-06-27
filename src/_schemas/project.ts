@@ -31,8 +31,13 @@ export const savedTtsSchema = draftTtsSchema.extend({
     .default({}),
 });
 
+export const pageTypeSchema = z.enum(["intro", "main", "outro"]);
+
 export const draftPageSchema = z.object({
   id: z.string().min(1),
+  type: pageTypeSchema,
+  padBeforeSec: z.number().nonnegative(),
+  padAfterSec: z.number().nonnegative(),
   richText: z.string(),
   tts: z.array(draftTtsSchema),
 });
@@ -43,6 +48,10 @@ export const draftProjectSchema = z.object({
 
 export const savedPageSchema = z.object({
   id: z.string().min(1),
+  type: pageTypeSchema,
+  padBeforeSec: z.number().nonnegative(),
+  padAfterSec: z.number().nonnegative(),
+  durationSec: z.number().nonnegative(),
   richText: z.string(),
   tts: z.array(savedTtsSchema),
 });
@@ -70,6 +79,7 @@ export const projectFileSummarySchema = z.object({
 export type VoiceOption = z.infer<typeof voiceOptionSchema>;
 export type DraftTts = z.infer<typeof draftTtsSchema>;
 export type SavedTts = z.infer<typeof savedTtsSchema>;
+export type PageType = z.infer<typeof pageTypeSchema>;
 export type DraftPage = z.infer<typeof draftPageSchema>;
 export type SavedPage = z.infer<typeof savedPageSchema>;
 export type DraftProject = z.infer<typeof draftProjectSchema>;

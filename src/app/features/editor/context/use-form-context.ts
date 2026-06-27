@@ -13,6 +13,9 @@ import {
 function toDraftPages(project: SavedProject): DraftPage[] {
   return project.pages.map((page) => ({
     id: page.id,
+    type: page.type,
+    padBeforeSec: page.padBeforeSec,
+    padAfterSec: page.padAfterSec,
     richText: page.richText,
     tts: page.tts.map((item) => ({
       id: item.id,

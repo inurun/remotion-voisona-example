@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getPageThumbnailFrame,
+  getProjectPageTimings,
   getPageMoveState,
 } from "@/app/components/app-editor/editor-card/page-list/page-list.lib";
 
@@ -15,6 +16,36 @@ describe("page list", () => {
 
   it("keeps thumbnails inside the project range", () => {
     expect(getPageThumbnailFrame({ startSec: 4, endSec: 8 }, 24, 100)).toBe(99);
+  });
+
+  it("builds page timings from saved page durations", () => {
+    expect(
+      getProjectPageTimings({
+        pages: [
+          {
+            id: "page-1",
+            type: "intro",
+            padBeforeSec: 0.5,
+            padAfterSec: 0.25,
+            durationSec: 1.75,
+            richText: "<p>Intro</p>",
+            tts: [],
+          },
+          {
+            id: "page-2",
+            type: "main",
+            padBeforeSec: 0,
+            padAfterSec: 0,
+            durationSec: 3,
+            richText: "<p>Main</p>",
+            tts: [],
+          },
+        ],
+      }),
+    ).toEqual([
+      { id: "page-1", startSec: 0, endSec: 1.75 },
+      { id: "page-2", startSec: 1.75, endSec: 4.75 },
+    ]);
   });
 
   it("keeps the selected page selected after moving pages", () => {

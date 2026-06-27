@@ -1,4 +1,5 @@
 import { Composition } from "remotion";
+import { sumBy } from "remeda";
 import { SavedProject, savedProjectSchema } from "@/_schemas";
 import { COMP_NAME, VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
 import projectJson from "../../../data/project.json";
@@ -6,11 +7,8 @@ import { Composition as RemotionVideo } from "./composition";
 import { secondsToFrames } from "../utils/timing";
 
 function calculateDurationInFrames(project: SavedProject) {
-  const sumDurationSec = project.pages.reduce(
-    (acc, page) => acc + page.tts.reduce((acc, tts) => acc + tts.durationSec, 0),
-    0,
-  );
-  return secondsToFrames(sumDurationSec, VIDEO_FPS);
+  const sumDurationSec = sumBy(project.pages, (page) => page.durationSec);
+  return Math.max(1, secondsToFrames(sumDurationSec, VIDEO_FPS));
 }
 
 export function RemotionRoot() {

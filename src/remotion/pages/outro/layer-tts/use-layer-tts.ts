@@ -1,10 +1,10 @@
 import { createSequentialSegments } from "@/remotion/utils/timing/timing-helpers";
-import { useMainPageContext } from "../context";
+import { useOutroPageContext } from "../context";
 import { secondsToFrames } from "@/remotion/utils/timing";
 import { staticFile } from "remotion";
 
 export function useLayerTts() {
-  const { page } = useMainPageContext();
+  const { page } = useOutroPageContext();
 
   const segments = createSequentialSegments(
     page.tts.map((tts) => secondsToFrames(tts.durationSec)),

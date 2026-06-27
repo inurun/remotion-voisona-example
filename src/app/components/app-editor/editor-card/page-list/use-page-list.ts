@@ -1,10 +1,11 @@
 import { useCallback } from "react";
 import type { DragEndEvent } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
-import { getProjectPlayback } from "@/_shared/lib/project-playback";
+import { sumBy } from "remeda";
 import { VIDEO_FPS } from "@/constants";
 import { useRemotionComposition } from "@/app/features/remotion/hook/use-remotion-composition";
 import {
+  getProjectPageTimings,
   getPageMoveState,
   getPageThumbnailFrame,
 } from "@/app/components/app-editor/editor-card/page-list/page-list.lib";
@@ -20,9 +21,11 @@ export function usePageList() {
   const { pageFields, selectedPageIndex, setSelectedPageIndex, movePage, removePage, appendPage } =
     usePage();
   const { syncForPage, clearSelection } = useTts();
-  const playback = getProjectPlayback(project);
-  const durationInFrames = Math.max(1, Math.ceil(playback.durationSec * VIDEO_FPS));
-  const savedPagesById = new Map(playback.pages.map((page) => [page.id, page]));
+  const durationInFrames = Math.max(
+    1,
+    Math.ceil(sumBy(project.pages, (page) => page.durationSec) * VIDEO_FPS),
+  );
+  const savedPagesById = new Map(getProjectPageTimings(project).map((page) => [page.id, page]));
 
   const selectPage = useCallback(
     (index: number) => {
@@ -37,6 +40,9 @@ export function usePageList() {
     clearSelection();
     appendPage({
       id: createUuid(),
+      type: "main",
+      padBeforeSec: 0,
+      padAfterSec: 0,
       richText: "<p></p>",
       tts: [],
     });

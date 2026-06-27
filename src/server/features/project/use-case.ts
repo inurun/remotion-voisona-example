@@ -5,6 +5,7 @@ import {
   savedProjectSchema,
   type SavedProject,
 } from "@/_schemas";
+import { sumBy } from "remeda";
 import {
   listSavedProjects,
   parseDraftPayload,
@@ -165,6 +166,10 @@ async function buildSavedPage(
 
   return {
     id: page.id,
+    type: page.type,
+    padBeforeSec: page.padBeforeSec,
+    padAfterSec: page.padAfterSec,
+    durationSec: sumBy(tts, (item) => item.durationSec) + page.padBeforeSec + page.padAfterSec,
     richText: page.richText,
     tts,
   };

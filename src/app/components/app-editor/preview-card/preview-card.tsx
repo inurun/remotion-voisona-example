@@ -1,7 +1,7 @@
 import { Player } from "@remotion/player";
 import { useMemo } from "react";
+import { sumBy } from "remeda";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_shared/components/ui/card";
-import { getProjectPlayback } from "@/_shared/lib/project-playback";
 import { VIDEO_FPS, VIDEO_HEIGHT, VIDEO_WIDTH } from "@/constants";
 import { useProject } from "@/app/features/project";
 import { usePreviewCard } from "./use-preview-card";
@@ -10,7 +10,7 @@ export function PreviewCard() {
   const { project } = useProject();
   const component = usePreviewCard();
   const durationInFrames = useMemo(() => {
-    return Math.max(1, Math.ceil(getProjectPlayback(project).durationSec * VIDEO_FPS));
+    return Math.max(1, Math.ceil(sumBy(project.pages, (page) => page.durationSec) * VIDEO_FPS));
   }, [project]);
 
   return (

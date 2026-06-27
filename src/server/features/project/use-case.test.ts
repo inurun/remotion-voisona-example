@@ -33,6 +33,10 @@ describe("project use-case", () => {
       pages: [
         {
           id: "page-1",
+          type: "main",
+          padBeforeSec: 0,
+          padAfterSec: 0,
+          durationSec: 1.2,
           richText: "<p>Hello</p>",
           tts: [
             {
@@ -56,6 +60,9 @@ describe("project use-case", () => {
       pages: [
         {
           id: "page-1",
+          type: "main",
+          padBeforeSec: 0,
+          padAfterSec: 0,
           richText: "<p>Hello</p>",
           tts: [
             {
@@ -82,6 +89,10 @@ describe("project use-case", () => {
       pages: [
         {
           id: "page-1",
+          type: "main",
+          padBeforeSec: 0,
+          padAfterSec: 0,
+          durationSec: 0,
           richText: "<p>Previous</p>",
           tts: [],
         },
@@ -99,6 +110,9 @@ describe("project use-case", () => {
       pages: [
         {
           id: "page-1",
+          type: "main",
+          padBeforeSec: 0.5,
+          padAfterSec: 0.25,
           richText: "<p>Hello</p>",
           tts: [{ id: "tts-1", text: "Hello", voiceName: "voice", speech: {} }],
         },
@@ -106,7 +120,69 @@ describe("project use-case", () => {
     });
 
     expect(saved.pages[0]?.tts[0]?.audio.src).toBe("/tts/generated.wav");
+    expect(saved.pages[0]?.durationSec).toBe(2.85);
     expect(writeSavedProjectMock).toHaveBeenCalledWith("project", saved);
+  });
+
+  it("updates page timing fields without regenerating unchanged tts", async () => {
+    const previous = {
+      pages: [
+        {
+          id: "page-1",
+          type: "main",
+          padBeforeSec: 0,
+          padAfterSec: 0,
+          durationSec: 2,
+          richText: "<p>Hello</p>",
+          tts: [
+            {
+              id: "tts-1",
+              text: "Hello",
+              readText: "Hello",
+              voiceName: "voice",
+              voiceVersion: "1",
+              durationSec: 2,
+              audio: { src: "/tts/old.wav" },
+              speech: { analyzedText: "Hello" },
+            },
+          ],
+        },
+      ],
+    };
+
+    readSavedProjectMock.mockResolvedValueOnce(previous);
+    const { saveProject } = await import("./use-case");
+    const result = await saveProject({}, "project", {
+      pages: [
+        {
+          id: "page-1",
+          type: "intro",
+          padBeforeSec: 1,
+          padAfterSec: 0.5,
+          richText: "<p>Hello</p>",
+          tts: [
+            {
+              id: "tts-1",
+              text: "Hello",
+              readText: "Hello",
+              voiceName: "voice",
+              voiceVersion: "1",
+              speech: { analyzedText: "Hello" },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(result.pages[0]).toMatchObject({
+      type: "intro",
+      padBeforeSec: 1,
+      padAfterSec: 0.5,
+      durationSec: 3.5,
+    });
+    expect(result.pages[0]?.tts[0]).toEqual(previous.pages[0]?.tts[0]);
+    expect(analyzeVoisonaTextMock).not.toHaveBeenCalled();
+    expect(synthesizeVoisonaMock).not.toHaveBeenCalled();
   });
 
   it("lists saved projects", async () => {

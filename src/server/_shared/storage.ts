@@ -35,6 +35,10 @@ function createInitialSavedProject() {
     pages: [
       {
         id: "page-1",
+        type: "main",
+        padBeforeSec: 0,
+        padAfterSec: 0,
+        durationSec: 0,
         richText:
           "<h1>Remotion + VoiSona Template</h1><p>このテンプレをベースに本文と読み上げを編集できる。</p>",
         tts: [

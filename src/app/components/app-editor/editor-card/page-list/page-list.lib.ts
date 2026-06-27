@@ -1,4 +1,7 @@
+import type { SavedProject } from "@/_schemas";
+
 type PageTiming = {
+  id?: string;
   startSec: number;
   endSec: number;
 };
@@ -28,6 +31,21 @@ export function getPageThumbnailFrame(page: PageTiming, fps: number, durationInF
   const preferredFrame = Math.round((page.startSec + 1) * fps);
 
   return clamp(preferredFrame, pageStartFrame, pageEndFrame);
+}
+
+export function getProjectPageTimings(project: SavedProject): PageTiming[] {
+  let currentSec = 0;
+
+  return project.pages.map((page) => {
+    const startSec = currentSec;
+    currentSec += page.durationSec;
+
+    return {
+      id: page.id,
+      startSec,
+      endSec: currentSec,
+    };
+  });
 }
 
 function resolveSelectedPageIndexAfterMove(

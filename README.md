@@ -9,16 +9,16 @@ https://github.com/user-attachments/assets/7488dc5a-36bd-4a98-8333-38f514935c30
 - [x] blankページ追加機能
   - [x] 追加ボタンはサイドバーヘッダー右端にアイコンのみ
   - [x] 同時に複製機能、既存プロジェクト右端にアイコンのみのボタン設置、押下で複製
-- [ ] ページタイプの追加（intro, main, outro）
-  - [ ] intro, outroはデモ用、とりあえず今はmainと全く同じ構成で良い
-  - [ ] remotion側も修正、mainの構成をコピーして
-  - [ ] ページごとにdurationInSecを持つように修正
-  - [ ] ページごとに`padAfterSec`と`padBeforeSec`を追加
-  - [ ] pad系はページの前後の秒数、padBeforeSecが1sなら、ページが始まる前に1秒の空白期間がある
-  - [ ] 主にトランジションや余韻とかの表現用、トランジション表現用意できていないので今は0秒デフォルト、設定するUIも不要
-  - [ ] durationInSecはpad系の値を加算した値（総時間として処理）
-  - [ ] getProjectPlaybackは削除、かわりにremedaの`sumBy()`関数で計算、getProjectPlaybackによる余計な計算コストを減らす
-  - [ ] remotion側も合わせて修正
+- [x] ページタイプの追加（intro, main, outro）
+  - [x] intro, outroはデモ用、とりあえず今はmainと全く同じ構成で良い
+  - [x] remotion側も修正、mainの構成をコピーして
+  - [x] ページごとにdurationSecを持つように修正
+  - [x] ページごとに`padAfterSec`と`padBeforeSec`を追加
+  - [x] pad系はページの前後の秒数、padBeforeSecが1sなら、ページが始まる前に1秒の空白期間がある
+  - [x] 主にトランジションや余韻とかの表現用、トランジション表現用意できていないので今は0秒デフォルト、設定するUIも不要
+  - [x] durationSecはpad系の値を加算した値（総時間として処理）
+  - [x] getProjectPlaybackは削除、かわりにremedaの`sumBy()`関数で計算、getProjectPlaybackによる余計な計算コストを減らす
+  - [x] remotion側も合わせて修正
 - [ ] ページ設定の追加
   - [ ] page-header右端に設定アイコン、ダイアログ
   - [ ] サンプルなのでページタイトルのみ
@@ -99,6 +99,10 @@ https://github.com/user-attachments/assets/7488dc5a-36bd-4a98-8333-38f514935c30
   "pages": [
     {
       "id": "page-1",
+      "type": "main",
+      "padBeforeSec": 0,
+      "padAfterSec": 0,
+      "durationSec": 1.23,
       "richText": "<h1>Title</h1><p>Body</p>",
       "tts": [
         {
@@ -124,6 +128,9 @@ https://github.com/user-attachments/assets/7488dc5a-36bd-4a98-8333-38f514935c30
 管理画面は draft を持ち、`Save` 時にサーバーが project を確定させる。
 
 - `richText` はページ本文
+- `type` はページ種別（`intro`, `main`, `outro`）
+- `padBeforeSec`, `padAfterSec` はページ前後の余白秒数
+- ページの `durationSec` は `tts[].durationSec` の合計に pad 系を足した総時間
 - `tts[]` は読み上げ単位
 - 保存時に `readText`, `analyzedText`, `audio`, `durationSec` を再計算する
 - 変更がない TTS は前回生成済み音声を再利用する
